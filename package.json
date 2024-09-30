@@ -2,14 +2,22 @@
   "name": "polaroids",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord": "^0.8.2",
+    "discord.js": "^14.16.2",
     "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "eslint": "^9.11.1",
+    "tsx": "^4.19.1"
   }
 }

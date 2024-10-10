@@ -5,6 +5,7 @@ import path from "path";
 import { Command } from "./@types/discord.js";
 import getDirname from "./utils/get_dirname.js";
 
+// Initialize client and client.commands collection
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
 
@@ -12,6 +13,7 @@ const __dirname = getDirname(import.meta.url);
 const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
+// Get all commands from commands folder, and save them to client.commands
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs
@@ -22,7 +24,8 @@ for (const folder of commandFolders) {
     let command = await import(filePath);
     // Set a new item in the Collection with the key as the command name and the value as the exported module
     if ("data" in command && "execute" in command) {
-      client.commands.set(command.data.name, command);
+      const cmd = command as Command;
+      client.commands.set(cmd.data.name, cmd);
     } else {
       console.log(
         `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
@@ -31,13 +34,11 @@ for (const folder of commandFolders) {
   }
 }
 
-client.once(Events.ClientReady, (readyClient: any) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
-});
-
+// Hnadle commands
 client.on(Events.InteractionCreate, async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
+  // Try to get the command from the commands collection
   const command = interaction.client.commands.get(interaction.commandName);
 
   if (!command) {
@@ -61,6 +62,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
       });
     }
   }
+});
+
+client.once(Events.ClientReady, (readyClient: any) => {
+  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });
 
 client.login(process.env.TOKEN);

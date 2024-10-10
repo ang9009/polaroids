@@ -9,7 +9,6 @@ declare module "discord.js" {
   export interface Client {
     commands: Collection<string, Command>;
   }
-  åå;
 }
 
 /**
@@ -19,6 +18,6 @@ interface Command {
   // The callback function that will be called when the user invokes the
   // command's name.
   execute: (interaction: Interaction<CacheType>) => void;
-  // Holds data about a command, including its name (see discord.js docs).
+  // Holds data about a command, including its name (see discord.js
   data: SlashCommandBuilder;
 }

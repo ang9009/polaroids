@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx --watch src",
     "build": "tsc",
-    "start": "node ."
+    "start": "node .",
+    "deployCommands": "tsx deploy_commands.js"
   },
   "author": "",
   "license": "ISC",

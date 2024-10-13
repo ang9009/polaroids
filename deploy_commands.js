@@ -1,5 +1,5 @@
 // Taken from https://discordjs.guide/creating-your-bot/command-deployment.html#command-registration.
-// Run "npm run deploy-commands" to run this file using tsx
+// Run "npm run deployCommands" to run this file using tsx
 
 import { REST, Routes } from "discord.js";
 import "dotenv/config";

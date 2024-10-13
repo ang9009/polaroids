@@ -1,5 +1,4 @@
 # polaroids-bot
 
-Run dev environment using npm run dev
-Run npm build to compile to js
-Run node . to run js (like in production)
+Run `npm run dev` to run index.ts on save (also transpiles to JS using tsx).
+Run `npm run deployCommands` to deploy the commands to Discord.

@@ -5,8 +5,6 @@ import { Command } from "../@types/discord.js";
 import getDirname from "./getDirname.js";
 
 const __dirname = getDirname(import.meta.url);
-const foldersPath = path.join(__dirname, "../commands");
-const commandFolders = fs.readdirSync(foldersPath);
 
 /**
  * Gets all the commands from the commands folder, and returns a Collection
@@ -16,6 +14,9 @@ const commandFolders = fs.readdirSync(foldersPath);
 const getCommandsCollection = async (): Promise<
   Collection<string, Command>
 > => {
+  // Get the command files from the commands folder
+  const foldersPath = path.join(__dirname, "../commands");
+  const commandFolders = fs.readdirSync(foldersPath);
   const commands: Collection<string, Command> = new Collection();
 
   for (const folder of commandFolders) {

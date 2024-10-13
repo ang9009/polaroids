@@ -5,6 +5,7 @@ import { REST, Routes } from "discord.js";
 import "dotenv/config";
 import fs from "fs";
 import path from "path";
+import process from "process";
 import getDirname from "./src/utils/get_dirname.ts";
 
 const clientId = process.env.CLIENT_ID;

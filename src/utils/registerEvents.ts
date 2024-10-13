@@ -15,7 +15,7 @@ const registerEvents = async (client: Client) => {
   const eventsPath = path.join(__dirname, "../events");
   const eventFiles = fs
     .readdirSync(eventsPath)
-    .filter((file: String) => file.endsWith(".ts"));
+    .filter((file: string) => file.endsWith(".ts"));
 
   // Add all the events as listener functions on the client
   for (const file of eventFiles) {

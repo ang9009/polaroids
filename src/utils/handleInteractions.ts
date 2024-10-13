@@ -1,6 +1,10 @@
 import { Interaction } from "discord.js";
 
-const handleInteractions = async (interaction: Interaction): Promise<void> => {
+/**
+ * Handles interactions/commands executed by users.
+ * @param interaction the interaction in question
+ */
+const handleInteractions = async (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   // Try to get the command from the commands collection

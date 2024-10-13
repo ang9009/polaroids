@@ -19,11 +19,13 @@ client.on(Events.InteractionCreate, (interaction) =>
   handleInteractions(interaction)
 );
 
-// Register events
+// Register all events
 await registerEvents(client);
 
-await client.once(Events.ClientReady, (readyClient: any) => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+await client.once(Events.ClientReady, (readyClient: Client) => {
+  if (readyClient.user) {
+    console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+  }
 });
 
 client.login(process.env.TOKEN);

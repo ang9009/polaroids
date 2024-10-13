@@ -1,5 +1,8 @@
 {
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:jsdoc/recommended-typescript-error"
+  ],
   "env": {
     "node": true,
     "es6": true
@@ -7,7 +10,9 @@
   "parserOptions": {
     "ecmaVersion": 2021
   },
+  "plugins": ["jsdoc"],
   "rules": {
+    "jsdoc/require-jsdoc": 1,
     "arrow-spacing": ["warn", { "before": true, "after": true }],
     "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
     "comma-dangle": ["error", "always-multiline"],

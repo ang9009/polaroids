@@ -23,10 +23,10 @@ const getCommandsCollection = async (): Promise<
     const commandsPath = path.join(foldersPath, folder);
     const commandFiles = fs
       .readdirSync(commandsPath)
-      .filter((file: String) => file.endsWith(".ts"));
+      .filter((file: string) => file.endsWith(".ts"));
     for (const file of commandFiles) {
       const filePath = path.join(commandsPath, file);
-      let command = await import(filePath);
+      const command = await import(filePath);
       // Set a new item in the Collection with the key as the command name and the value as the exported module
       if ("data" in command && "execute" in command) {
         const cmd = command as Command;

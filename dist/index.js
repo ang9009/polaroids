@@ -1,5 +1,6 @@
 import { Client, Collection, Events, GatewayIntentBits } from "discord.js";
 import "dotenv/config";
+import process from "process";
 import { execute } from "./commands/utility/goat.js";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();

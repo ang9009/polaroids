@@ -64,6 +64,25 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
+// Retrieve all events files from events folder
+const eventsPath = path.join(__dirname, "events");
+const eventFiles = fs
+  .readdirSync(eventsPath)
+  .filter((file) => file.endsWith(".ts"));
+
+// Add all the events as listener functions on the client
+for (const file of eventFiles) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
+  }
+}
+
+// TODO: Refactor the events and commands logic into new files.
+
 client.once(Events.ClientReady, (readyClient: any) => {
   console.log(`Ready! Logged in as ${readyClient.user.tag}`);
 });

@@ -16,8 +16,8 @@ declare module "discord.js" {
  */
 interface Command {
   // The callback function that will be called when the user invokes the
-  // command's name.
+  // command
   execute: (interaction: Interaction<CacheType>) => void;
-  // Holds data about a command, including its name (see discord.js
+  // Holds data about a command, including its name (see discord.js documentation)
   data: SlashCommandBuilder;
 }

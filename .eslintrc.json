@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:jsdoc/recommended-typescript-error"
-  ],
+  "extends": ["eslint:recommended", "plugin:jsdoc/recommended"],
   "env": {
     "node": true,
     "es6": true
@@ -12,7 +9,6 @@
   },
   "plugins": ["jsdoc"],
   "rules": {
-    "jsdoc/require-jsdoc": 1,
     "arrow-spacing": ["warn", { "before": true, "after": true }],
     "brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
     "comma-dangle": ["error", "always-multiline"],

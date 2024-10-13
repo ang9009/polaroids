@@ -1,15 +1,20 @@
-import { Message } from "discord.js";
+import { Attachment, Message } from "discord.js";
+import getImgsFromUrls from "../utils/getImgsFromUrls.js";
 
 module.exports = {
   name: "messageCreate",
   once: false,
-  execute(message: Message) {
-    // If the author is a bot (e.g. Polaroids itself), do nothing to avoid
-    // triggering an infinite loop
-    if (message.author.bot) {
+  async execute(message: Message) {
+    // If the author is a bot (e.g. Polaroids itself)/message has no
+    // attachments, do nothing
+    if (message.author.bot || message.attachments.size == 0) {
       return;
     }
-    console.log(message.content);
+    const attachments = message.attachments;
+    const imageUrls = attachments.map((img: Attachment) => img.url);
+    const imagePromises = getImgsFromUrls(imageUrls);
+    const imgs = await Promise.all(imagePromises);
+
     message.reply("Images received!");
   },
 };

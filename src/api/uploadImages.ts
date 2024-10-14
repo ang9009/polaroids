@@ -1,13 +1,13 @@
-import { ContentData } from "../@types/contentData.js";
+import { AttachmentUploadData } from "../@types/attachmentUploadData.js";
 
 const destinationFolderPath = "Alvin and HS Friends";
 
 /**
- * Uploads a given list of images to PhotoStation.
- * @param imgs the list of images to be uploaded
+ * Uploads a given array of images to PhotoStation.
+ * @param imgs the array of images to be uploaded
  * @throws Error if API credentials are missing
  */
-const uploadImages = async (imgs: ContentData[]) => {
+const uploadImages = async (imgs: AttachmentUploadData[]) => {
   const { PS_API_URL } = process.env;
   if (!PS_API_URL) {
     throw new Error("Missing API credentials in environment variables.");

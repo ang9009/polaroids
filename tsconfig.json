@@ -1,18 +1,11 @@
 {
+  "extends": "./node_modules/gts/tsconfig-google.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "noImplicitAny": true,
-    "declaration": false,
-    "skipLibCheck": true,
-    "strictNullChecks": true,
-    "resolveJsonModule": true,
-    "outDir": "dist",
-    "typeRoots": ["src/@types", "node_modules/@types"],
-    "sourceMap": true
+    "rootDir": ".",
+    "outDir": "build"
   },
-  "include": ["src", "src/deploy_commands.js"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
 }

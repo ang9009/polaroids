@@ -7,6 +7,8 @@ import handleInteractions from "./utils/handleInteractions.js";
 import registerEvents from "./utils/registerEvents.js";
 
 // Set up local storage for session id, then update session id
+// ! TODO: check if session ID is valid before performing any API related
+// ! actions/updating it
 global.localStorage = new LocalStorage("./session_id");
 await updateSessionId();
 
@@ -20,12 +22,12 @@ const client = new Client({
 });
 client.commands = await getCommandsCollection();
 
-// Handle commands
+// Handle commands from commands folder
 client.on(Events.InteractionCreate, (interaction) =>
   handleInteractions(interaction)
 );
 
-// Register all events
+// Register all events from events folder
 await registerEvents(client);
 
 await client.once(Events.ClientReady, (readyClient: Client) => {

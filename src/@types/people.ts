@@ -8,4 +8,8 @@ export enum People {
   Jia,
   Tsz,
   Kiley,
+  Alvin,
+  Matthew,
+  Colin,
+  ALai,
 }

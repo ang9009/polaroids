@@ -1,7 +1,7 @@
 # polaroids-bot
 
-A Discord bot that automatically uploads photos from private Discord servers my
-friends and I are in to my Synology PhotoStation6.
+A Discord bot that automatically uploads videos and images from private Discord servers my
+friends and I are in to my Synology PhotoStation6. Supports photo and video tagging.
 
 ## Scripts
 

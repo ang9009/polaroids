@@ -1,14 +1,14 @@
-import { ContentType } from "./contentType.js";
 import { People } from "./people.js";
+import { SupportedContentType } from "./supportedContentType.js";
 
 /**
  * Data for an image/video to be uploaded, including the file itself, a unique id,
  * the people in the
  */
-export interface ContentData {
+export interface AttachmentUploadData {
   file: Blob;
   date: Date;
   id: string;
   people: People[];
-  contentType: ContentType;
+  contentType: SupportedContentType;
 }

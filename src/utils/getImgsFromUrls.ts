@@ -2,13 +2,14 @@
  * Converts a list of urls into a list of Blob objects representing images from
  * each url.
  * @param urls a list of image urls
- * @returns the corresponding Blob images
+ * @returns a list of corresponding Blob images
  */
-const getImgsFromUrls = (urls: string[]): Promise<Blob>[] => {
-  return urls.map(async (url) => {
+const getBlobsFromUrls = async (urls: string[]): Promise<Blob[]> => {
+  const blobPromises = urls.map(async (url) => {
     const res = await fetch(url);
     return res.blob();
   });
+  return await Promise.all(blobPromises);
 };
 
-export default getImgsFromUrls;
+export default getBlobsFromUrls;

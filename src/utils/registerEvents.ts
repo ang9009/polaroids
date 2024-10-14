@@ -17,7 +17,7 @@ const registerEvents = async (client: Client) => {
     .readdirSync(eventsPath)
     .filter((file: string) => file.endsWith(".ts"));
 
-  // Add all the events as listener functions on the client
+  // Attach events as listeners on the client
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const eventFile = await import(filePath);

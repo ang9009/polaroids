@@ -14,7 +14,9 @@ module.exports = {
     const imageUrls = attachments.map((img: Attachment) => img.url);
     const imagePromises = getImgsFromUrls(imageUrls);
     const imgs = await Promise.all(imagePromises);
+    console.log(imgs);
 
+    // Should show an error if Photostation failed
     message.reply("Images received!");
   },
 };

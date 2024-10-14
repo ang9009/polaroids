@@ -4,6 +4,8 @@ import getCommandsCollection from "./utils/getCommandsCollection.js";
 import handleInteractions from "./utils/handleInteractions.js";
 import registerEvents from "./utils/registerEvents.js";
 
+// TODO: Check features doc
+
 // Initialize client and client.commands collection
 const client = new Client({
   intents: [

@@ -1,5 +1,29 @@
 # polaroids-bot
 
-- Use `npm run dev` to turn on the bot.
-- Use `npm run deployCommands` to deploy new commands to Discord.
-- Use `npm run lint` to run ESLint on the src folder.
+A Discord bot that automatically uploads photos from private Discord servers my
+friends and I are in to my Synology PhotoStation6.
+
+## Scripts
+
+- **Start the bot**:
+
+  ```bash
+  npm run dev
+  ```
+
+- **Deploy commands to Discord**:
+
+  ```bash
+  npm run deployCommands
+  ```
+
+- **Run ESLint on the `src` folder**:
+  ```bash
+  npm run lint
+  ```
+
+## API Documentation
+
+To learn more about the PhotoStation6 API, you can visit the unofficial documentation by JBowen [here](https://blog.jbowen.dev/synology/photostation/api/syno-photostation-file/uploadphoto/).
+
+Full credits to JBowen.

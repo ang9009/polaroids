@@ -1,16 +1,32 @@
+import { ContentData } from "../@types/contentData.js";
+
 const destinationFolderPath = "Alvin and HS Friends";
 
 /**
  * Uploads a given list of images to PhotoStation.
- * @param imgs a list of images to be uploaded
+ * @param imgs the list of images to be uploaded
+ * @throws Error if API credentials are missing
  */
-// TODO:  This should be refactored to use ImageData instead later.
-// const uploadImages = async (imgs: ImageData[]) => {
-//     const fileUploadRoute = "/file.php?api=SYNO.PhotoStation.File";
+const uploadImages = async (imgs: ContentData[]) => {
+  const { PS_API_URL } = process.env;
+  if (!PS_API_URL) {
+    throw new Error("Missing API credentials in environment variables.");
+  }
+  const fileUploadRoute = "/file.php?api=SYNO.PhotoStation.File";
 
-//     for (const img in imgs) {
-//         const fileName =
-//         const params = `&method=uploadphoto&version=1&dest_folder_path=${destinationFolderPath}&duplicate=ignore&filename=myfilename.jpg&mtime=1579384308'`;
-//     }
+  for (const img of imgs) {
+    const params = new URLSearchParams({
+      method: "uploadphoto",
+      version: "1",
+      dest_folder_path: destinationFolderPath,
+      duplicate: "overwrite",
+      filename: img.id,
+      mtime: img.date.getTime().toString(),
+    });
 
-// };
+    // TODO: Create a helper function for this
+    const url = `${PS_API_URL}${fileUploadRoute}${params}`;
+  }
+};
+
+export default uploadImages;

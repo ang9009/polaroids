@@ -11,6 +11,9 @@ import registerEvents from "./utils/registerEvents.js";
 // ! actions/updating it
 global.localStorage = new LocalStorage("./session_id");
 await updateSessionId();
+console.log(
+  `Successfully retrieved session ID: ${global.localStorage.getItem("sessionId")}`
+);
 
 // Initialize client and client.commands collection
 const client = new Client({

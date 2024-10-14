@@ -1,6 +1,19 @@
 import "process";
 
 /**
+ * The shape of the response from Photostation's authentication API.
+ */
+interface authResponse {
+  success: boolean;
+  error?: {
+    code: string;
+  };
+  data?: {
+    sid: string;
+  };
+}
+
+/**
  * Logs into Photostation and gets a session id, then stores it in local storage.
  * @throws Error if API credentials are missing, login fails, or local storage
  *         is not available
@@ -21,13 +34,16 @@ const updateSessionId = async () => {
   const url = `${PS_API_URL}${loginRoute}&${params.toString()}`;
 
   const res = await fetch(url);
-  const loginData = await res.json();
+  const loginData = (await res.json()) as authResponse;
+  let sessionId;
 
-  if (!loginData.success) {
+  if (!loginData.success && loginData.error) {
     throw new Error(`Failed to get session id: ${loginData.error.code}`);
+  } else if (loginData.data) {
+    sessionId = loginData.data.sid;
+  } else {
+    throw new Error(`Received unexpected auth response shape: ${loginData}`);
   }
-
-  const sessionId = loginData.data.sid;
 
   if (typeof localStorage !== "undefined") {
     global.localStorage.setItem("sessionId", sessionId);

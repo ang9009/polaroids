@@ -50,7 +50,7 @@ module.exports = {
 /**
  * Produces a formatted string representation of the total size of the given attachments.
  * @param attachments an array of attachments
- * @returns  a formatted string representation of attachments' total size (e.g. 12MB)
+ * @returns a formatted string representation of attachments' total size (e.g. 12MB)
  */
 const getAttachmentsTotalSizeString = (attachments: Attachment[]): string => {
   const totalSizeBytes = attachments.reduce(

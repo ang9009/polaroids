@@ -18,7 +18,7 @@ module.exports = {
     const attachments = message.attachments.map((attachment) => attachment);
     const date = new Date(message.createdTimestamp);
     const { unsupportedAttachmentsString, blobs, contentTypes, ids } =
-      await processAttachments(attachments);
+      await processAndValidateAttachments(attachments);
 
     if (unsupportedAttachmentsString) {
       // If there are no valid attachments (only unsupported content types), return
@@ -90,15 +90,16 @@ const getAttachmentsUploadData = (
 };
 
 /**
- * Process a array of attachments and returns data about them
- * @param attachments the array of attachments
- * @returns a string that represents a array of attachments that were of
- *      unsupported formats (unsupportedAttachmentsString), a array of blobs (blobs)
- *      and a array of ids (ids) of the files with valid formats, and a array of their
- *      respective content types (contentTypes). Note that blobs[i], ids[i] and
- *      contentTypes[i] all correspond to the same file.
+ * Processes an array of attachments, filtering out invalid files and extracting data from valid ones.
+ * @param attachments - The array of attachments to process.
+ * @returns An object containing:
+ *      - unsupportedAttachmentsString: A string listing unsupported attachments.
+ *      - blobs: An array of Blob objects for valid attachments.
+ *      - ids: An array of IDs for valid attachments.
+ *      - contentTypes: An array of content types for valid attachments.
+ *      (Note: blobs[i], ids[i], and contentTypes[i] correspond to the same file.)
  */
-const processAttachments = async (attachments: Attachment[]) => {
+const processAndValidateAttachments = async (attachments: Attachment[]) => {
   const blobs: Blob[] = [];
   const ids: string[] = [];
   const unsupportedAttachments: string[] = [];

@@ -5,7 +5,7 @@ import { People } from "./people.js";
  * and the people in it.
  */
 export interface ImageUploadData {
-  file: File;
+  file: Blob;
   date: Date;
   id: string;
   people: People[];

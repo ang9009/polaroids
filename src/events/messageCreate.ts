@@ -21,12 +21,12 @@ module.exports = {
     const date = new Date(message.createdTimestamp);
     const ids = attachments.map((item) => item.id);
 
-    const imagesData = blobs.forEach((blob, i) => {
+    const imagesData = blobs.map((blob, i) => {
       const id = ids[i];
-      const file = new File([blob], id);
+      // ! file does not exist in node.js.
       // ! id may be redundant if I am using it as the filename?
       const data: ImageUploadData = {
-        file: file,
+        file: blob,
         id: id,
         date: date,
         people: [],

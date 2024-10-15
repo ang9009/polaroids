@@ -1,9 +1,8 @@
 import { Attachment, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
-import { SupportedContentType } from "../@types/data/supportedContentType.js";
+import { MimeType, SupportedContentType } from "../@types/data/supportedContentType.js";
 import formatBytes from "../utils/formatBytes.js";
 import getBlobFromUrl from "../utils/getBlobFromUrl.js";
-import getContentTypeFromString from "../utils/getContentTypeFromString.js";
 
 module.exports = {
   name: "messageCreate",
@@ -24,22 +23,17 @@ module.exports = {
       // If there are no valid attachments (only unsupported content types), return
       if (blobs.length === 0) {
         message.reply(
-          `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`
+          `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
         );
         return;
       } else {
         message.reply(
-          `File(s) of unsupported formats found: ${unsupportedAttachmentsString} These will be ignored.`
+          `File(s) of unsupported formats found: ${unsupportedAttachmentsString} These will be ignored.`,
         );
       }
     }
 
-    const attachmentsUploadData = getAttachmentsUploadData(
-      blobs,
-      ids,
-      date,
-      contentTypes
-    );
+    const attachmentsUploadData = getAttachmentsUploadData(blobs, ids, date, contentTypes);
     const totalSizeString = getAttachmentsTotalSizeString(attachments);
 
     console.log(totalSizeString, attachmentsUploadData);
@@ -50,13 +44,10 @@ module.exports = {
 /**
  * Produces a formatted string representation of the total size of the given attachments.
  * @param attachments an array of attachments
- * @returns a formatted string representation of attachments' total size (e.g. 12MB)
+ * @returns a formatted string representation of the attachments' total size (e.g. 12MB)
  */
 const getAttachmentsTotalSizeString = (attachments: Attachment[]): string => {
-  const totalSizeBytes = attachments.reduce(
-    (size, curr) => size + curr.size,
-    0
-  );
+  const totalSizeBytes = attachments.reduce((size, curr) => size + curr.size, 0);
   const totalSize = formatBytes(totalSizeBytes);
   return totalSize;
 };
@@ -74,7 +65,7 @@ const getAttachmentsUploadData = (
   blobs: Blob[],
   ids: string[],
   date: Date,
-  contentTypes: SupportedContentType[]
+  contentTypes: SupportedContentType[],
 ): AttachmentUploadData[] => {
   return blobs.map((blob, i) => {
     const id = ids[i];
@@ -112,12 +103,9 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
       unsupportedAttachments.push(`${fileName} (unknown type)`);
       continue;
     }
-    let contentType;
-    try {
-      contentType = getContentTypeFromString(typeExtension);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      // Content type is not recognized
+    const contentType = getContentTypeFromString(typeExtension);
+    // Content type is not recognized
+    if (!contentType) {
       unsupportedAttachments.push(`${fileName} (${typeExtension})`);
       continue;
     }
@@ -129,3 +117,30 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
   const unsupportedAttachmentsString = unsupportedAttachments.join(", ");
   return { unsupportedAttachmentsString, blobs, ids, contentTypes };
 };
+
+/**
+ * Returns the associated SupportedContentType enum given a file extension, or
+ * null if it doesn't exist.
+ * @param fileExtension the file extension in question
+ * @returns the associated SupportContentType enum
+ * @throws an error if the file extension is not recognized, or if there isn't a
+ *     SupportedContentType associated with the MIME type found.
+ */
+const getContentTypeFromString = (fileExtension: string): SupportedContentType | undefined => {
+  const contentTypeExtensions: string[] = Object.values(MimeType);
+  const mimeType = contentTypeExtensions.find((currFileType) => currFileType === fileExtension) as
+    | MimeType
+    | undefined;
+
+  // Return the MimeType, even if it is undefined
+  if (!mimeType) {
+    return mimeType;
+  }
+  const supportedType = SupportedContentType.getSupportedContentType(mimeType);
+  if (!supportedType) {
+    throw new Error(`Missing supported type for MIME type: ${mimeType}`);
+  }
+  return supportedType;
+};
+
+export default getContentTypeFromString;

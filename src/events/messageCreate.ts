@@ -14,33 +14,37 @@ module.exports = {
 
     const attachments = message.attachments.map((attachment) => attachment);
     const date = new Date(message.createdTimestamp);
+    let blobs, contentTypes, ids, unsupportedAttachmentsString;
+
     try {
-      const { unsupportedAttachmentsString, blobs, contentTypes, ids } =
-        await processAndValidateAttachments(attachments);
-      if (unsupportedAttachmentsString) {
-        // If there are no valid attachments (only unsupported content types), return
-        if (blobs.length === 0) {
-          message.reply(
-            `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
-          );
-          return;
-        } else {
-          message.reply(
-            `File(s) of unsupported formats found: ${unsupportedAttachmentsString} These will be ignored.`,
-          );
-        }
-      }
-
-      const attachmentsUploadData = getAttachmentsUploadData(blobs, ids, date, contentTypes);
-      const totalSizeString = getAttachmentsTotalSizeString(attachments);
-
-      console.log(totalSizeString, attachmentsUploadData);
-      message.reply(`Images sent! Size of upload: ${totalSizeString}`);
+      ({ unsupportedAttachmentsString, blobs, contentTypes, ids } =
+        await processAndValidateAttachments(attachments));
     } catch (err) {
-      const msg = `An unexpected error occurred: ${err}`;
-      console.error(msg);
-      message.reply(msg);
+      console.error("Error processing attachments:", err);
+      message.reply(`An error occurred while processing attachments: ${err}`);
+      return;
     }
+
+    // If there are unsupported attachments, handle them
+    if (unsupportedAttachmentsString) {
+      // If all attachments are unsupported, return immediately
+      if (blobs.length === 0) {
+        message.reply(
+          `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
+        );
+        return;
+      } else {
+        message.reply(
+          `File(s) of unsupported formats found: ${unsupportedAttachmentsString}. These will be ignored.`,
+        );
+      }
+    }
+
+    const attachmentsUploadData = getAttachmentsUploadData(blobs, ids, date, contentTypes);
+    const totalSizeString = getAttachmentsTotalSizeString(attachments);
+
+    console.log(totalSizeString, attachmentsUploadData);
+    message.reply(`Images sent! Size of upload: ${totalSizeString}`);
   },
 };
 

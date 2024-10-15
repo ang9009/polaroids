@@ -1,19 +1,17 @@
 import axios from "axios";
 import "process";
-import { ApiRoutes } from "../@types/api/apiRoutes";
-import { LoginApiResponse } from "../@types/api/authApiResponses";
-import getApiUrlForRoute from "../utils/getValidApiUrl";
+import { ApiRoutes } from "../../../@types/api/apiRoutes";
+import { LoginApiResponse } from "../../../@types/api/authApiResponses";
+import getApiUrlForRoute from "../utils/getValidPSApiUrl";
+import getValidatedPSData from "./getValidatedPSData";
 
 /**
  * Logs into Photostation and gets a session id, then stores it in local storage.
  * @throws Error if API credentials are missing, login fails, or local storage
  *         is not available
  */
-const updateSessionId = async () => {
-  const { PS_API_URL, PS_API_USERNAME, PS_API_PASSWORD } = process.env;
-  if (!PS_API_URL || !PS_API_USERNAME || !PS_API_PASSWORD) {
-    throw new Error("Missing API credentials in environment variables.");
-  }
+const updatePSSessionId = async () => {
+  const { PS_API_USERNAME, PS_API_PASSWORD } = process.env;
 
   const loginRoute = ApiRoutes.Auth;
   const params = {
@@ -27,7 +25,7 @@ const updateSessionId = async () => {
   let loginData;
   try {
     const res = await axios.get(url, { params: params });
-    loginData = res.data as LoginApiResponse;
+    loginData = getValidatedPSData<LoginApiResponse>(res);
   } catch (err) {
     throw new Error(`Failed to get session id: ${err}`);
   }
@@ -46,4 +44,4 @@ const updateSessionId = async () => {
   }
 };
 
-export default updateSessionId;
+export default updatePSSessionId;

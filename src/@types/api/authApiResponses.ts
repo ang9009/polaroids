@@ -14,9 +14,13 @@ export interface LoginApiResponse extends BaseApiResponse {
  * The shape of the response from Photostation's authentication API after
  * checking if a sessionId is valid using the checkauth method. If the username is
  */
-export interface CheckAuthApiResponse {
+export interface CheckAuthApiResponse extends BaseApiResponse {
   data?: {
     sid: string;
-    username: string | undefined;
+    permission: {
+      browse: boolean;
+      upload: boolean;
+      manage: boolean;
+    };
   };
 }

@@ -1,24 +1,15 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import "dotenv/config";
 import { LocalStorage } from "node-localstorage";
-import sessionIdIsValid from "./api/sessionIdIsValid.js";
-import updateSessionId from "./api/updateSessionId.js";
+import ensureValidPSSessionId from "./api/photostation/session/ensureValidPSSessionId.js";
 import getCommandsCollection from "./utils/getCommandsCollection.js";
 import handleInteractions from "./utils/handleInteractions.js";
 import registerEvents from "./utils/registerEvents.js";
 
-// Set up local storage for session id, then update session id
-// ! TODO: check if session ID is valid before performing any API related
-// ! actions/updating it
+// Set up local storage for PhotoStation6 session id
 global.localStorage = new LocalStorage("./session_id");
-await updateSessionId();
-
-console.log(
-  `Successfully retrieved session ID: ${global.localStorage.getItem("sessionId")}`
-);
-// Validate session id
-// const valid = await sessionIdIsValid(global.localStorage.getItem("sessionId")!);
-// console.log(valid);
+// Update session id if necessary
+await ensureValidPSSessionId();
 
 // Initialize client and client.commands collection
 const client = new Client({

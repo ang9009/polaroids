@@ -1,4 +1,4 @@
-import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
+import { AttachmentUploadData } from "../../../@types/data/attachmentUploadData.js";
 
 const destinationFolderPath = "Alvin and HS Friends";
 

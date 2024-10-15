@@ -10,9 +10,7 @@ const __dirname = getDirname(import.meta.url);
 const registerEvents = async (client) => {
     // Retrieve all events files from events folder
     const eventsPath = path.join(__dirname, "../events");
-    const eventFiles = fs
-        .readdirSync(eventsPath)
-        .filter((file) => file.endsWith(".ts"));
+    const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".ts"));
     // Attach events as listeners on the client
     for (const file of eventFiles) {
         const filePath = path.join(eventsPath, file);

@@ -8,36 +8,39 @@ module.exports = {
   name: "messageCreate",
   once: false,
   async execute(message: Message) {
-    // If the author is a bot (e.g. Polaroids itself)/message has no
-    // attachments, do nothing
     if (message.author.bot || message.attachments.size === 0) {
       return;
     }
 
     const attachments = message.attachments.map((attachment) => attachment);
     const date = new Date(message.createdTimestamp);
-    const { unsupportedAttachmentsString, blobs, contentTypes, ids } =
-      await processAndValidateAttachments(attachments);
-
-    if (unsupportedAttachmentsString) {
-      // If there are no valid attachments (only unsupported content types), return
-      if (blobs.length === 0) {
-        message.reply(
-          `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
-        );
-        return;
-      } else {
-        message.reply(
-          `File(s) of unsupported formats found: ${unsupportedAttachmentsString} These will be ignored.`,
-        );
+    try {
+      const { unsupportedAttachmentsString, blobs, contentTypes, ids } =
+        await processAndValidateAttachments(attachments);
+      if (unsupportedAttachmentsString) {
+        // If there are no valid attachments (only unsupported content types), return
+        if (blobs.length === 0) {
+          message.reply(
+            `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
+          );
+          return;
+        } else {
+          message.reply(
+            `File(s) of unsupported formats found: ${unsupportedAttachmentsString} These will be ignored.`,
+          );
+        }
       }
+
+      const attachmentsUploadData = getAttachmentsUploadData(blobs, ids, date, contentTypes);
+      const totalSizeString = getAttachmentsTotalSizeString(attachments);
+
+      console.log(totalSizeString, attachmentsUploadData);
+      message.reply(`Images sent! Size of upload: ${totalSizeString}`);
+    } catch (err) {
+      const msg = `An unexpected error occurred: ${err}`;
+      console.error(msg);
+      message.reply(msg);
     }
-
-    const attachmentsUploadData = getAttachmentsUploadData(blobs, ids, date, contentTypes);
-    const totalSizeString = getAttachmentsTotalSizeString(attachments);
-
-    console.log(totalSizeString, attachmentsUploadData);
-    message.reply(`Images sent! Size of upload: ${totalSizeString}`);
   },
 };
 
@@ -89,6 +92,8 @@ const getAttachmentsUploadData = (
  *      - ids: An array of IDs for valid attachments.
  *      - contentTypes: An array of content types for valid attachments.
  *      (Note: blobs[i], ids[i], and contentTypes[i] correspond to the same file.)
+ * @throws an error if a file extension is not recognized, or if there isn't a
+ *     SupportedContentType associated with the MIME type found (see getContentTypeFromString).
  */
 const processAndValidateAttachments = async (attachments: Attachment[]) => {
   const blobs: Blob[] = [];
@@ -103,6 +108,7 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
       unsupportedAttachments.push(`${fileName} (unknown type)`);
       continue;
     }
+
     const contentType = getContentTypeFromString(typeExtension);
     // Content type is not recognized
     if (!contentType) {
@@ -142,5 +148,3 @@ const getContentTypeFromString = (fileExtension: string): SupportedContentType |
   }
   return supportedType;
 };
-
-export default getContentTypeFromString;

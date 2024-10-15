@@ -12,8 +12,8 @@ const uploadFilesToPS = async (files: AttachmentUploadData[]) => {
     throw Error("Files argument is null");
   }
 
-  for (const file of files) {
-  }
+  // for (const file of files) {
+  // }
 };
 
 export default uploadFilesToPS;

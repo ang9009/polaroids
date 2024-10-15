@@ -1,6 +1,6 @@
 import { Attachment, Message } from "discord.js";
-import { AttachmentUploadData } from "../@types/attachmentUploadData.js";
-import { SupportedContentType } from "../@types/supportedContentType.js";
+import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
+import { SupportedContentType } from "../@types/data/supportedContentType.js";
 import formatBytes from "../utils/formatBytes.js";
 import getBlobFromUrl from "../utils/getBlobFromUrl.js";
 import getContentTypeFromString from "../utils/getContentTypeFromString.js";

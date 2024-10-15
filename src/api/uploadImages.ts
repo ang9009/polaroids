@@ -1,4 +1,4 @@
-import { AttachmentUploadData } from "../@types/attachmentUploadData.js";
+import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
 
 const destinationFolderPath = "Alvin and HS Friends";
 
@@ -7,6 +7,7 @@ const destinationFolderPath = "Alvin and HS Friends";
  * @param imgs the array of images to be uploaded
  * @throws Error if API credentials are missing
  */
+// !Correction: this should upload generic files, and handle both images and videos.
 const uploadImages = async (imgs: AttachmentUploadData[]) => {
   const { PS_API_URL } = process.env;
   if (!PS_API_URL) {
@@ -25,7 +26,7 @@ const uploadImages = async (imgs: AttachmentUploadData[]) => {
     });
 
     // TODO: Create a helper function for this
-    const url = `${PS_API_URL}${fileUploadRoute}${params}`;
+    // const url = `${PS_API_URL}${fileUploadRoute}${params}`;
   }
 };
 

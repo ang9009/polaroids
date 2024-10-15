@@ -1,4 +1,4 @@
-import { SupportedContentType } from "../@types/supportedContentType.js";
+import { SupportedContentType } from "../@types/data/supportedContentType.js";
 
 /**
  * Returns the associated SupportedContentType enum given a file extension.

@@ -1,17 +1,8 @@
+import axios from "axios";
 import "process";
-
-/**
- * The shape of the response from Photostation's authentication API.
- */
-interface authResponse {
-  success: boolean;
-  error?: {
-    code: string;
-  };
-  data?: {
-    sid: string;
-  };
-}
+import { ApiRoutes } from "../@types/api/apiRoutes";
+import { LoginApiResponse } from "../@types/api/authApiResponses";
+import getApiUrlForRoute from "../utils/getValidApiUrl";
 
 /**
  * Logs into Photostation and gets a session id, then stores it in local storage.
@@ -24,25 +15,26 @@ const updateSessionId = async () => {
     throw new Error("Missing API credentials in environment variables.");
   }
 
-  const loginRoute = "/auth.php?api=SYNO.PhotoStation.Auth";
-  const params = new URLSearchParams({
+  const loginRoute = ApiRoutes.Auth;
+  const params = {
     method: "login",
     version: "1",
     username: PS_API_USERNAME,
     password: PS_API_PASSWORD,
-  });
-  const url = `${PS_API_URL}${loginRoute}&${params.toString()}`;
+  };
+  const url = getApiUrlForRoute(loginRoute);
 
-  const res = await fetch(url);
-  const loginData = (await res.json()) as authResponse;
-  let sessionId;
+  let loginData;
+  try {
+    const res = await axios.get(url, { params: params });
+    loginData = res.data as LoginApiResponse;
+  } catch (err) {
+    throw new Error(`Failed to get session id: ${err}`);
+  }
 
-  if (!loginData.success && loginData.error) {
-    throw new Error(`Failed to get session id: ${loginData.error.code}`);
-  } else if (loginData.data) {
-    sessionId = loginData.data.sid;
-  } else {
-    throw new Error(`Received unexpected auth response shape: ${loginData}`);
+  const sessionId = loginData?.data?.sid;
+  if (!sessionId) {
+    throw new Error(`Unexpected response: ${JSON.stringify(loginData)}`);
   }
 
   if (typeof localStorage !== "undefined") {

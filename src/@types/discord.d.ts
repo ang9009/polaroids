@@ -1,4 +1,9 @@
-import { Collection, SlashCommandBuilder } from "discord.js";
+import {
+  CacheType,
+  Collection,
+  Interaction,
+  SlashCommandBuilder,
+} from "discord.js";
 
 /**
  * Adds a new "commands" property to the Client interface, which stores a

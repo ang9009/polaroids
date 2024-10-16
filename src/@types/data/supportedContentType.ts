@@ -1,4 +1,4 @@
-import Extension from "./Extension";
+import Extension from "./extension";
 import MimeType from "./mimeType";
 
 /**

@@ -1,9 +1,7 @@
 import { Attachment, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
-import MimeType from "../@types/data/mimeType.js";
 import SupportedContentType from "../@types/data/supportedContentType.js";
-import SupportedPhotoType from "../@types/data/supportedPhotoType.js";
-import SupportedVideoType from "../@types/data/supportedVideoType.js";
+import getContentTypeFromMimeType from "../api/photostation/utils/getContentTypeFromMimeType.js";
 import formatBytes from "../utils/formatBytes.js";
 import getBlobFromUrl from "../utils/getBlobFromUrl.js";
 
@@ -47,7 +45,7 @@ module.exports = {
     const totalSizeString = getAttachmentsTotalSizeString(attachments);
 
     console.log(totalSizeString, attachmentsUploadData);
-    message.reply(`Images sent! Size of upload: ${totalSizeString}`);
+    message.reply(`Attachments sent! Size of upload: ${totalSizeString}`);
   },
 };
 
@@ -129,42 +127,4 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
 
   const unsupportedAttachmentsString = unsupportedAttachments.join(", ");
   return { unsupportedAttachmentsString, blobs, ids, contentTypes };
-};
-
-/**
- * Factory method that returns the associated SupportedContentType enum given a file extension,
- * or null if it doesn't exist.
- * @param mimeType the file extension in question
- * @returns the associated SupportContentType enum
- */
-const getContentTypeFromMimeType = (mimeType: string): SupportedContentType | undefined => {
-  let supportedContentType: SupportedContentType | undefined;
-
-  switch (mimeType) {
-    case MimeType.GIF:
-      supportedContentType = SupportedPhotoType.GIF;
-      break;
-    case MimeType.JPG:
-      supportedContentType = SupportedPhotoType.JPG;
-      break;
-    case MimeType.PNG:
-      supportedContentType = SupportedPhotoType.PNG;
-      break;
-    case MimeType.TIFF:
-      supportedContentType = SupportedPhotoType.TIFF;
-      break;
-    case MimeType.MOV:
-      supportedContentType = SupportedVideoType.MOV;
-      break;
-    case MimeType.MP4:
-      supportedContentType = SupportedVideoType.MP4;
-      break;
-    case MimeType.MPEG:
-      supportedContentType = SupportedVideoType.MPEG;
-      break;
-    default:
-      supportedContentType = undefined;
-  }
-
-  return supportedContentType;
 };

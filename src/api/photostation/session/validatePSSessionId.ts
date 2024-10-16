@@ -31,11 +31,7 @@ const validatePSSessionId = async (sessionId: string): Promise<boolean> => {
   if (!authData.data) {
     throw new Error(`Unexpected response: ${authData}`);
   }
-  const {
-    browse: canBrowse,
-    upload: canUpload,
-    manage: canManage,
-  } = authData.data.permission;
+  const { browse: canBrowse, upload: canUpload, manage: canManage } = authData.data.permission;
 
   return canBrowse && canUpload && canManage;
 };

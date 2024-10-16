@@ -1,0 +1,15 @@
+import Extension from "./Extension";
+import MimeType from "./mimeType";
+import SupportedContentType from "./supportedContentType";
+
+/**
+ * Photo types that Polaroids supports.
+ */
+class SupportedPhotoType extends SupportedContentType {
+  public static readonly JPG = new SupportedPhotoType(Extension.JPG, MimeType.JPG);
+  public static readonly PNG = new SupportedPhotoType(Extension.PNG, MimeType.PNG);
+  public static readonly GIF = new SupportedPhotoType(Extension.GIF, MimeType.GIF);
+  public static readonly TIFF = new SupportedPhotoType(Extension.TIFF, MimeType.TIFF);
+}
+
+export default SupportedPhotoType;

@@ -1,11 +1,9 @@
 import { Attachment, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
 import MimeType from "../@types/data/mimeType.js";
-import {
-  SupportedContentType,
-  SupportedPhotoType,
-  SupportedVideoType,
-} from "../@types/data/supportedContentType.js";
+import SupportedContentType from "../@types/data/supportedContentType.js";
+import SupportedPhotoType from "../@types/data/supportedPhotoType.js";
+import SupportedVideoType from "../@types/data/supportedVideoType.js";
 import formatBytes from "../utils/formatBytes.js";
 import getBlobFromUrl from "../utils/getBlobFromUrl.js";
 

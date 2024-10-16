@@ -6,7 +6,7 @@ import MimeType from "./mimeType";
  * look up common MIME types, and cross reference them with PhotoStation6
  * supported types.
  */
-export abstract class SupportedContentType {
+abstract class SupportedContentType {
   public readonly extension: Extension;
   public readonly mimeType: MimeType;
 
@@ -21,21 +21,4 @@ export abstract class SupportedContentType {
   }
 }
 
-/**
- * Photo types that Polaroids supports.
- */
-export class SupportedPhotoType extends SupportedContentType {
-  public static readonly JPG = new SupportedPhotoType(Extension.JPG, MimeType.JPG);
-  public static readonly PNG = new SupportedPhotoType(Extension.PNG, MimeType.PNG);
-  public static readonly GIF = new SupportedPhotoType(Extension.GIF, MimeType.GIF);
-  public static readonly TIFF = new SupportedPhotoType(Extension.TIFF, MimeType.TIFF);
-}
-
-/**
- * Video types that Polaroids supports.
- */
-export class SupportedVideoType extends SupportedContentType {
-  public static readonly MP4 = new SupportedVideoType(Extension.MP4, MimeType.MP4);
-  public static readonly MOV = new SupportedVideoType(Extension.MOV, MimeType.MOV);
-  public static readonly MPEG = new SupportedVideoType(Extension.MPEG, MimeType.MPEG);
-}
+export default SupportedContentType;

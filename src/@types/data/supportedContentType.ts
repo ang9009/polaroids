@@ -1,71 +1,41 @@
-export enum MimeType {
-  JPG = "image/jpeg",
-  TIFF = "image/tiff",
-  PNG = "image/png",
-  GIF = "image/gif",
-  MP4 = "video/mp4",
-  MPEG = "video/mpeg",
-  MOV = "video/mov",
-}
-
-enum FileType {
-  PHOTO,
-  VIDEO,
-}
-
-enum Extension {
-  JPG = ".jpg",
-  TIFF = ".tiff",
-  PNG = ".png",
-  GIF = ".gif",
-  MP4 = ".mp4",
-  MPEG = ".mpeg",
-  MOV = ".mov",
-}
+import Extension from "./Extension";
+import MimeType from "./mimeType";
 
 /**
  * Represents the content types that Polaroids recognizes. For further extension,
  * look up common MIME types, and cross reference them with PhotoStation6
  * supported types.
  */
-export class SupportedContentType {
-  private static readonly contentTypeMap: Map<MimeType, SupportedContentType> = new Map();
-
-  static readonly JPG = new SupportedContentType(MimeType.JPG, FileType.PHOTO, Extension.JPG);
-  static readonly TIFF = new SupportedContentType(MimeType.TIFF, FileType.PHOTO, Extension.TIFF);
-  static readonly PNG = new SupportedContentType(MimeType.PNG, FileType.PHOTO, Extension.PNG);
-  static readonly GIF = new SupportedContentType(MimeType.GIF, FileType.PHOTO, Extension.GIF);
-  static readonly MP4 = new SupportedContentType(MimeType.MP4, FileType.VIDEO, Extension.MP4);
-  static readonly MPEG = new SupportedContentType(MimeType.MPEG, FileType.VIDEO, Extension.MPEG);
-  static readonly MOV = new SupportedContentType(MimeType.MOV, FileType.VIDEO, Extension.MOV);
+export abstract class SupportedContentType {
+  public readonly extension: Extension;
+  public readonly mimeType: MimeType;
 
   /**
-   * Constructor for a SupportedContentType.
-   * @param mimeType the MIME type for the content type
-   * @param fileType the file type (photo or video)
-   * @param extension the extension of the file type
+   * The constructor for a SupportedContentType.
+   * @param extension the content type's extension
+   * @param mimeType the MIME type of the content type
    */
-  private constructor(
-    public readonly mimeType: MimeType,
-    public readonly fileType: FileType,
-    public readonly extension: Extension,
-  ) {
-    if (mimeType == null || fileType == null || extension == null) {
-      throw new Error("Invalid mimetype, filetype, or extension provided");
-    }
-    // Automatically register each instance
-    SupportedContentType.contentTypeMap.set(mimeType, this);
+  protected constructor(extension: Extension, mimeType: MimeType) {
+    this.extension = extension;
+    this.mimeType = mimeType;
   }
+}
 
-  /**
-   * Gets the supported content type according to the MIME type.
-   * @param mimeType the MIME type
-   * @returns the associated SupportedContentType
-   */
-  public static getSupportedContentType(mimeType: MimeType): SupportedContentType | undefined {
-    if (!mimeType) {
-      throw Error("Invalid mimeType provided");
-    }
-    return this.contentTypeMap.get(mimeType);
-  }
+/**
+ * Photo types that Polaroids supports.
+ */
+export class SupportedPhotoType extends SupportedContentType {
+  public static readonly JPG = new SupportedPhotoType(Extension.JPG, MimeType.JPG);
+  public static readonly PNG = new SupportedPhotoType(Extension.PNG, MimeType.PNG);
+  public static readonly GIF = new SupportedPhotoType(Extension.GIF, MimeType.GIF);
+  public static readonly TIFF = new SupportedPhotoType(Extension.TIFF, MimeType.TIFF);
+}
+
+/**
+ * Video types that Polaroids supports.
+ */
+export class SupportedVideoType extends SupportedContentType {
+  public static readonly MP4 = new SupportedVideoType(Extension.MP4, MimeType.MP4);
+  public static readonly MOV = new SupportedVideoType(Extension.MOV, MimeType.MOV);
+  public static readonly MPEG = new SupportedVideoType(Extension.MPEG, MimeType.MPEG);
 }

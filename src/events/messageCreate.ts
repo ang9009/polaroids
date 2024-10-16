@@ -1,6 +1,11 @@
 import { Attachment, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
-import { MimeType, SupportedContentType } from "../@types/data/supportedContentType.js";
+import MimeType from "../@types/data/mimeType.js";
+import {
+  SupportedContentType,
+  SupportedPhotoType,
+  SupportedVideoType,
+} from "../@types/data/supportedContentType.js";
 import formatBytes from "../utils/formatBytes.js";
 import getBlobFromUrl from "../utils/getBlobFromUrl.js";
 
@@ -14,8 +19,8 @@ module.exports = {
 
     const attachments = message.attachments.map((attachment) => attachment);
     const date = new Date(message.createdTimestamp);
-    let blobs, contentTypes, ids, unsupportedAttachmentsString;
 
+    let blobs, contentTypes, ids, unsupportedAttachmentsString;
     try {
       ({ unsupportedAttachmentsString, blobs, contentTypes, ids } =
         await processAndValidateAttachments(attachments));
@@ -113,7 +118,7 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
       continue;
     }
 
-    const contentType = getContentTypeFromString(typeExtension);
+    const contentType = getContentTypeFromMimeType(typeExtension);
     // Content type is not recognized
     if (!contentType) {
       unsupportedAttachments.push(`${fileName} (${typeExtension})`);
@@ -129,26 +134,39 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
 };
 
 /**
- * Returns the associated SupportedContentType enum given a file extension, or
- * null if it doesn't exist.
- * @param fileExtension the file extension in question
+ * Factory method that returns the associated SupportedContentType enum given a file extension,
+ * or null if it doesn't exist.
+ * @param mimeType the file extension in question
  * @returns the associated SupportContentType enum
- * @throws an error if the file extension is not recognized, or if there isn't a
- *     SupportedContentType associated with the MIME type found.
  */
-const getContentTypeFromString = (fileExtension: string): SupportedContentType | undefined => {
-  const contentTypeExtensions: string[] = Object.values(MimeType);
-  const mimeType = contentTypeExtensions.find((currFileType) => currFileType === fileExtension) as
-    | MimeType
-    | undefined;
+const getContentTypeFromMimeType = (mimeType: string): SupportedContentType | undefined => {
+  let supportedContentType: SupportedContentType | undefined;
 
-  // Return the MimeType, even if it is undefined
-  if (!mimeType) {
-    return mimeType;
+  switch (mimeType) {
+    case MimeType.GIF:
+      supportedContentType = SupportedPhotoType.GIF;
+      break;
+    case MimeType.JPG:
+      supportedContentType = SupportedPhotoType.JPG;
+      break;
+    case MimeType.PNG:
+      supportedContentType = SupportedPhotoType.PNG;
+      break;
+    case MimeType.TIFF:
+      supportedContentType = SupportedPhotoType.TIFF;
+      break;
+    case MimeType.MOV:
+      supportedContentType = SupportedVideoType.MOV;
+      break;
+    case MimeType.MP4:
+      supportedContentType = SupportedVideoType.MP4;
+      break;
+    case MimeType.MPEG:
+      supportedContentType = SupportedVideoType.MPEG;
+      break;
+    default:
+      supportedContentType = undefined;
   }
-  const supportedType = SupportedContentType.getSupportedContentType(mimeType);
-  if (!supportedType) {
-    throw new Error(`Missing supported type for MIME type: ${mimeType}`);
-  }
-  return supportedType;
+
+  return supportedContentType;
 };

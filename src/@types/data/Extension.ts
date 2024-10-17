@@ -1,4 +1,4 @@
-enum Extension {
+export enum Extension {
   JPG = ".jpg",
   TIFF = ".tiff",
   PNG = ".png",
@@ -7,5 +7,3 @@ enum Extension {
   MPEG = ".mpeg",
   MOV = ".mov",
 }
-
-export default Extension;

@@ -10,7 +10,7 @@ const __dirname = getDirname(import.meta.url);
  * mutates the client object that is passed into it.
  * @param client the Discord API client object being used
  */
-const registerEvents = async (client: Client) => {
+export const registerEvents = async (client: Client) => {
   // Retrieve all events files from events folder
   const eventsPath = path.join(__dirname, "../events");
   const eventFiles = fs.readdirSync(eventsPath).filter((file: string) => file.endsWith(".ts"));
@@ -28,5 +28,3 @@ const registerEvents = async (client: Client) => {
     }
   }
 };
-
-export default registerEvents;

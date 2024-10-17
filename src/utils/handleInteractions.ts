@@ -4,7 +4,7 @@ import { Interaction } from "discord.js";
  * Handles interactions/commands executed by users.
  * @param interaction the interaction in question
  */
-const handleInteractions = async (interaction: Interaction) => {
+export const handleInteractions = async (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   // Try to get the command from the commands collection
@@ -32,5 +32,3 @@ const handleInteractions = async (interaction: Interaction) => {
     }
   }
 };
-
-export default handleInteractions;

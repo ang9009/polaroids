@@ -13,6 +13,7 @@ module.exports = {
       return;
     }
 
+    const loadingMsgRef = await message.reply("Processing attachments...");
     const attachments = message.attachments.map((attachment) => attachment);
     const date = new Date(message.createdTimestamp);
 
@@ -21,8 +22,8 @@ module.exports = {
       ({ unsupportedAttachmentsString, blobs, contentTypes, ids } =
         await processAndValidateAttachments(attachments));
     } catch (err) {
-      console.error("Error processing attachments:", err);
-      message.reply(`An error occurred while processing attachments: ${err}`);
+      console.error("Error occurred while processing attachments:", err);
+      loadingMsgRef.edit(`An error occurred while processing attachments: ${err}`);
       return;
     }
 
@@ -30,12 +31,12 @@ module.exports = {
     if (unsupportedAttachmentsString) {
       // If all attachments are unsupported, return immediately
       if (blobs.length === 0) {
-        message.reply(
+        loadingMsgRef.edit(
           `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
         );
         return;
       } else {
-        message.reply(
+        loadingMsgRef.edit(
           `File(s) of unsupported formats found: ${unsupportedAttachmentsString}. These will be ignored.`,
         );
       }

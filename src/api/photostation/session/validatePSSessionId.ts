@@ -1,7 +1,7 @@
 import axios from "axios";
-import { ApiRoutes } from "../../../@types/api/apiRoutes";
+import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
 import { CheckAuthApiResponse } from "../../../@types/api/authApiResponses";
-import getApiUrlForRoute from "../utils/getValidPSApiUrl";
+import getPSApiUrlForRoute from "../utils/getPSApiUrlForRoute";
 import getValidatedPSData from "./getValidatedPSData";
 
 /**
@@ -11,7 +11,7 @@ import getValidatedPSData from "./getValidatedPSData";
  * @throws Error if the get request fails
  */
 const validatePSSessionId = async (sessionId: string): Promise<boolean> => {
-  const url = getApiUrlForRoute(ApiRoutes.Auth);
+  const url = getPSApiUrlForRoute(PSApiRoutes.Auth);
   const params = {
     method: "checkauth",
     version: 1,

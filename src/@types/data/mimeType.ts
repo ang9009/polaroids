@@ -1,4 +1,4 @@
-enum MimeType {
+export enum MimeType {
   JPG = "image/jpeg",
   TIFF = "image/tiff",
   PNG = "image/png",
@@ -7,5 +7,3 @@ enum MimeType {
   MPEG = "video/mpeg",
   MOV = "video/mov",
 }
-
-export default MimeType;

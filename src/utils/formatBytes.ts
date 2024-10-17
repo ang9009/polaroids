@@ -3,7 +3,7 @@
  * @param bytes the number of bytes
  * @returns a corresponding string representation
  */
-const formatBytes = (bytes: number): string => {
+export const formatBytes = (bytes: number): string => {
   if (!+bytes) return "0 Bytes";
 
   const k = 1024;
@@ -14,5 +14,3 @@ const formatBytes = (bytes: number): string => {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
-
-export default formatBytes;

@@ -1,12 +1,12 @@
-import Extension from "./extension";
-import MimeType from "./mimeType";
+import { Extension } from "./extension";
+import { MimeType } from "./mimeType";
 
 /**
  * Represents the content types that Polaroids recognizes. For further extension,
  * look up common MIME types, and cross reference them with PhotoStation6
  * supported types.
  */
-abstract class SupportedContentType {
+export abstract class SupportedContentType {
   public readonly extension: Extension;
   public readonly mimeType: MimeType;
 
@@ -20,5 +20,3 @@ abstract class SupportedContentType {
     this.mimeType = mimeType;
   }
 }
-
-export default SupportedContentType;

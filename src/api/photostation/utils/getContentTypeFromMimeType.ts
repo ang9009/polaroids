@@ -1,7 +1,7 @@
-import MimeType from "../../../@types/data/mimeType";
-import SupportedContentType from "../../../@types/data/supportedContentType";
-import SupportedPhotoType from "../../../@types/data/supportedPhotoType";
-import SupportedVideoType from "../../../@types/data/supportedVideoType";
+import { MimeType } from "../../../@types/data/mimeType";
+import { SupportedContentType } from "../../../@types/data/supportedContentType";
+import { SupportedPhotoType } from "../../../@types/data/supportedPhotoType";
+import { SupportedVideoType } from "../../../@types/data/supportedVideoType";
 
 /**
  * Factory method that returns the associated SupportedContentType enum given a file extension,

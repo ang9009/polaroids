@@ -1,8 +1,8 @@
 import axios from "axios";
 import "process";
-import { ApiRoutes } from "../../../@types/api/apiRoutes";
+import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
 import { LoginApiResponse } from "../../../@types/api/authApiResponses";
-import getApiUrlForRoute from "../utils/getValidPSApiUrl";
+import getPSApiUrlForRoute from "../utils/getPSApiUrlForRoute";
 import getValidatedPSData from "./getValidatedPSData";
 
 /**
@@ -13,14 +13,14 @@ import getValidatedPSData from "./getValidatedPSData";
 const updatePSSessionId = async () => {
   const { PS_API_USERNAME, PS_API_PASSWORD } = process.env;
 
-  const loginRoute = ApiRoutes.Auth;
+  const loginRoute = PSApiRoutes.Auth;
   const params = {
     method: "login",
     version: "1",
     username: PS_API_USERNAME,
     password: PS_API_PASSWORD,
   };
-  const url = getApiUrlForRoute(loginRoute);
+  const url = getPSApiUrlForRoute(loginRoute);
 
   let loginData;
   try {
@@ -38,9 +38,7 @@ const updatePSSessionId = async () => {
   if (typeof localStorage !== "undefined") {
     global.localStorage.setItem("sessionId", sessionId);
   } else {
-    throw new Error(
-      "Local storage is not available, failed to save session id"
-    );
+    throw new Error("Local storage is not available, failed to save session id");
   }
 };
 

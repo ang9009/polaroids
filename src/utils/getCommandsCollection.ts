@@ -2,7 +2,7 @@ import { Collection } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { Command } from "../@types/discord.js";
-import getDirname from "./getDirname.js";
+import { getDirname } from "./getDirname.js";
 
 const __dirname = getDirname(import.meta.url);
 
@@ -11,9 +11,7 @@ const __dirname = getDirname(import.meta.url);
  * of command names mapped to their corresponding Command objects.
  * @returns a Collection of command names and Command objects.
  */
-const getCommandsCollection = async (): Promise<
-  Collection<string, Command>
-> => {
+export const getCommandsCollection = async (): Promise<Collection<string, Command>> => {
   // Get the command files from the commands folder
   const foldersPath = path.join(__dirname, "../commands");
   const commandFolders = fs.readdirSync(foldersPath);
@@ -33,7 +31,7 @@ const getCommandsCollection = async (): Promise<
         commands.set(cmd.data.name, cmd);
       } else {
         console.log(
-          `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+          `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
         );
       }
     }
@@ -41,5 +39,3 @@ const getCommandsCollection = async (): Promise<
 
   return commands;
 };
-
-export default getCommandsCollection;

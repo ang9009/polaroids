@@ -1,4 +1,4 @@
-import { ApiRoutes } from "../../../@types/api/apiRoutes";
+import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
 
 /**
  * Returns a formatted PhotoStation API url given the route used. Note that this
@@ -7,7 +7,7 @@ import { ApiRoutes } from "../../../@types/api/apiRoutes";
  * @returns a formatted API url with the route.
  * @throws Error if the route argument is null
  */
-const getApiUrlForRoute = (route: ApiRoutes): string => {
+const getPSApiUrlForRoute = (route: PSApiRoutes): string => {
   if (route == null) {
     throw Error("Route argument was null");
   }
@@ -16,4 +16,4 @@ const getApiUrlForRoute = (route: ApiRoutes): string => {
   return `${PS_API_URL}${route}`;
 };
 
-export default getApiUrlForRoute;
+export default getPSApiUrlForRoute;

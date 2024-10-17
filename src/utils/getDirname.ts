@@ -6,8 +6,6 @@ import { fileURLToPath } from "url";
  * @param moduleUrl the url of the module
  * @returns the current directory's name as a string
  */
-const getDirname = (moduleUrl: string): string => {
+export const getDirname = (moduleUrl: string): string => {
   return dirname(fileURLToPath(moduleUrl));
 };
-
-export default getDirname;

@@ -1,6 +1,6 @@
 /**
  * The PhotoStation 6 API Routes being used in this project. Note that this
- * includes some necessary parameters for the associated API.
+ * includes the necessary api parameter for the associated API.
  */
 export enum PSApiRoutes {
   Auth = "/auth.php?api=SYNO.PhotoStation.Auth",

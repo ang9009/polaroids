@@ -52,9 +52,10 @@ export class PhotoUploadData extends AttachmentUploadData {
     photoFormData.append("original", this.file);
     try {
       const res = await axios.post(url, photoFormData, { withCredentials: true, headers, params });
-
       const data = getValidatedPSData(res);
-      console.log(res);
+      if (data.error) {
+        throw new Error(`Error code ${data.error.code}`);
+      }
     } catch (error) {
       throw new Error(`An error occurred while trying to upload a photo to PhotoStation: ${error}`);
     }

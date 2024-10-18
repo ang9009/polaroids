@@ -8,6 +8,6 @@ import { SupportedContentType } from "./supportedContentType";
 export class SupportedPhotoType extends SupportedContentType {
   public static readonly JPG = new SupportedPhotoType(Extension.JPG, MimeType.JPG);
   public static readonly PNG = new SupportedPhotoType(Extension.PNG, MimeType.PNG);
-  public static readonly GIF = new SupportedPhotoType(Extension.GIF, MimeType.GIF);
   public static readonly TIFF = new SupportedPhotoType(Extension.TIFF, MimeType.TIFF);
+  // public static readonly GIF = new SupportedPhotoType(Extension.GIF, MimeType.GIF);
 }

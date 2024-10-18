@@ -13,9 +13,9 @@ export const getContentTypeFromMimeType = (mimeType: string): SupportedContentTy
   let supportedContentType: SupportedContentType | undefined;
 
   switch (mimeType) {
-    case MimeType.GIF:
-      supportedContentType = SupportedPhotoType.GIF;
-      break;
+    // case MimeType.GIF:
+    //   supportedContentType = SupportedPhotoType.GIF;
+    //   break;
     case MimeType.JPG:
       supportedContentType = SupportedPhotoType.JPG;
       break;

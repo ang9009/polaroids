@@ -17,7 +17,7 @@ module.exports = {
       return;
     }
 
-    const loadingMsgRef = await message.reply("Processing attachments...");
+    const initialMsgRef = await message.reply("Processing attachments...");
     const attachments = message.attachments.map((attachment) => attachment);
 
     let files, contentTypes, ids, unsupportedAttachmentsString;
@@ -26,7 +26,7 @@ module.exports = {
         await processAndValidateAttachments(attachments));
     } catch (err) {
       console.error("Error occurred while processing attachments:", err);
-      loadingMsgRef.edit(`An error occurred while processing attachments: ${err}`);
+      initialMsgRef.edit(`An error occurred while processing attachments: ${err}`);
       return;
     }
 
@@ -34,12 +34,12 @@ module.exports = {
     if (unsupportedAttachmentsString) {
       // If all attachments are unsupported, return immediately
       if (files.length === 0) {
-        loadingMsgRef.edit(
+        initialMsgRef.edit(
           `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
         );
         return;
       } else {
-        loadingMsgRef.edit(
+        initialMsgRef.edit(
           `File(s) of unsupported formats found: ${unsupportedAttachmentsString}. These will be ignored.`,
         );
       }
@@ -51,10 +51,11 @@ module.exports = {
     console.log(totalSizeString, allFilesData, files[0].name);
 
     try {
+      initialMsgRef.edit("Uploading attachments...");
       await uploadFilesToPS(allFilesData);
     } catch (err) {
       console.error("Error occurred while uploading attachments:", err);
-      loadingMsgRef.edit(`An error occurred while uploading attachments: ${err}`);
+      initialMsgRef.edit(`An error occurred while uploading attachments: ${err}`);
       return;
     }
     message.reply(`Attachments sent! Size of upload: ${totalSizeString}`);

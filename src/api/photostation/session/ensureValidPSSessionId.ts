@@ -14,6 +14,8 @@ export const ensureValidPSSessionId = async () => {
     if (sessionIsValid) {
       console.log(`Using saved session ID as it is still valid: ${sessionId}`);
       return;
+    } else {
+      console.log(`Saved session ID ${sessionId} has become stale. Retrieving new session ID...`);
     }
   }
 

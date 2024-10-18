@@ -1,15 +1,13 @@
 import { Attachment, Message } from "discord.js";
-import {
-  AttachmentUploadData,
-  PhotoUploadData,
-  VideoUploadData,
-} from "../@types/data/attachmentUploadData.js";
+import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
+import { PhotoUploadData } from "../@types/data/photoUploadData.js";
 import { SupportedContentType } from "../@types/data/supportedContentType.js";
 import { SupportedPhotoType } from "../@types/data/supportedPhotoType.js";
 import { uploadFilesToPS } from "../api/photostation/file/uploadFilesToPS.js";
 import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
 import { formatBytes } from "../utils/formatBytes.js";
 import { getFileFromUrl } from "../utils/getFileFromUrl.js";
+import { VideoUploadData } from "./../@types/data/videoUploadData";
 
 module.exports = {
   name: "messageCreate",

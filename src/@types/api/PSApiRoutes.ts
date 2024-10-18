@@ -5,4 +5,5 @@
 export enum PSApiRoutes {
   Auth = "/auth.php?api=SYNO.PhotoStation.Auth",
   Download = "/auth.php?api=SYNO.PhotoStation.Download",
+  File = "/file.php?api=SYNO.PhotoStation.File",
 }

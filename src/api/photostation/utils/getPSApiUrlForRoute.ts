@@ -8,10 +8,10 @@ import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
  * @throws Error if the route argument is null
  */
 export const getPSApiUrlForRoute = (route: PSApiRoutes): string => {
-  if (route == null) {
+  const { PS_API_URL } = process.env;
+  if (route == null || PS_API_URL == null) {
     throw Error("Route argument was null");
   }
-  const { PS_API_URL } = process.env;
 
   return `${PS_API_URL}${route}`;
 };

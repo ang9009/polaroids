@@ -1,6 +1,12 @@
 import { Attachment, Message } from "discord.js";
-import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
+import {
+  AttachmentUploadData,
+  PhotoUploadData,
+  VideoUploadData,
+} from "../@types/data/attachmentUploadData.js";
 import { SupportedContentType } from "../@types/data/supportedContentType.js";
+import { SupportedPhotoType } from "../@types/data/supportedPhotoType.js";
+import { uploadFilesToPS } from "../api/photostation/file/uploadFilesToPS.js";
 import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
 import { formatBytes } from "../utils/formatBytes.js";
 import { getFileFromUrl } from "../utils/getFileFromUrl.js";
@@ -41,10 +47,18 @@ module.exports = {
       }
     }
 
-    const attachmentsUploadData = getAttachmentsUploadData(files, ids, contentTypes);
+    const allFilesData: AttachmentUploadData[] = getAttachmentsUploadData(files, ids, contentTypes);
     const totalSizeString = getAttachmentsTotalSizeString(files);
 
-    console.log(totalSizeString, attachmentsUploadData, files[0].name);
+    console.log(totalSizeString, allFilesData, files[0].name);
+
+    try {
+      await uploadFilesToPS(allFilesData);
+    } catch (err) {
+      console.error("Error occurred while uploading attachments:", err);
+      loadingMsgRef.edit(`An error occurred while uploading attachments: ${err}`);
+      return;
+    }
     message.reply(`Attachments sent! Size of upload: ${totalSizeString}`);
   },
 };
@@ -75,13 +89,14 @@ const getAttachmentsUploadData = (
 ): AttachmentUploadData[] => {
   return files.map((file, i) => {
     const id = ids[i];
+    const contentType = contentTypes[i];
 
-    const data: AttachmentUploadData = {
-      file: file,
-      id: id,
-      people: [],
-      contentType: contentTypes[i],
-    };
+    let data;
+    if (contentType instanceof SupportedPhotoType) {
+      data = new PhotoUploadData(file, id, [], contentTypes[i]);
+    } else {
+      data = new VideoUploadData(file, id, [], contentTypes[i]);
+    }
     return data;
   });
 };
@@ -107,21 +122,23 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
 
   for (const attachment of attachments) {
     const attachmentName = attachment.name;
-    const typeExtension = attachment.contentType;
-    if (!typeExtension) {
+    const mimeType = attachment.contentType;
+    if (!mimeType) {
       unsupportedAttachments.push(`${attachmentName} (unknown type)`);
       continue;
     }
 
-    const contentType = getContentTypeFromMimeType(typeExtension);
+    const contentType = getContentTypeFromMimeType(mimeType);
     // Content type is not recognized
     if (!contentType) {
-      unsupportedAttachments.push(`${attachmentName} (${typeExtension})`);
+      unsupportedAttachments.push(`${attachmentName} (${mimeType})`);
       continue;
     }
     contentTypes.push(contentType);
     ids.push(attachment.id);
-    const file = await getFileFromUrl(attachment.url, attachment.name);
+    // The name of the file should be the attachment's id and its file extension
+    const fileName = attachment.id + contentType.extension;
+    const file = await getFileFromUrl(attachment.url, fileName);
     files.push(file);
   }
 

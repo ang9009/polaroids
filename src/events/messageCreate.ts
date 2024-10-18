@@ -42,20 +42,20 @@ module.exports = {
     }
 
     const attachmentsUploadData = getAttachmentsUploadData(files, ids, contentTypes);
-    const totalSizeString = getAttachmentsTotalSizeString(attachments);
+    const totalSizeString = getAttachmentsTotalSizeString(files);
 
-    console.log(totalSizeString, attachmentsUploadData);
+    console.log(totalSizeString, attachmentsUploadData, files[0].name);
     message.reply(`Attachments sent! Size of upload: ${totalSizeString}`);
   },
 };
 
 /**
- * Produces a formatted string representation of the total size of the given attachments.
- * @param attachments an array of attachments
- * @returns a formatted string representation of the attachments' total size (e.g. 12MB)
+ * Produces a formatted string representation of the total size of the given files.
+ * @param files an array of files
+ * @returns a formatted string representation of the files' total size (e.g. 12MB)
  */
-const getAttachmentsTotalSizeString = (attachments: Attachment[]): string => {
-  const totalSizeBytes = attachments.reduce((size, curr) => size + curr.size, 0);
+const getAttachmentsTotalSizeString = (files: File[]): string => {
+  const totalSizeBytes = files.reduce((size, file) => size + file.size, 0);
   const totalSize = formatBytes(totalSizeBytes);
   return totalSize;
 };
@@ -121,8 +121,7 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
     }
     contentTypes.push(contentType);
     ids.push(attachment.id);
-    const fileName = attachment.name + contentType.extension;
-    const file = await getFileFromUrl(attachment.url, fileName);
+    const file = await getFileFromUrl(attachment.url, attachment.name);
     files.push(file);
   }
 

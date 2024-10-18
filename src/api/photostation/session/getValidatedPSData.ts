@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import BaseApiResponse from "../../../@types/api/baseApiResponse";
+import { BaseApiResponse } from "../../../@types/api/baseApiResponse";
 
 /**
  * Validates the given PhotoStation6 (PS) API response and returns its data as the
@@ -9,12 +9,10 @@ import BaseApiResponse from "../../../@types/api/baseApiResponse";
  * @returns the data from res as a BaseApiResponse object
  * @throws Error if the response object indicates that the response failed
  */
-function getValidatedPSData<T extends BaseApiResponse>(res: AxiosResponse): T {
+export function getValidatedPSData<T extends BaseApiResponse>(res: AxiosResponse): T {
   const data = res.data as T;
   if (!data.success) {
     throw new Error(`An error occurred (${data.error!.code})`);
   }
   return data;
 }
-
-export default getValidatedPSData;

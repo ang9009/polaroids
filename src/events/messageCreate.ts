@@ -1,9 +1,9 @@
 import { Attachment, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
-import SupportedContentType from "../@types/data/supportedContentType.js";
-import getContentTypeFromMimeType from "../api/photostation/utils/getContentTypeFromMimeType.js";
-import formatBytes from "../utils/formatBytes.js";
-import getBlobFromUrl from "../utils/getBlobFromUrl.js";
+import { SupportedContentType } from "../@types/data/supportedContentType.js";
+import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
+import { formatBytes } from "../utils/formatBytes.js";
+import { getFileFromUrl } from "../utils/getFileFromUrl.js";
 
 module.exports = {
   name: "messageCreate",
@@ -15,11 +15,10 @@ module.exports = {
 
     const loadingMsgRef = await message.reply("Processing attachments...");
     const attachments = message.attachments.map((attachment) => attachment);
-    const date = new Date(message.createdTimestamp);
 
-    let blobs, contentTypes, ids, unsupportedAttachmentsString;
+    let files, contentTypes, ids, unsupportedAttachmentsString;
     try {
-      ({ unsupportedAttachmentsString, blobs, contentTypes, ids } =
+      ({ unsupportedAttachmentsString, files, contentTypes, ids } =
         await processAndValidateAttachments(attachments));
     } catch (err) {
       console.error("Error occurred while processing attachments:", err);
@@ -30,7 +29,7 @@ module.exports = {
     // If there are unsupported attachments, handle them
     if (unsupportedAttachmentsString) {
       // If all attachments are unsupported, return immediately
-      if (blobs.length === 0) {
+      if (files.length === 0) {
         loadingMsgRef.edit(
           `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
         );
@@ -42,7 +41,7 @@ module.exports = {
       }
     }
 
-    const attachmentsUploadData = getAttachmentsUploadData(blobs, ids, date, contentTypes);
+    const attachmentsUploadData = getAttachmentsUploadData(files, ids, contentTypes);
     const totalSizeString = getAttachmentsTotalSizeString(attachments);
 
     console.log(totalSizeString, attachmentsUploadData);
@@ -63,25 +62,23 @@ const getAttachmentsTotalSizeString = (attachments: Attachment[]): string => {
 
 /**
  * Converts attachment data into a array of AttachmentUploadData objects. This
- * assumes that blobs[i], ids[i], and contentTypes[i] all correspond to the same file.
- * @param blobs the blobs for each attachment
+ * assumes that files[i], ids[i], and contentTypes[i] all correspond to the same file.
+ * @param files the files for each attachment
  * @param ids the ids for each attachment
- * @param date the date at which the attachments were sent
  * @param contentTypes the content types for each attachment
  * @returns a array of the corresponding AttachmentUploadData objects
  */
 const getAttachmentsUploadData = (
-  blobs: Blob[],
+  files: File[],
   ids: string[],
-  date: Date,
   contentTypes: SupportedContentType[],
 ): AttachmentUploadData[] => {
-  return blobs.map((blob, i) => {
+  return files.map((file, i) => {
     const id = ids[i];
+
     const data: AttachmentUploadData = {
-      file: blob,
+      file: file,
       id: id,
-      date: date,
       people: [],
       contentType: contentTypes[i],
     };
@@ -94,38 +91,41 @@ const getAttachmentsUploadData = (
  * @param attachments - The array of attachments to process.
  * @returns An object containing:
  *      - unsupportedAttachmentsString: A string listing unsupported attachments.
- *      - blobs: An array of Blob objects for valid attachments.
+ *      - files: An array of File objects for valid attachments. The names each
+ *        file matches the attachment name.
  *      - ids: An array of IDs for valid attachments.
  *      - contentTypes: An array of content types for valid attachments.
- *      (Note: blobs[i], ids[i], and contentTypes[i] correspond to the same file.)
+ *      (Note: files[i], ids[i], and contentTypes[i] correspond to the same file.)
  * @throws an error if a file extension is not recognized, or if there isn't a
  *     SupportedContentType associated with the MIME type found (see getContentTypeFromString).
  */
 const processAndValidateAttachments = async (attachments: Attachment[]) => {
-  const blobs: Blob[] = [];
+  const files: File[] = [];
   const ids: string[] = [];
   const unsupportedAttachments: string[] = [];
   const contentTypes: SupportedContentType[] = [];
 
   for (const attachment of attachments) {
-    const fileName = attachment.name;
+    const attachmentName = attachment.name;
     const typeExtension = attachment.contentType;
     if (!typeExtension) {
-      unsupportedAttachments.push(`${fileName} (unknown type)`);
+      unsupportedAttachments.push(`${attachmentName} (unknown type)`);
       continue;
     }
 
     const contentType = getContentTypeFromMimeType(typeExtension);
     // Content type is not recognized
     if (!contentType) {
-      unsupportedAttachments.push(`${fileName} (${typeExtension})`);
+      unsupportedAttachments.push(`${attachmentName} (${typeExtension})`);
       continue;
     }
     contentTypes.push(contentType);
     ids.push(attachment.id);
-    blobs.push(await getBlobFromUrl(attachment.url));
+    const fileName = attachment.name + contentType.extension;
+    const file = await getFileFromUrl(attachment.url, fileName);
+    files.push(file);
   }
 
   const unsupportedAttachmentsString = unsupportedAttachments.join(", ");
-  return { unsupportedAttachmentsString, blobs, ids, contentTypes };
+  return { unsupportedAttachmentsString, files, ids, contentTypes };
 };

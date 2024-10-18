@@ -1,4 +1,4 @@
-import BaseApiResponse from "./baseApiResponse";
+import { BaseApiResponse } from "./baseApiResponse";
 
 /**
  * The shape of the response from Photostation's authentication API after

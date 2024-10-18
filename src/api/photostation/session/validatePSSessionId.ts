@@ -1,8 +1,8 @@
 import axios from "axios";
 import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
 import { CheckAuthApiResponse } from "../../../@types/api/authApiResponses";
-import getPSApiUrlForRoute from "../utils/getPSApiUrlForRoute";
-import getValidatedPSData from "./getValidatedPSData";
+import { getPSApiUrlForRoute } from "../utils/getPSApiUrlForRoute";
+import { getValidatedPSData } from "./getValidatedPSData";
 
 /**
  * Checks if the given PhotoStation6 sessionId is still valid
@@ -10,7 +10,7 @@ import getValidatedPSData from "./getValidatedPSData";
  * @returns whether the sessionId is valid
  * @throws Error if the get request fails
  */
-const validatePSSessionId = async (sessionId: string): Promise<boolean> => {
+export const validatePSSessionId = async (sessionId: string): Promise<boolean> => {
   const url = getPSApiUrlForRoute(PSApiRoutes.Auth);
   const params = {
     method: "checkauth",
@@ -35,5 +35,3 @@ const validatePSSessionId = async (sessionId: string): Promise<boolean> => {
 
   return canBrowse && canUpload && canManage;
 };
-
-export default validatePSSessionId;

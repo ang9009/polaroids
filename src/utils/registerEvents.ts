@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 import fs from "fs";
 import path from "path";
-import getDirname from "./getDirname.js";
+import { getDirname } from "./getDirname.js";
 
 const __dirname = getDirname(import.meta.url);
 

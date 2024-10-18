@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import "dotenv/config";
 import { LocalStorage } from "node-localstorage";
-import ensureValidPSSessionId from "./api/photostation/session/ensureValidPSSessionId.js";
+import { ensureValidPSSessionId } from "./api/photostation/session/ensureValidPSSessionId.js";
 import { getCommandsCollection } from "./utils/getCommandsCollection.js";
 import { handleInteractions } from "./utils/handleInteractions.js";
 import { registerEvents } from "./utils/registerEvents.js";

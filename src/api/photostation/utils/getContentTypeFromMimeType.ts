@@ -9,7 +9,7 @@ import { SupportedVideoType } from "../../../@types/data/supportedVideoType";
  * @param mimeType the file extension in question
  * @returns the associated SupportContentType enum, or undefined if not supported
  */
-const getContentTypeFromMimeType = (mimeType: string): SupportedContentType | undefined => {
+export const getContentTypeFromMimeType = (mimeType: string): SupportedContentType | undefined => {
   let supportedContentType: SupportedContentType | undefined;
 
   switch (mimeType) {
@@ -40,5 +40,3 @@ const getContentTypeFromMimeType = (mimeType: string): SupportedContentType | un
 
   return supportedContentType;
 };
-
-export default getContentTypeFromMimeType;

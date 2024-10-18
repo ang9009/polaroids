@@ -2,25 +2,23 @@ import axios from "axios";
 import "process";
 import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
 import { LoginApiResponse } from "../../../@types/api/authApiResponses";
-import getPSApiUrlForRoute from "../utils/getPSApiUrlForRoute";
-import getValidatedPSData from "./getValidatedPSData";
+import { getPSApiUrlForRoute } from "../utils/getPSApiUrlForRoute";
+import { getValidatedPSData } from "./getValidatedPSData";
 
 /**
  * Logs into Photostation and gets a session id, then stores it in local storage.
  * @throws Error if API credentials are missing, login fails, or local storage
  *         is not available
  */
-const updatePSSessionId = async () => {
+export const updatePSSessionId = async () => {
   const { PS_API_USERNAME, PS_API_PASSWORD } = process.env;
-
-  const loginRoute = PSApiRoutes.Auth;
   const params = {
     method: "login",
     version: "1",
     username: PS_API_USERNAME,
     password: PS_API_PASSWORD,
   };
-  const url = getPSApiUrlForRoute(loginRoute);
+  const url = getPSApiUrlForRoute(PSApiRoutes.Auth);
 
   let loginData;
   try {
@@ -41,5 +39,3 @@ const updatePSSessionId = async () => {
     throw new Error("Local storage is not available, failed to save session id");
   }
 };
-
-export default updatePSSessionId;

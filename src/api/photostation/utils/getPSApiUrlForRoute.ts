@@ -7,7 +7,7 @@ import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
  * @returns a formatted API url with the route.
  * @throws Error if the route argument is null
  */
-const getPSApiUrlForRoute = (route: PSApiRoutes): string => {
+export const getPSApiUrlForRoute = (route: PSApiRoutes): string => {
   if (route == null) {
     throw Error("Route argument was null");
   }
@@ -15,5 +15,3 @@ const getPSApiUrlForRoute = (route: PSApiRoutes): string => {
 
   return `${PS_API_URL}${route}`;
 };
-
-export default getPSApiUrlForRoute;

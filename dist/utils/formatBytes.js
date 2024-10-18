@@ -3,7 +3,7 @@
  * @param bytes the number of bytes
  * @returns a corresponding string representation
  */
-const formatBytes = (bytes) => {
+export const formatBytes = (bytes) => {
     if (!+bytes)
         return "0 Bytes";
     const k = 1024;
@@ -12,5 +12,4 @@ const formatBytes = (bytes) => {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
-export default formatBytes;
 //# sourceMappingURL=formatBytes.js.map

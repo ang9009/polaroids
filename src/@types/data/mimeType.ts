@@ -5,5 +5,5 @@ export enum MimeType {
   GIF = "image/gif",
   MP4 = "video/mp4",
   MPEG = "video/mpeg",
-  MOV = "video/mov",
+  MOV = "video/quicktime",
 }

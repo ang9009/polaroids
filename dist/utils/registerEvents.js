@@ -1,13 +1,13 @@
 import fs from "fs";
 import path from "path";
-import getDirname from "./getDirname.js";
+import { getDirname } from "./getDirname.js";
 const __dirname = getDirname(import.meta.url);
 /**
  * Registers all events from the events folder to the bot. Note that this function
  * mutates the client object that is passed into it.
  * @param client the Discord API client object being used
  */
-const registerEvents = async (client) => {
+export const registerEvents = async (client) => {
     // Retrieve all events files from events folder
     const eventsPath = path.join(__dirname, "../events");
     const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".ts"));
@@ -24,5 +24,4 @@ const registerEvents = async (client) => {
         }
     }
 };
-export default registerEvents;
 //# sourceMappingURL=registerEvents.js.map

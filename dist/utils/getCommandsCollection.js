@@ -1,14 +1,14 @@
 import { Collection } from "discord.js";
 import fs from "fs";
 import path from "path";
-import getDirname from "./getDirname.js";
+import { getDirname } from "./getDirname.js";
 const __dirname = getDirname(import.meta.url);
 /**
  * Gets all the commands from the commands folder, and returns a Collection
  * of command names mapped to their corresponding Command objects.
  * @returns a Collection of command names and Command objects.
  */
-const getCommandsCollection = async () => {
+export const getCommandsCollection = async () => {
     // Get the command files from the commands folder
     const foldersPath = path.join(__dirname, "../commands");
     const commandFolders = fs.readdirSync(foldersPath);
@@ -33,5 +33,4 @@ const getCommandsCollection = async () => {
     }
     return commands;
 };
-export default getCommandsCollection;
 //# sourceMappingURL=getCommandsCollection.js.map

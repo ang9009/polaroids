@@ -1,10 +1,10 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import "dotenv/config";
 import { LocalStorage } from "node-localstorage";
-import ensureValidPSSessionId from "./api/photostation/session/ensureValidPSSessionId.js";
-import getCommandsCollection from "./utils/getCommandsCollection.js";
-import handleInteractions from "./utils/handleInteractions.js";
-import registerEvents from "./utils/registerEvents.js";
+import { ensureValidPSSessionId } from "./api/photostation/session/ensureValidPSSessionId.js";
+import { getCommandsCollection } from "./utils/getCommandsCollection.js";
+import { handleInteractions } from "./utils/handleInteractions.js";
+import { registerEvents } from "./utils/registerEvents.js";
 // Set up local storage for PhotoStation6 session id
 global.localStorage = new LocalStorage("./session_id");
 // Update session id if necessary

@@ -1,15 +1,15 @@
 import axios from "axios";
-import { ApiRoutes } from "../../../@types/api/apiRoutes";
-import getApiUrlForRoute from "../utils/getValidPSApiUrl";
-import getValidatedPSData from "./getValidatedPSData";
+import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
+import { getPSApiUrlForRoute } from "../utils/getPSApiUrlForRoute";
+import { getValidatedPSData } from "./getValidatedPSData";
 /**
  * Checks if the given PhotoStation6 sessionId is still valid
  * @param sessionId the sessionId in question
  * @returns whether the sessionId is valid
  * @throws Error if the get request fails
  */
-const validatePSSessionId = async (sessionId) => {
-    const url = getApiUrlForRoute(ApiRoutes.Auth);
+export const validatePSSessionId = async (sessionId) => {
+    const url = getPSApiUrlForRoute(PSApiRoutes.Auth);
     const params = {
         method: "checkauth",
         version: 1,
@@ -28,8 +28,7 @@ const validatePSSessionId = async (sessionId) => {
     if (!authData.data) {
         throw new Error(`Unexpected response: ${authData}`);
     }
-    const { browse: canBrowse, upload: canUpload, manage: canManage, } = authData.data.permission;
+    const { browse: canBrowse, upload: canUpload, manage: canManage } = authData.data.permission;
     return canBrowse && canUpload && canManage;
 };
-export default validatePSSessionId;
 //# sourceMappingURL=validatePSSessionId.js.map

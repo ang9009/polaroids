@@ -5,8 +5,7 @@ import { fileURLToPath } from "url";
  * @param moduleUrl the url of the module
  * @returns the current directory's name as a string
  */
-const getDirname = (moduleUrl) => {
+export const getDirname = (moduleUrl) => {
     return dirname(fileURLToPath(moduleUrl));
 };
-export default getDirname;
 //# sourceMappingURL=getDirname.js.map

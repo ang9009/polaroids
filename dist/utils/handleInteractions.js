@@ -2,7 +2,7 @@
  * Handles interactions/commands executed by users.
  * @param interaction the interaction in question
  */
-const handleInteractions = async (interaction) => {
+export const handleInteractions = async (interaction) => {
     if (!interaction.isChatInputCommand())
         return;
     // Try to get the command from the commands collection
@@ -30,5 +30,4 @@ const handleInteractions = async (interaction) => {
         }
     }
 };
-export default handleInteractions;
 //# sourceMappingURL=handleInteractions.js.map

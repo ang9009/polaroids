@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosProgressEvent } from "axios";
 import { getValidatedPSData } from "../../api/photostation/session/getValidatedPSData.js";
 import { getPSApiUrlForRoute } from "../../api/photostation/utils/getPSApiUrlForRoute.js";
 import { PSApiRoutes } from "../api/PSApiRoutes.js";
@@ -45,10 +45,13 @@ export abstract class AttachmentUploadData {
    * Uploads a file, given its folderPath and upload method.
    * @param folderPath the folder path the file will be saved to
    * @param uploadFileMethod the method of uploading (uploadimage or uploadvideo)
+   * @param updateLoadingBar a function that updates the loading bar in the
+   *        message embed given the AxiosProgressEvent object
    */
   protected async uploadFile(
     folderPath: string,
     uploadFileMethod: UploadFileMethod,
+    updateLoadingBar: (res: AxiosProgressEvent) => void,
   ): Promise<void> {
     const sessionId = global.localStorage.getItem("sessionId");
     if (!sessionId) {
@@ -58,12 +61,14 @@ export abstract class AttachmentUploadData {
     const headers = {
       Cookie: `PHPSESSID=${sessionId}`,
     };
+    // The filename should be the unique id + the extension. The id is used
+    // because the backup feature (TBD) should not back up previously uploaded images
     const params = {
       method: uploadFileMethod,
       version: "1",
       dest_folder_path: folderPath,
       mtime: Date.now(),
-      filename: this.id + this.contentType.extension, // The filename should be the unique id + the extension
+      filename: this.id + this.contentType.extension,
       duplicate: "overwrite",
     };
     const url = getPSApiUrlForRoute(PSApiRoutes.File);
@@ -71,8 +76,15 @@ export abstract class AttachmentUploadData {
     // The PhotoStation6 API requires data to be sent as forms
     const photoFormData = new FormData();
     photoFormData.append("original", this.blob);
+
     try {
-      const res = await axios.post(url, photoFormData, { withCredentials: true, headers, params });
+      const res = await axios.post(url, photoFormData, {
+        withCredentials: true,
+        headers,
+        params,
+        // eslint-disable-next-line jsdoc/require-jsdoc
+        onUploadProgress: (e) => updateLoadingBar(e),
+      });
       const data = getValidatedPSData(res);
       if (!data.success && data.error) {
         throw new Error(`Error code ${data.error.code}`);
@@ -85,6 +97,11 @@ export abstract class AttachmentUploadData {
   /**
    * Uploads the file to PhotoStation.
    * @param folderPath the folder the file will be saved to
+   * @param updateLoadingBar a function that updates the loading bar, given the
+   *        AxiosProgressEvent object
    */
-  public abstract upload(folderPath: string): Promise<void>;
+  public abstract upload(
+    folderPath: string,
+    updateLoadingBar: (res: AxiosProgressEvent) => void,
+  ): Promise<void>;
 }

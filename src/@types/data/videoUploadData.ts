@@ -1,3 +1,4 @@
+import { AxiosProgressEvent } from "axios";
 import { AttachmentUploadData } from "./attachmentUploadData.js";
 import { People } from "./people.js";
 import { SupportedVideoType } from "./supportedVideoType.js";
@@ -20,9 +21,14 @@ export class VideoUploadData extends AttachmentUploadData {
   /**
    * Uploads the video to PhotoStation.
    * @param folderPath the folder the video will be saved to
+   * @param updateLoadingBar a function that updates the loading bar, given the
+   *        AxiosProgressEvent object
    * @throws an Error if session ID is null
    */
-  public async upload(folderPath: string): Promise<void> {
-    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.Video);
+  public async upload(
+    folderPath: string,
+    updateLoadingBar: (res: AxiosProgressEvent) => void,
+  ): Promise<void> {
+    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.Video, updateLoadingBar);
   }
 }

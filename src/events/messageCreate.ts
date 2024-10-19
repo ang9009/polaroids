@@ -1,3 +1,4 @@
+import { AxiosProgressEvent } from "axios";
 import { Attachment, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
 import { PhotoUploadData } from "../@types/data/photoUploadData.js";
@@ -46,11 +47,16 @@ module.exports = {
     }
 
     const allFilesData: AttachmentUploadData[] = getAttachmentsUploadData(blobs, ids, contentTypes);
-    const totalSizeString = getAttachmentsTotalSizeString(blobs);
+    const { totalSizeString, totalSizeBytes } = getAttachmentsTotalSizeData(blobs);
 
+    // This function is used to upload the loading bar in the message embed
+    // eslint-disable-next-line jsdoc/require-jsdoc
+    const updateLoadingBar = (progressEvent: AxiosProgressEvent) => {
+      console.log(`${Math.round((progressEvent.loaded * 100) / totalSizeBytes)}%`);
+    };
     try {
       initialMsgRef.edit("Uploading attachments...");
-      await uploadFilesToPS(allFilesData);
+      await uploadFilesToPS(allFilesData, updateLoadingBar);
     } catch (err) {
       console.error("Error occurred while uploading attachments:", err);
       initialMsgRef.edit(`An error occurred while uploading attachments: ${err}`);
@@ -65,10 +71,12 @@ module.exports = {
  * @param blobs an array of blobs
  * @returns a formatted string representation of the files' total size (e.g. 12MB)
  */
-const getAttachmentsTotalSizeString = (blobs: Blob[]): string => {
+const getAttachmentsTotalSizeData = (
+  blobs: Blob[],
+): { totalSizeString: string; totalSizeBytes: number } => {
   const totalSizeBytes = blobs.reduce((size, blob) => size + blob.size, 0);
-  const totalSize = formatBytes(totalSizeBytes);
-  return totalSize;
+  const totalSizeString = formatBytes(totalSizeBytes);
+  return { totalSizeString, totalSizeBytes };
 };
 
 /**

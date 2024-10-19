@@ -6,6 +6,6 @@ export var MimeType;
     MimeType["GIF"] = "image/gif";
     MimeType["MP4"] = "video/mp4";
     MimeType["MPEG"] = "video/mpeg";
-    MimeType["MOV"] = "video/mov";
+    MimeType["MOV"] = "video/quicktime";
 })(MimeType || (MimeType = {}));
 //# sourceMappingURL=mimeType.js.map

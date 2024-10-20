@@ -33,7 +33,7 @@ export const updatePSSessionId = async () => {
     throw new Error(`Unexpected response: ${JSON.stringify(loginData)}`);
   }
 
-  if (typeof localStorage !== "undefined") {
+  if (localStorage) {
     global.localStorage.setItem("sessionId", sessionId);
   } else {
     throw new Error("Local storage is not available, failed to save session id");

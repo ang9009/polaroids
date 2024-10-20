@@ -3,7 +3,6 @@ import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
 import { PhotoUploadData } from "../@types/data/photoUploadData.js";
 import { SupportedContentType } from "../@types/data/supportedContentType.js";
 import { SupportedPhotoType } from "../@types/data/supportedPhotoType.js";
-import { uploadFilesToPS } from "../api/photostation/file/uploadFilesToPS.js";
 import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
 import { formatBytes } from "../utils/formatBytes.js";
 import { getBlobFromUrl } from "../utils/getBlobFromUrl.js";
@@ -17,22 +16,29 @@ module.exports = {
       return;
     }
 
+    // Get all the attachments, their size, and the requester's name
+    const attachments = message.attachments.map((attachment) => attachment);
     const requesterName = message.author.username;
+    const totalSizeString = getAttachmentsTotalSizeData(attachments);
+    let uploadProgress = 0;
 
     // Send the initial "processing" message
-    const processingMsgEmbed = getStatusEmbed(
+    const processingMsgEmbed = getUploadStatusEmbed(
       UploadStatus.Processing,
       requesterName,
-      "Calculating...",
-      0,
+      totalSizeString,
+      uploadProgress,
     );
     const initialMsgRef = await message.reply({ embeds: [processingMsgEmbed] });
 
-    // Get all attachments and process them
-    const attachments = message.attachments.map((attachment) => attachment);
     let blobs, contentTypes, ids, unsupportedAttachmentsString;
     // The embed that the original embed will be changed to if an error occurs
-    const uploadFailureMsgEmbed = getStatusEmbed(UploadStatus.Failure, requesterName, "Unknown", 0);
+    const uploadFailureMsgEmbed = getUploadStatusEmbed(
+      UploadStatus.Failure,
+      requesterName,
+      totalSizeString,
+      0,
+    );
     try {
       ({ unsupportedAttachmentsString, blobs, contentTypes, ids } =
         await processAndValidateAttachments(attachments));
@@ -45,7 +51,6 @@ module.exports = {
       return;
     }
 
-    let warning: string | undefined;
     // If there are unsupported attachments, handle them
     if (unsupportedAttachmentsString) {
       // If all attachments are unsupported, return immediately
@@ -58,42 +63,49 @@ module.exports = {
         return;
       } else {
         // If only some of the attachments are unsupported, just add a warning
-        warning = `Warning: file(s) of unsupported formats found ${unsupportedAttachmentsString}. These will be ignored.`;
+        const warning = `Files of unsupported formats found: ${unsupportedAttachmentsString}. These will be ignored.`;
+        message.reply(warning);
       }
     }
 
-    // Update the loading status to 40%, add warning if necessary
-    const updatedProcessingMsg = getStatusEmbed(
+    // Update the loading progress to 40%, add warning if necessary
+    uploadProgress = 0.4;
+    const updatedProcessingMsg = getUploadStatusEmbed(
       UploadStatus.Processing,
       requesterName,
-      "Calculating...",
-      0.4,
-      warning,
+      totalSizeString,
+      uploadProgress,
     );
     initialMsgRef.edit({ embeds: [updatedProcessingMsg] });
 
-    // Convert all of the files into AttachmentUploadData objects, and get a
-    // string representation of the total size of the files
+    // Convert all of the files into AttachmentUploadData objects
     const allFilesData: AttachmentUploadData[] = getAttachmentsUploadData(blobs, ids, contentTypes);
-    const totalSizeString = getAttachmentsTotalSizeData(blobs);
 
     // Update the loading status to 60%, and change the status to uploading
-    const uploadingMsg = getStatusEmbed(
+    uploadProgress = 0.6;
+    const uploadingMsg = getUploadStatusEmbed(
       UploadStatus.Uploading,
       requesterName,
       totalSizeString,
-      0.6,
+      uploadProgress,
     );
     initialMsgRef.edit({ embeds: [uploadingMsg] });
 
     try {
-      await uploadFilesToPS(allFilesData);
+      // await uploadFilesToPS(allFilesData);
     } catch (err) {
       console.error("Error occurred while uploading attachments:", err);
       initialMsgRef.edit(`An error occurred while uploading attachments: ${err}`);
       return;
     }
-    message.reply(`Attachments sent! Size of upload: ${totalSizeString}`);
+    uploadProgress = 1;
+    const successMsg = getUploadStatusEmbed(
+      UploadStatus.Success,
+      requesterName,
+      totalSizeString,
+      uploadProgress,
+    );
+    initialMsgRef.edit({ embeds: [successMsg] });
   },
 };
 
@@ -128,26 +140,26 @@ const getErrorMsgEmbed = (errMsg: string): EmbedBuilder => {
  * @param uploadSize a string representation of the upload size (e.g. 21MB)
  * @param uploadProgress the progress of the upload represented as a decimal
  *                       between 0 and 1
- * @param warning an optional warning message displayed in the footer
- * @returns an EmbedBuilder containing all of the given information.
+ * @returns an EmbedBuilder containing all of the given information
  */
-const getStatusEmbed = (
+const getUploadStatusEmbed = (
   status: UploadStatus,
   requesterName: string,
   uploadSize: string,
   uploadProgress: number,
-  warning?: string,
 ): EmbedBuilder => {
   if (uploadProgress > 1 || uploadProgress < 0 || status == null) {
     throw Error("Invalid argument(s): status cannot be null and 0 < uploadProgress < 1");
   }
 
-  const loadingBarLength = 45;
-  const loadingBarFilledChar = "█";
-  const loadingBarEmptyChar = "░";
+  const loadingBarLength = 20;
+  const loadingBarFilledChar = "🟦";
+  const loadingBarEmptyChar = "⬜";
   const filledSection = loadingBarFilledChar.repeat(Math.round(loadingBarLength * uploadProgress));
   const loadingBar = filledSection.padEnd(
-    loadingBarLength - filledSection.length,
+    // The filled character is length 2 for some reason, so we need to add extra
+    // empty characters
+    loadingBarLength + filledSection.length / 2,
     loadingBarEmptyChar,
   );
   const loadedPercentage = `${Math.round(uploadProgress * 100)}%`;
@@ -168,23 +180,13 @@ const getStatusEmbed = (
       value: requesterName,
       inline: true,
     },
-    // This just adds a warning message if warning is not null, and nothing if
-    // it is. Trying to do it with && (warning && {...}) will add the boolean
-    // false to the array if warning is null.
-    ...(warning
-      ? [
-          {
-            name: " ",
-            value: warning,
-            inline: false,
-          },
-        ]
-      : []),
   ];
 
+  // The spaces around the description are intentional. Do not remove them,
+  // otherwise the carriage returns won't work
   const embed = new EmbedBuilder()
     .setTitle("Upload Request")
-    .setDescription(`\n${loadingBar}\n(${loadedPercentage})\n\n`)
+    .setDescription(`‎\n${loadingBar}\n(${loadedPercentage})\n‎`)
     .setColor(embedColor)
     .setFields(fields);
 
@@ -197,29 +199,22 @@ const getStatusEmbed = (
  * @returns a hexadecimal number representing the associated color
  */
 const getEmbedColor = (status: UploadStatus): number => {
-  switch (status) {
-    case UploadStatus.Processing:
-      // White
-      return 0xffffff;
-    case UploadStatus.Uploading:
-      // Blue
-      return 0x008cff;
-    case UploadStatus.Success:
-      // Green
-      return 0x4bb543;
-    default:
-      // (Failure) red
-      return 0xfc100d;
+  // Red
+  if (status == UploadStatus.Failure) {
+    return 0xfc100d;
   }
+
+  // Blue
+  return 0x58acec;
 };
 
 /**
  * Produces a formatted string representation of the total size of the given files.
- * @param blobs an array of blobs
+ * @param attachments the attachments in question
  * @returns a formatted string representation of the files' total size (e.g. 12MB)
  */
-const getAttachmentsTotalSizeData = (blobs: Blob[]): string => {
-  const totalSizeBytes = blobs.reduce((size, blob) => size + blob.size, 0);
+const getAttachmentsTotalSizeData = (attachments: Attachment[]): string => {
+  const totalSizeBytes = attachments.reduce((size, file) => size + file.size, 0);
   const totalSizeString = formatBytes(totalSizeBytes);
   return totalSizeString;
 };

@@ -1,4 +1,4 @@
-import { Attachment, Message } from "discord.js";
+import { Attachment, EmbedBuilder, Message } from "discord.js";
 import { AttachmentUploadData } from "../@types/data/attachmentUploadData.js";
 import { PhotoUploadData } from "../@types/data/photoUploadData.js";
 import { SupportedContentType } from "../@types/data/supportedContentType.js";
@@ -17,39 +17,76 @@ module.exports = {
       return;
     }
 
-    const initialMsgRef = await message.reply("Processing attachments...");
-    const attachments = message.attachments.map((attachment) => attachment);
+    const requesterName = message.author.username;
 
+    // Send the initial "processing" message
+    const processingMsgEmbed = getStatusEmbed(
+      UploadStatus.Processing,
+      requesterName,
+      "Calculating...",
+      0,
+    );
+    const initialMsgRef = await message.reply({ embeds: [processingMsgEmbed] });
+
+    // Get all attachments and process them
+    const attachments = message.attachments.map((attachment) => attachment);
     let blobs, contentTypes, ids, unsupportedAttachmentsString;
+    // The embed that the original embed will be changed to if an error occurs
+    const uploadFailureMsgEmbed = getStatusEmbed(UploadStatus.Failure, requesterName, "Unknown", 0);
     try {
       ({ unsupportedAttachmentsString, blobs, contentTypes, ids } =
         await processAndValidateAttachments(attachments));
     } catch (err) {
       console.error("Error occurred while processing attachments:", err);
-      initialMsgRef.edit(`An error occurred while processing attachments: ${err}`);
+      // Edit the original embed, and reply to the user with an error message
+      initialMsgRef.edit({ embeds: [uploadFailureMsgEmbed] });
+      const errorEmbed = getErrorMsgEmbed(`An error occurred while processing attachments: ${err}`);
+      message.reply({ embeds: [errorEmbed] });
       return;
     }
 
+    let warning: string | undefined;
     // If there are unsupported attachments, handle them
     if (unsupportedAttachmentsString) {
       // If all attachments are unsupported, return immediately
       if (blobs.length === 0) {
-        initialMsgRef.edit(
+        initialMsgRef.edit({ embeds: [uploadFailureMsgEmbed] });
+        const errorEmbed = getErrorMsgEmbed(
           `All of the provided files are of unsupported formats: ${unsupportedAttachmentsString}. Please try again.`,
         );
+        message.reply({ embeds: [errorEmbed] });
         return;
       } else {
-        message.reply(
-          `File(s) of unsupported formats found: ${unsupportedAttachmentsString}. These will be ignored.`,
-        );
+        // If only some of the attachments are unsupported, just add a warning
+        warning = `Warning: file(s) of unsupported formats found ${unsupportedAttachmentsString}. These will be ignored.`;
       }
     }
 
+    // Update the loading status to 40%, add warning if necessary
+    const updatedProcessingMsg = getStatusEmbed(
+      UploadStatus.Processing,
+      requesterName,
+      "Calculating...",
+      0.4,
+      warning,
+    );
+    initialMsgRef.edit({ embeds: [updatedProcessingMsg] });
+
+    // Convert all of the files into AttachmentUploadData objects, and get a
+    // string representation of the total size of the files
     const allFilesData: AttachmentUploadData[] = getAttachmentsUploadData(blobs, ids, contentTypes);
     const totalSizeString = getAttachmentsTotalSizeData(blobs);
 
+    // Update the loading status to 60%, and change the status to uploading
+    const uploadingMsg = getStatusEmbed(
+      UploadStatus.Uploading,
+      requesterName,
+      totalSizeString,
+      0.6,
+    );
+    initialMsgRef.edit({ embeds: [uploadingMsg] });
+
     try {
-      initialMsgRef.edit("Uploading attachments...");
       await uploadFilesToPS(allFilesData);
     } catch (err) {
       console.error("Error occurred while uploading attachments:", err);
@@ -58,6 +95,122 @@ module.exports = {
     }
     message.reply(`Attachments sent! Size of upload: ${totalSizeString}`);
   },
+};
+
+/**
+ * Represents the status of the upload.
+ */
+enum UploadStatus {
+  Processing = "Processing attachments...",
+  Uploading = "Uploading attachments...",
+  Success = "Upload complete",
+  Failure = "Upload failed",
+}
+
+/**
+ * Returns an EmbedBuilder object that represents an error message.
+ * @param errMsg the error message to be displayed
+ * @returns an EmbedBuilder with the error message
+ */
+const getErrorMsgEmbed = (errMsg: string): EmbedBuilder => {
+  const embed = new EmbedBuilder()
+    .setTitle("Upload failed")
+    .setDescription(errMsg)
+    .setColor(getEmbedColor(UploadStatus.Failure));
+  return embed;
+};
+
+/**
+ * Returns an EmbedBuilder object that contains information on the upload's
+ * current status and other data.
+ * @param status the status of the upload
+ * @param requesterName the username of the user who requested the upload
+ * @param uploadSize a string representation of the upload size (e.g. 21MB)
+ * @param uploadProgress the progress of the upload represented as a decimal
+ *                       between 0 and 1
+ * @param warning an optional warning message displayed in the footer
+ * @returns an EmbedBuilder containing all of the given information.
+ */
+const getStatusEmbed = (
+  status: UploadStatus,
+  requesterName: string,
+  uploadSize: string,
+  uploadProgress: number,
+  warning?: string,
+): EmbedBuilder => {
+  if (uploadProgress > 1 || uploadProgress < 0 || status == null) {
+    throw Error("Invalid argument(s): status cannot be null and 0 < uploadProgress < 1");
+  }
+
+  const loadingBarLength = 45;
+  const loadingBarFilledChar = "█";
+  const loadingBarEmptyChar = "░";
+  const filledSection = loadingBarFilledChar.repeat(Math.round(loadingBarLength * uploadProgress));
+  const loadingBar = filledSection.padEnd(
+    loadingBarLength - filledSection.length,
+    loadingBarEmptyChar,
+  );
+  const loadedPercentage = `${Math.round(uploadProgress * 100)}%`;
+  const embedColor = getEmbedColor(status);
+  const fields = [
+    {
+      name: "Status",
+      value: status,
+      inline: true,
+    },
+    {
+      name: "Upload size",
+      value: uploadSize,
+      inline: true,
+    },
+    {
+      name: "Requested by",
+      value: requesterName,
+      inline: true,
+    },
+    // This just adds a warning message if warning is not null, and nothing if
+    // it is. Trying to do it with && (warning && {...}) will add the boolean
+    // false to the array if warning is null.
+    ...(warning
+      ? [
+          {
+            name: " ",
+            value: warning,
+            inline: false,
+          },
+        ]
+      : []),
+  ];
+
+  const embed = new EmbedBuilder()
+    .setTitle("Upload Request")
+    .setDescription(`\n${loadingBar}\n(${loadedPercentage})\n\n`)
+    .setColor(embedColor)
+    .setFields(fields);
+
+  return embed;
+};
+
+/**
+ * Returns the appropriate color given the current upload status.
+ * @param status the current upload status
+ * @returns a hexadecimal number representing the associated color
+ */
+const getEmbedColor = (status: UploadStatus): number => {
+  switch (status) {
+    case UploadStatus.Processing:
+      // White
+      return 0xffffff;
+    case UploadStatus.Uploading:
+      // Blue
+      return 0x008cff;
+    case UploadStatus.Success:
+      // Green
+      return 0x4bb543;
+    default:
+      // (Failure) red
+      return 0xfc100d;
+  }
 };
 
 /**
@@ -103,7 +256,8 @@ const getAttachmentsUploadData = (
  * unsupported types) and extracting data from valid ones
  * @param attachments - The array of attachments to process.
  * @returns An object containing:
- *      - unsupportedAttachmentsString: A string listing unsupported attachments.
+ *      - unsupportedAttachmentsString: A string listing unsupported
+ *        attachments, each separated by commas (e.g. video1.m4v, image2.HEIC...).
  *      - blobs: An array of Blob objects for valid attachments.
  *      - ids: An array of IDs for valid attachments.
  *      - contentTypes: An array of content types for valid attachments.

@@ -1,4 +1,4 @@
-import axios, { AxiosProgressEvent } from "axios";
+import axios from "axios";
 import { getValidatedPSData } from "../../api/photostation/session/getValidatedPSData.js";
 import { getPSApiUrlForRoute } from "../../api/photostation/utils/getPSApiUrlForRoute.js";
 import { PSApiRoutes } from "../api/PSApiRoutes.js";
@@ -45,13 +45,10 @@ export abstract class AttachmentUploadData {
    * Uploads a file, given its folderPath and upload method.
    * @param folderPath the folder path the file will be saved to
    * @param uploadFileMethod the method of uploading (uploadimage or uploadvideo)
-   * @param updateLoadingBar a function that updates the loading bar in the
-   *        message embed given the AxiosProgressEvent object
    */
   protected async uploadFile(
     folderPath: string,
     uploadFileMethod: UploadFileMethod,
-    updateLoadingBar: (res: AxiosProgressEvent) => void,
   ): Promise<void> {
     const sessionId = global.localStorage.getItem("sessionId");
     if (!sessionId) {
@@ -82,8 +79,6 @@ export abstract class AttachmentUploadData {
         withCredentials: true,
         headers,
         params,
-        // eslint-disable-next-line jsdoc/require-jsdoc
-        onUploadProgress: (e) => updateLoadingBar(e),
       });
       const data = getValidatedPSData(res);
       if (!data.success && data.error) {
@@ -97,11 +92,6 @@ export abstract class AttachmentUploadData {
   /**
    * Uploads the file to PhotoStation.
    * @param folderPath the folder the file will be saved to
-   * @param updateLoadingBar a function that updates the loading bar, given the
-   *        AxiosProgressEvent object
    */
-  public abstract upload(
-    folderPath: string,
-    updateLoadingBar: (res: AxiosProgressEvent) => void,
-  ): Promise<void>;
+  public abstract upload(folderPath: string): Promise<void>;
 }

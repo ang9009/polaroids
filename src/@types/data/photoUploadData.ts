@@ -1,4 +1,3 @@
-import { AxiosProgressEvent } from "axios";
 import { AttachmentUploadData } from "./attachmentUploadData.js";
 import { People } from "./people.js";
 import { SupportedPhotoType } from "./supportedPhotoType.js";
@@ -21,13 +20,8 @@ export class PhotoUploadData extends AttachmentUploadData {
   /**
    * Uploads this photo to PhotoStation.
    * @param folderPath the folder the photo will be saved to
-   * @param updateLoadingBar a function that updates the loading bar, given the
-   *        AxiosProgressEvent object
    */
-  public async upload(
-    folderPath: string,
-    updateLoadingBar: (res: AxiosProgressEvent) => void,
-  ): Promise<void> {
-    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.Photo, updateLoadingBar);
+  public async upload(folderPath: string): Promise<void> {
+    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.Photo);
   }
 }

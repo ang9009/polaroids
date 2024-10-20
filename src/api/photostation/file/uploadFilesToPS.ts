@@ -1,4 +1,3 @@
-import { AxiosProgressEvent } from "axios";
 import { AttachmentUploadData } from "../../../@types/data/attachmentUploadData";
 import { ensureValidPSSessionId } from "../session/ensureValidPSSessionId";
 
@@ -9,14 +8,9 @@ const destinationFolderPath = "Test/test 2";
 /**
  * Uploads a given array of files to PhotoStation.
  * @param files the array of files to be uploaded
- * @param updateLoadingBar a callback function that updates the loading bar in
- *        the message embed
  * @throws Error if the files argument is null, or if any file uploads fail
  */
-export const uploadFilesToPS = async (
-  files: AttachmentUploadData[],
-  updateLoadingBar: (res: AxiosProgressEvent) => void,
-) => {
+export const uploadFilesToPS = async (files: AttachmentUploadData[]) => {
   await ensureValidPSSessionId();
   if (files == null) {
     throw Error("Files argument is null");
@@ -26,6 +20,6 @@ export const uploadFilesToPS = async (
   // and one throws an error), there is no "transaction" feature like in SQL
   // where I can rollback.
   for (const file of files) {
-    await file.upload(destinationFolderPath, updateLoadingBar);
+    await file.upload(destinationFolderPath);
   }
 };

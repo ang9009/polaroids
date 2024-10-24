@@ -9,6 +9,12 @@ import { formatBytes } from "../utils/formatBytes.js";
 import { getBlobFromUrl } from "../utils/getBlobFromUrl.js";
 import { VideoUploadData } from "./../@types/data/videoUploadData";
 
+/**
+ * The event that is fired when a user sends a message in a watched channel,
+ * which is determined during the setup phase. The upload sequence has 3 primary
+ * stages: validating the attachments for unsupported types, converting the attachments
+ * into AttachmentUploadData objects, and uploading the data to PhotoStation.
+ */
 module.exports = {
   name: "messageCreate",
   once: false,
@@ -16,15 +22,18 @@ module.exports = {
     if (userMsg.author.bot || userMsg.attachments.size === 0) {
       return;
     }
-
     // Get all the attachments, their size, and the requester's name
     const attachments = userMsg.attachments.map((attachment) => attachment);
     const requesterName = userMsg.author.username;
     const totalSizeString = getAttachmentsTotalSizeString(attachments);
 
-    // Send the initial "processing" message
-    const processingMsg = getProcessingStatusMsg(requesterName, totalSizeString);
-    const initialMsgRef = await userMsg.reply({ embeds: [processingMsg] });
+    // Send the initial "validating" message
+    const validatingMsg = getCurrentStatusMsg(
+      requesterName,
+      totalSizeString,
+      UploadStatus.Validating,
+    );
+    const initialMsgRef = await userMsg.reply({ embeds: [validatingMsg] });
 
     // The embed that the original embed will be changed to if an error occurs
     let blobs, contentTypes, ids, invalidFilesMsg;
@@ -54,9 +63,13 @@ module.exports = {
       }
     }
 
-    // Update the loading progress to 40%, add warning if necessary
-    const midwayStatusMsg = getMidwayStatusMsg(requesterName, totalSizeString);
-    initialMsgRef.edit({ embeds: [midwayStatusMsg] });
+    // Send "converting" status message
+    const convertingStatusMsg = getCurrentStatusMsg(
+      requesterName,
+      totalSizeString,
+      UploadStatus.Converting,
+    );
+    initialMsgRef.edit({ embeds: [convertingStatusMsg] });
 
     // Convert all of the files into AttachmentUploadData objects
     const allFilesData: AttachmentUploadData[] = getAttachmentsUploadData(
@@ -66,11 +79,10 @@ module.exports = {
     );
 
     // Update the loading status to 60%, and change the status to uploading
-    const uploadingMsg = getUploadStatusEmbed(
-      UploadStatus.Uploading,
+    const uploadingMsg = getCurrentStatusMsg(
       requesterName,
       totalSizeString,
-      0.6,
+      UploadStatus.Uploading,
     );
     initialMsgRef.edit({ embeds: [uploadingMsg] });
 
@@ -82,7 +94,7 @@ module.exports = {
       return;
     }
     // Update loading status to 100% (complete)
-    const successMsg = getSuccessStatusMsg(requesterName, totalSizeString);
+    const successMsg = getCurrentStatusMsg(requesterName, totalSizeString, UploadStatus.Success);
     initialMsgRef.edit({ embeds: [successMsg] });
   },
 };
@@ -91,7 +103,8 @@ module.exports = {
  * Represents the status of the upload.
  */
 enum UploadStatus {
-  Processing = "Processing attachments...",
+  Validating = "Validating attachments...",
+  Converting = "Converting attachments...",
   Uploading = "Uploading attachments...",
   Success = "Upload complete",
   Failure = "Upload failed",
@@ -283,42 +296,6 @@ const processAndValidateAttachments = async (attachments: Attachment[]) => {
 };
 
 /**
- * Returns the "processing" message, sent when the bot is initially processing the data.
- * @param requesterName the name of the user who requested the upload
- * @param totalSizeString a string representation of the total size
- * @returns an EmbedBuilder with the given information and the upload status (0)
- */
-const getProcessingStatusMsg = (requesterName: string, totalSizeString: string): EmbedBuilder => {
-  const processingMsgEmbed = getUploadStatusEmbed(
-    UploadStatus.Processing,
-    requesterName,
-    totalSizeString,
-    0,
-  );
-  return processingMsgEmbed;
-};
-
-/**
- * Returns an embed representing when the upload has progressed to 40%.
- * @param requesterName the name of the user who requested the upload
- * @param totalSizeString a string representation of the total size
- * @returns a midway status embed with the given information
- */
-const getMidwayStatusMsg = (requesterName: string, totalSizeString: string): EmbedBuilder => {
-  return getUploadStatusEmbed(UploadStatus.Processing, requesterName, totalSizeString, 0.4);
-};
-
-/**
- * Creates an embed representing the successful status of an upload.
- * @param requesterName the name of the user who requested the upload
- * @param totalSizeString a string representation of the total size
- * @returns a success status embed with the given information
- */
-const getSuccessStatusMsg = (requesterName: string, totalSizeString: string) => {
-  return getUploadStatusEmbed(UploadStatus.Success, requesterName, totalSizeString, 1);
-};
-
-/**
  * Updates the original status embed, and replies to the user with a new message.
  * @param requesterName the name of the requester (to be used in the upload
  *                      failure status embed)
@@ -336,19 +313,43 @@ const handleUploadError = (
   errMsg: string,
   userMsg: Message<boolean>,
 ) => {
-  const uploadFailureMsgEmbed = getUploadFailureStatusMsg(requesterName, totalSizeString);
+  const uploadFailureMsgEmbed = getCurrentStatusMsg(
+    requesterName,
+    totalSizeString,
+    UploadStatus.Failure,
+  );
   initialMsgRef.edit({ embeds: [uploadFailureMsgEmbed] });
   const errorEmbed = getErrorMsgEmbed(`An error occurred while processing attachments: ${errMsg}`);
   userMsg.reply({ embeds: [errorEmbed] });
 };
 
 /**
- * Returns the "upload failure" status embed, displayed when something causes
- * the upload to fail (e.g. invalid attachment types).
- * @param requesterName the name of the requester
- * @param totalSizeString a string representation of the upload size (e.g. 21MB)\
- * @returns an EmbedBuilder object with the above information
+ * Creates an embed that represents the current status of the upload.
+ * @param requesterName the user who requested the upload
+ * @param totalSizeString a string representation of the total size of the upload
+ * @param uploadStatus the current status fo the upload
+ * @returns an EmbedBuilder with the given information
  */
-function getUploadFailureStatusMsg(requesterName: string, totalSizeString: string): EmbedBuilder {
-  return getUploadStatusEmbed(UploadStatus.Failure, requesterName, totalSizeString, 0);
-}
+const getCurrentStatusMsg = (
+  requesterName: string,
+  totalSizeString: string,
+  uploadStatus: UploadStatus,
+): EmbedBuilder => {
+  switch (uploadStatus) {
+    case UploadStatus.Validating:
+      // Displayed when the bot is validating the attachments for unsupported types
+      return getUploadStatusEmbed(UploadStatus.Validating, requesterName, totalSizeString, 0);
+    case UploadStatus.Converting:
+      // Displayed when the bot is uploading the attachments to PhotoStation6
+      return getUploadStatusEmbed(UploadStatus.Converting, requesterName, totalSizeString, 0.4);
+    case UploadStatus.Uploading:
+      // Displayed when the bot is uploading the attachments to PhotoStation6
+      return getUploadStatusEmbed(UploadStatus.Uploading, requesterName, totalSizeString, 0.6);
+    case UploadStatus.Failure:
+      // Displayed when something causes the upload to fail (e.g. invalid attachment types)
+      return getUploadStatusEmbed(UploadStatus.Failure, requesterName, totalSizeString, 0);
+    case UploadStatus.Success:
+      // Displayed when the bot has successfully updated the data to PhotoStation
+      return getUploadStatusEmbed(UploadStatus.Success, requesterName, totalSizeString, 1);
+  }
+};

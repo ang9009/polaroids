@@ -58,8 +58,8 @@ export abstract class AttachmentUploadData {
     const headers = {
       Cookie: `PHPSESSID=${sessionId}`,
     };
-    // The filename should be the unique id + the extension. The id is used
-    // because the backup feature (TBD) should not back up previously uploaded images
+    // The filename should be the unique id + the extension. The attachment id is used
+    // because the backup feature should not back up previously uploaded images
     const params = {
       method: uploadFileMethod,
       version: "1",

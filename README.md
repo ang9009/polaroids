@@ -1,9 +1,8 @@
 # polaroids
 
 A photos storage system consisting of:
-- A Discord bot that automatically uploads videos and images from private Discord servers my
-friends and I are in to my Synology PhotoStation6
-- A website that displays this content images
+- A Discord bot that automatically uploads media to my Synology PhotoStation6
+- A website that displays this media
 
 ## Scripts
 

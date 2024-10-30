@@ -5,6 +5,10 @@ media to my Synology PhotoStation6, and a website that displays this media.
 
 ## Setup
 
+I'm not sure if anyone would actually be interested in this (this is moreso for
+my own reference), but if for some reason you are, here's how you can
+set polaroids up for yourself:
+
 ### Prerequisites
 
 - Docker and Docker Compose installed on your machine.
@@ -45,6 +49,6 @@ docker-compose up
 
 ## Acknowledgments
 
-- Big thanks to JBowen who wrote this very nice [unofficial API
+- Huge thanks to JBowen, who wrote this very nice [unofficial API
   reference](https://blog.jbowen.dev/synology/photostation/api/) for the
   PhotoStation6.

@@ -1,4 +1,4 @@
 .env
-session_id
+session_id/
 .vscode
 .DS_Store

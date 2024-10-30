@@ -33,6 +33,9 @@ set polaroids up for yourself:
    PS_API_PASSWORD=XXX
    ```
 
+   Your PhotoStation6 API url should be prefixed with "/photo/webapi". Make sure
+   that the user associated with your login details has admin permissions.
+
    The `.env` file in the root folder should look like this:
 
    ```plaintext

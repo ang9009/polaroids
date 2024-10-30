@@ -4,7 +4,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 const app = express();
 
 app.use(logger);

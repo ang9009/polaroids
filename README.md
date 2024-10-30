@@ -1,30 +1,50 @@
-# polaroids
+# Polaroids
 
-A photos storage system consisting of:
-- A Discord bot that automatically uploads media to my Synology PhotoStation6
-- A website that displays this media
+A photo storage system consisting of a Discord bot that automatically uploads
+media to my Synology PhotoStation6, and a website that displays this media.
 
-## Scripts
+## Setup
 
-- **Start the bot**:
+### Prerequisites
 
-  ```bash
-  npm run dev
-  ```
+- Docker and Docker Compose installed on your machine.
+- A Discord Developer Portal account.
+- A Synology PhotoStation6.
 
-- **Deploy commands to Discord**:
+### Environment Configuration
 
-  ```bash
-  npm run deployCommands
-  ```
+1. **Create .env files in the root and bot directories**
 
-- **Run ESLint on the `src` folder**:
-  ```bash
-  npm run lint
-  ```
+   The `.env` file in the bot directory should look like this:
 
-## API Documentation
+   ```plaintext
+   // From the Discord Developer Portal
+   TOKEN=XXX
+   CLIENT_ID=XXX
+   GUILD_ID=XXX
 
-To learn more about the PhotoStation6 API, you can visit the unofficial documentation by JBowen [here](https://blog.jbowen.dev/synology/photostation/api/syno-photostation-file/uploadphoto/).
+   // Your PhotoStation6 details
+   PS_API_URL=XXX
+   PS_API_USERNAME=XXX
+   PS_API_PASSWORD=XXX
+   ```
 
-Full credits to JBowen.
+   The `.env` file in the root folder should look like this:
+
+   ```plaintext
+   POSTGRES_USER=XXX
+   POSTGRES_PASSWORD=XXX
+   ```
+
+### Starting Services
+
+```bash
+docker-compose build
+docker-compose up
+```
+
+## Acknowledgments
+
+- Big thanks to JBowen who wrote this very nice [unofficial API
+  reference](https://blog.jbowen.dev/synology/photostation/api/) for the
+  PhotoStation6.

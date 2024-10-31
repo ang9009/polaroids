@@ -1,6 +1,6 @@
--- This file is used to set up the tables in the Postgres database
+-- This file is used to initialize the tables in the Postgres database
 
--- Servers that Polaroids has been added to
+-- Servers that polaroids has been added to
 CREATE TABLE guild (
     -- The server id, supplied by the Discord API
     guild_id VARCHAR(255),
@@ -9,7 +9,7 @@ CREATE TABLE guild (
 );
 
 COMMENT ON TABLE guild
-    IS 'Servers that Polaroids has been added to';
+    IS 'Servers that polaroids has been added to';
 COMMENT ON COLUMN guild.guild_id
     IS 'The server id, supplied by Discord API';
 
@@ -30,7 +30,7 @@ COMMENT ON TABLE album
 COMMENT ON COLUMN album.album_id
     IS 'The album id, supplied by the PhotoStation API';
 
--- Channels within Discord servers that Polaroids is subscribed to for changes
+-- Channels within Discord servers that polaroids is subscribed to for changes
 CREATE TABLE subscribed_channel (
     -- The channel id, supplied by the Discord API
     channel_id VARCHAR(255),
@@ -42,7 +42,7 @@ CREATE TABLE subscribed_channel (
 );
 
 COMMENT ON TABLE subscribed_channel
-    IS 'Channels within Discord servers that Polaroids is subscribed to for changes';
+    IS 'Channels within Discord servers that polaroids is subscribed to for changes';
 COMMENT ON COLUMN subscribed_channel.guild_id
     IS 'The guild that this channel is in';
 

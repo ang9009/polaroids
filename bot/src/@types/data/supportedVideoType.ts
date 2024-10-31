@@ -3,7 +3,7 @@ import { MimeType } from "./mimeType";
 import { SupportedContentType } from "./supportedContentType";
 
 /**
- * Video types that Polaroids supports.
+ * Video types that polaroids supports.
  */
 export class SupportedVideoType extends SupportedContentType {
   public static readonly MP4 = new SupportedVideoType(Extension.MP4, MimeType.MP4);

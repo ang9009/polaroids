@@ -3,7 +3,7 @@ import { MimeType } from "./mimeType";
 import { SupportedContentType } from "./supportedContentType";
 
 /**
- * Photo types that Polaroids supports.
+ * Photo types that polaroids supports.
  */
 export class SupportedPhotoType extends SupportedContentType {
   public static readonly JPG = new SupportedPhotoType(Extension.JPG, MimeType.JPG);

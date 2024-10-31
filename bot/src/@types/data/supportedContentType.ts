@@ -2,7 +2,7 @@ import { Extension } from "./extension";
 import { MimeType } from "./mimeType";
 
 /**
- * Represents the content types that Polaroids recognizes. For further extension,
+ * Represents the content types that polaroids recognizes. For further extension,
  * look up common MIME types, and cross reference them with PhotoStation6
  * supported types.
  */

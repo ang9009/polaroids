@@ -1,4 +1,4 @@
-# Polaroids
+# polaroids
 
 A photo storage system consisting of a Discord bot that automatically uploads
 media to my Synology PhotoStation6, and a website that displays this media.
@@ -19,7 +19,7 @@ set polaroids up for yourself:
 
 1. **Create .env files in the root and bot directories**
 
-   The `.env` file in the bot directory should look like this:
+   The `.env` file in the `bot` directory should look like this:
 
    ```plaintext
    // From the Discord Developer Portal
@@ -35,6 +35,12 @@ set polaroids up for yourself:
 
    Your PhotoStation6 API url should be prefixed with "/photo/webapi". Make sure
    that the user associated with your login details has admin permissions.
+
+   The `.env` file in the `db-api` folder should look like this:
+
+   ```plaintext
+   DATABASE_URL=XXX
+   ```
 
    The `.env` file in the root folder should look like this:
 

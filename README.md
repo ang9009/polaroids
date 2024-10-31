@@ -41,7 +41,10 @@ set polaroids up for yourself:
    ```plaintext
    POSTGRES_USER=XXX
    POSTGRES_PASSWORD=XXX
+   POSTGRES_DB=XXX
    ```
+
+   These variables are used in `docker-compose.yml` to initialize the Postgres database.
 
 ### Starting Services
 

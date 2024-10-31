@@ -59,6 +59,8 @@ docker-compose build
 docker-compose up
 ```
 
+Refer to the docker compose file for port information.
+
 ## Acknowledgments
 
 - Huge thanks to JBowen, who wrote this very nice [unofficial API

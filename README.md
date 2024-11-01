@@ -17,7 +17,7 @@ set polaroids up for yourself:
 
 ### Environment Configuration
 
-1. **Create .env files in the root and bot directories**
+1. **Create .env files in the root, bot, and db-api directories**
 
    The `.env` file in the `bot` directory should look like this:
 

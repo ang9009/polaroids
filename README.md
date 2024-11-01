@@ -21,13 +21,13 @@ set polaroids up for yourself:
 
    The `.env` file in the `bot` directory should look like this:
 
-   ```plaintext
-   // From the Discord Developer Portal
+   ```sh
+   # From the Discord Developer Portal
    TOKEN=XXX
    CLIENT_ID=XXX
    GUILD_ID=XXX
 
-   // Your PhotoStation6 details
+   # Your PhotoStation6 details
    PS_API_URL=XXX
    PS_API_USERNAME=XXX
    PS_API_PASSWORD=XXX
@@ -38,13 +38,18 @@ set polaroids up for yourself:
 
    The `.env` file in the `db-api` folder should look like this:
 
-   ```plaintext
-   DATABASE_URL=XXX
+   ```sh
+   # Make sure that these variables match the .env file in the root folder.
+   POSTGRES_USER=XXX
+   POSTGRES_PASSWORD=XXX
+   POSTGRES_DB=XXX
+
+   DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
    ```
 
    The `.env` file in the root folder should look like this:
 
-   ```plaintext
+   ```sh
    POSTGRES_USER=XXX
    POSTGRES_PASSWORD=XXX
    POSTGRES_DB=XXX

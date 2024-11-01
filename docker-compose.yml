@@ -5,9 +5,10 @@ services:
     build: ./bot
     depends_on:
       db-api:
-        condition: service_completed_successfully
+        condition: service_started
       db:
-        condition: service_completed_successfully
+        condition: service_healthy
+        restart: true
 
   db-api:
     build: ./db-api

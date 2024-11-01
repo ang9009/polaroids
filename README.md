@@ -15,9 +15,11 @@ set polaroids up for yourself:
 - A Discord Developer Portal account.
 - A Synology PhotoStation6.
 
-### Environment Configuration
+### Setup
 
-1. **Create .env files in the root, bot, and db-api directories**
+1. Run `npm run postinstall`
+
+2. Create .env files in the root, bot, and db-api directories
 
    The `.env` file in the `bot` directory should look like this:
 

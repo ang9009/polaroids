@@ -204,13 +204,14 @@ const getUploadStatusEmbed = (
  * @returns a hexadecimal number representing the associated color
  */
 const getEmbedColor = (status: UploadStatus): number => {
-  // Red
-  if (status == UploadStatus.Failure) {
-    return 0xfc100d;
+  switch (status) {
+    case UploadStatus.Failure:
+      return 0xfc100d; // Red
+    case UploadStatus.Success:
+      return 0x4bb543; // Green
+    default:
+      return 0x58acec; // Blue
   }
-
-  // Blue
-  return 0x58acec;
 };
 
 /**

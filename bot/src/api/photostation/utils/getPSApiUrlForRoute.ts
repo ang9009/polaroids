@@ -1,4 +1,4 @@
-import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
+import { PSApiRoutes } from "../../../types/api/PSApiRoutes";
 
 /**
  * Returns a formatted PhotoStation API url given the route used. Note that this

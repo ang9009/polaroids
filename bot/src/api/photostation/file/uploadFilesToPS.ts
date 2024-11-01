@@ -1,4 +1,4 @@
-import { AttachmentUploadData } from "../../../@types/data/attachmentUploadData";
+import { AttachmentUploadData } from "../../../types/data/attachmentUploadData";
 
 // TODO: this should be stored in DB, and determined in setup stage
 // TODO: this should also be a nested folder

@@ -1,7 +1,7 @@
 import axios from "axios";
 import "process";
-import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
-import { LoginApiResponse } from "../../../@types/api/authApiResponses";
+import { PSApiRoutes } from "../../../types/api/PSApiRoutes";
+import { LoginApiResponse } from "../../../types/api/authApiResponses";
 import { getPSApiUrlForRoute } from "../utils/getPSApiUrlForRoute";
 import { getValidatedPSData } from "./getValidatedPSData";
 

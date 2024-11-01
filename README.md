@@ -41,12 +41,15 @@ set polaroids up for yourself:
    The `.env` file in the `db-api` folder should look like this:
 
    ```sh
-   # Make sure that these variables match the .env file in the root folder.
-   POSTGRES_USER=XXX
-   POSTGRES_PASSWORD=XXX
-   POSTGRES_DB=XXX
+   # The port for the API
+   PORT=8080
 
-   DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
+   # Make sure that these variables match the .env file in the root folder.
+   POSTGRES_USER=dalfie
+   POSTGRES_PASSWORD=ang900962116628Aa!
+   POSTGRES_DB=polaroids
+
+   DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
    ```
 
    The `.env` file in the root folder should look like this:

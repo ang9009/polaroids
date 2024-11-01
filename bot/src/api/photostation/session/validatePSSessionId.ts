@@ -1,6 +1,6 @@
 import axios from "axios";
-import { PSApiRoutes } from "../../../@types/api/PSApiRoutes";
-import { CheckAuthApiResponse } from "../../../@types/api/authApiResponses";
+import { PSApiRoutes } from "../../../types/api/PSApiRoutes";
+import { CheckAuthApiResponse } from "../../../types/api/authApiResponses";
 import { getPSApiUrlForRoute } from "../utils/getPSApiUrlForRoute";
 import { getValidatedPSData } from "./getValidatedPSData";
 

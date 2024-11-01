@@ -23,4 +23,5 @@ export const logger = (req: Request, res: Response, next: NextFunction) => {
 
   const color = methodColors[req.method as HttpMethod] || colors.white;
   console.log(color(`${req.method} ${req.protocol}://${req.get("host")}${req.originalUrl}`));
+  next();
 };

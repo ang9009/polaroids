@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { BaseApiResponse } from "../../../@types/api/baseApiResponse";
+import { BaseApiResponse } from "../../../types/api/baseApiResponse";
 
 /**
  * Validates the given PhotoStation6 (PS) API response and returns its data as the

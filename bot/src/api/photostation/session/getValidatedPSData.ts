@@ -2,10 +2,10 @@ import { AxiosResponse } from "axios";
 import { BaseApiResponse } from "../../../types/api/baseApiResponse";
 
 /**
- * Validates the given PhotoStation6 (PS) API response and returns its data as the
+ * Validates the given FileStation (PS) API response and returns its data as the
  * desired response type.
  * @template T the expected type of the API response
- * @param res the response from the PhotoStation6 API
+ * @param res the response from the FileStation API
  * @returns the data from res as a BaseApiResponse object
  * @throws Error if the response object indicates that the response failed
  */

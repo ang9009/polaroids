@@ -1,7 +1,7 @@
 # polaroids
 
 A photo storage system consisting of a Discord bot that automatically uploads
-media to my Synology PhotoStation6, and a website that displays this media.
+media to my Synology FileStation, and a website that displays this media.
 
 ## Setup
 
@@ -13,7 +13,7 @@ set polaroids up for yourself:
 
 - Docker and Docker Compose installed on your machine.
 - A Discord Developer Portal account.
-- A Synology PhotoStation6.
+- A Synology FileStation.
 
 ### Setup
 
@@ -29,13 +29,13 @@ set polaroids up for yourself:
    CLIENT_ID=XXX
    GUILD_ID=XXX
 
-   # Your PhotoStation6 details
+   # Your FileStation details
    PS_API_URL=XXX
    PS_API_USERNAME=XXX
    PS_API_PASSWORD=XXX
    ```
 
-   Your PhotoStation6 API url should be prefixed with "/photo/webapi". Make sure
+   Your FileStation API url should be prefixed with "/photo/webapi". Make sure
    that the user associated with your login details has admin permissions.
 
    The `.env` file in the `db-api` folder should look like this:
@@ -75,4 +75,4 @@ Refer to the docker compose file for port information.
 
 - Huge thanks to JBowen, who wrote this very nice [unofficial API
   reference](https://blog.jbowen.dev/synology/photostation/api/) for the
-  PhotoStation6.
+  FileStation.

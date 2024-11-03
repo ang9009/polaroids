@@ -2,7 +2,7 @@ import { updatePSSessionId } from "./updatePSSessionId";
 import { validatePSSessionId } from "./validatePSSessionId";
 
 /**
- * Checks if the saved PhotoStation6 session ID is valid/if there is one, and
+ * Checks if the saved FileStation session ID is valid/if there is one, and
  * updates it if it does not exist/it is not valid.
  */
 export const ensureValidPSSessionId = async () => {

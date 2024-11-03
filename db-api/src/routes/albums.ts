@@ -1,16 +1,15 @@
 import express, { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 import HttpStatusCode from "../data/statusCodes";
+import { HttpException } from "../types/error/apiError";
 import {
   CreateAlbumQueryParams,
   CreateAlbumQueryParamsSchema,
-} from "../types/createAlbumQueryParams";
-import { HttpException } from "../types/apiError";
+} from "../types/request/createAlbumQueryParams";
 
 const router = express.Router();
 
-// Look up DTO
-
+// Create an album
 router.post(
   "/",
   (req: Request<{}, {}, CreateAlbumQueryParams>, res: Response, next: NextFunction) => {
@@ -22,9 +21,9 @@ router.post(
         return next(error);
       }
     }
-    const albumData = req.body;
+    const { albumId, albumName } = req.body;
+    // prisma.guild.create
 
-    // TODO: make a type for the json return
     res.status(HttpStatusCode.OK).json({ msg: "Success" });
   }
 );

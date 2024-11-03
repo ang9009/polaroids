@@ -1,7 +1,7 @@
 {
   "name": "y",
   "version": "1.0.0",
-  "description": "A photo storage system consisting of a Discord bot that automatically uploads media to my Synology PhotoStation6, and a website that displays this media.",
+  "description": "A photo storage system consisting of a Discord bot that automatically uploads media to my Synology FileStation, and a website that displays this media.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

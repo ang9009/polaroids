@@ -1,13 +1,13 @@
 import { Attachment, EmbedBuilder, Message, OmitPartialGroupDMChannel } from "discord.js";
 import { uploadFilesToPS } from "../api/photostation/file/uploadFilesToPS.js";
 import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
-import { AttachmentUploadData } from "../types/data/attachmentUploadData.js";
-import { PhotoUploadData } from "../types/data/photoUploadData.js";
-import { SupportedContentType } from "../types/data/supportedContentType.js";
-import { SupportedPhotoType } from "../types/data/supportedPhotoType.js";
-import { VideoUploadData } from "../types/data/videoUploadData.js";
 import { formatBytes } from "../utils/formatBytes.js";
 import { getBlobFromUrl } from "../utils/getBlobFromUrl.js";
+import { AttachmentUploadData } from "./attachmentUploadData.js";
+import { PhotoUploadData } from "./photoUploadData.js";
+import { SupportedContentType } from "./supportedContentType.js";
+import { SupportedPhotoType } from "./supportedPhotoType.js";
+import { VideoUploadData } from "./videoUploadData.js";
 
 /**
  * The event that is fired when a user sends a message in a watched channel,

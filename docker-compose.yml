@@ -1,25 +1,25 @@
 version: "3.8"
 
 services:
-  # bot:
-  #   build: ./bot
-  #   depends_on:
-  #     db-api:
-  #       condition: service_started
-  #     db:
-  #       condition: service_healthy
-  #       restart: true
+  bot:
+    build: ./bot
+    depends_on:
+      db-api:
+        condition: service_started
+      db:
+        condition: service_healthy
+        restart: true
 
-  # db-api:
-  #   build: ./db-api
-  #   environment:
-  #     PORT: 8080
-  #   ports:
-  #     - 8080:8080
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #       restart: true
+  db-api:
+    build: ./db-api
+    environment:
+      PORT: 8080
+    ports:
+      - 8080:8080
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
 
   db:
     image: postgres

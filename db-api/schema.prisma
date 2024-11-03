@@ -15,10 +15,10 @@ model Guild {
     subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
 }
 
-/// Albums that correspond to existing albums in PhotoStation6
+/// Albums that correspond to existing folders in FileStation
 model Album {
-    albumId String @unique @db.VarChar(255) /// The album's PhotoStation6 ID
-    albumName String @unique @db.VarChar(255) /// The name of the album
+    albumId String @unique @db.VarChar(255) /// The folder's FileStation ID
+    albumName String @unique @db.VarChar(255) /// The name of the folder on FileStation
     deletedAt DateTime? @db.Timestamp() /// When the album was soft deleted
     images Image[]
 
@@ -35,9 +35,9 @@ model SubscribedChannel {
 }
 
 
-/// Images that correspond to to images saved to PhotoStation6
+/// Images that correspond to to images saved to FileStation
 model Image {
-  imageId String @id @db.VarChar(255) /// The image's PhotoStation6 ID
+  imageId String @id @db.VarChar(255) /// The image's FileStation ID
   deletedAt DateTime? @db.Timestamp() /// When the image was soft deleted
   description String? @db.VarChar(255) /// A description of the image
 

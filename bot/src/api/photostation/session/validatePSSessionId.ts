@@ -5,7 +5,7 @@ import { getPSApiUrlForRoute } from "../utils/getPSApiUrlForRoute";
 import { getValidatedPSData } from "./getValidatedPSData";
 
 /**
- * Checks if the given PhotoStation6 sessionId is still valid
+ * Checks if the given FileStation sessionId is still valid
  * @param sessionId the sessionId in question
  * @returns whether the sessionId is valid
  * @throws Error if the get request fails

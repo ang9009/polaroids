@@ -6,7 +6,7 @@ import { getCommandsCollection } from "./utils/getCommandsCollection.js";
 import { handleInteractions } from "./utils/handleInteractions.js";
 import { registerEvents } from "./utils/registerEvents.js";
 
-// Set up local storage for PhotoStation6 session id
+// Set up local storage for FileStation session id
 global.localStorage = new LocalStorage("./session_id");
 // Update session id if necessary
 await ensureValidPSSessionId();

@@ -1,6 +1,6 @@
 /**
  * All of the content types that polaroids recognizes. For further extension,
- * look up common MIME types, and cross reference them with PhotoStation6
+ * look up common MIME types, and cross reference them with FileStation
  * supported types.
  */
 export var SupportedContentType;

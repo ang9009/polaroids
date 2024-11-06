@@ -1,4 +1,4 @@
-import { Extension } from "./extension";
+import { FileExtension } from "./fileExtension";
 import { MimeType } from "./mimeType";
 
 /**
@@ -7,7 +7,7 @@ import { MimeType } from "./mimeType";
  * supported types.
  */
 export abstract class SupportedContentType {
-  public readonly extension: Extension;
+  public readonly extension: FileExtension;
   public readonly mimeType: MimeType;
 
   /**
@@ -15,7 +15,7 @@ export abstract class SupportedContentType {
    * @param extension the content type's extension
    * @param mimeType the MIME type of the content type
    */
-  protected constructor(extension: Extension, mimeType: MimeType) {
+  protected constructor(extension: FileExtension, mimeType: MimeType) {
     this.extension = extension;
     this.mimeType = mimeType;
   }

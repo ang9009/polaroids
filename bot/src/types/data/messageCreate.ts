@@ -1,8 +1,8 @@
 import { Attachment, EmbedBuilder, Message, OmitPartialGroupDMChannel } from "discord.js";
-import { uploadFilesToPS } from "../api/photostation/file/uploadFilesToPS.js";
-import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
-import { formatBytes } from "../utils/formatBytes.js";
-import { getBlobFromUrl } from "../utils/getBlobFromUrl.js";
+import { uploadFilesToPS } from "../../api/photostation/file/uploadFilesToPS.js";
+import { getContentTypeFromMimeType } from "../../api/photostation/utils/getContentTypeFromMimeType.js";
+import { formatBytes } from "../../utils/formatBytes.js";
+import { getBlobFromUrl } from "../../utils/getBlobFromUrl.js";
 import { AttachmentUploadData } from "./attachmentUploadData.js";
 import { PhotoUploadData } from "./photoUploadData.js";
 import { SupportedContentType } from "./supportedContentType.js";
@@ -31,7 +31,7 @@ module.exports = {
     const validatingMsg = getCurrentStatusMsg(
       requesterName,
       totalSizeString,
-      UploadStatus.Validating,
+      UploadStatus.VALIDATING,
     );
     const initialMsgRef = await userMsg.reply({ embeds: [validatingMsg] });
 
@@ -67,7 +67,7 @@ module.exports = {
     const convertingStatusMsg = getCurrentStatusMsg(
       requesterName,
       totalSizeString,
-      UploadStatus.Converting,
+      UploadStatus.CONVERTING,
     );
     initialMsgRef.edit({ embeds: [convertingStatusMsg] });
 
@@ -82,7 +82,7 @@ module.exports = {
     const uploadingMsg = getCurrentStatusMsg(
       requesterName,
       totalSizeString,
-      UploadStatus.Uploading,
+      UploadStatus.UPLOADING,
     );
     initialMsgRef.edit({ embeds: [uploadingMsg] });
 
@@ -94,7 +94,7 @@ module.exports = {
       return;
     }
     // Update loading status to 100% (complete)
-    const successMsg = getCurrentStatusMsg(requesterName, totalSizeString, UploadStatus.Success);
+    const successMsg = getCurrentStatusMsg(requesterName, totalSizeString, UploadStatus.SUCCESS);
     initialMsgRef.edit({ embeds: [successMsg] });
   },
 };
@@ -103,11 +103,11 @@ module.exports = {
  * Represents the status of the upload.
  */
 enum UploadStatus {
-  Validating = "Validating attachments...",
-  Converting = "Converting attachments...",
-  Uploading = "Uploading attachments...",
-  Success = "Upload complete",
-  Failure = "Upload failed",
+  VALIDATING = "Validating attachments...",
+  CONVERTING = "Converting attachments...",
+  UPLOADING = "Uploading attachments...",
+  SUCCESS = "Upload complete",
+  FAILURE = "Upload failed",
 }
 
 /**
@@ -133,7 +133,7 @@ const getErrorMsgEmbed = (errMsg: string): EmbedBuilder => {
   const embed = new EmbedBuilder()
     .setTitle("Upload failed")
     .setDescription(errMsg)
-    .setColor(getEmbedColor(UploadStatus.Failure));
+    .setColor(getEmbedColor(UploadStatus.FAILURE));
   return embed;
 };
 
@@ -205,9 +205,9 @@ const getUploadStatusEmbed = (
  */
 const getEmbedColor = (status: UploadStatus): number => {
   switch (status) {
-    case UploadStatus.Failure:
+    case UploadStatus.FAILURE:
       return 0xfc100d; // Red
-    case UploadStatus.Success:
+    case UploadStatus.SUCCESS:
       return 0x4bb543; // Green
     default:
       return 0x58acec; // Blue
@@ -317,7 +317,7 @@ const handleUploadError = (
   const uploadFailureMsgEmbed = getCurrentStatusMsg(
     requesterName,
     totalSizeString,
-    UploadStatus.Failure,
+    UploadStatus.FAILURE,
   );
   initialMsgRef.edit({ embeds: [uploadFailureMsgEmbed] });
   const errorEmbed = getErrorMsgEmbed(`An error occurred while processing attachments: ${errMsg}`);
@@ -337,20 +337,20 @@ const getCurrentStatusMsg = (
   uploadStatus: UploadStatus,
 ): EmbedBuilder => {
   switch (uploadStatus) {
-    case UploadStatus.Validating:
+    case UploadStatus.VALIDATING:
       // Displayed when the bot is validating the attachments for unsupported types
-      return getUploadStatusEmbed(UploadStatus.Validating, requesterName, totalSizeString, 0);
-    case UploadStatus.Converting:
+      return getUploadStatusEmbed(UploadStatus.VALIDATING, requesterName, totalSizeString, 0);
+    case UploadStatus.CONVERTING:
       // Displayed when the bot is uploading the attachments to FileStation
-      return getUploadStatusEmbed(UploadStatus.Converting, requesterName, totalSizeString, 0.4);
-    case UploadStatus.Uploading:
+      return getUploadStatusEmbed(UploadStatus.CONVERTING, requesterName, totalSizeString, 0.4);
+    case UploadStatus.UPLOADING:
       // Displayed when the bot is uploading the attachments to FileStation
-      return getUploadStatusEmbed(UploadStatus.Uploading, requesterName, totalSizeString, 0.6);
-    case UploadStatus.Failure:
+      return getUploadStatusEmbed(UploadStatus.UPLOADING, requesterName, totalSizeString, 0.6);
+    case UploadStatus.FAILURE:
       // Displayed when something causes the upload to fail (e.g. invalid attachment types)
-      return getUploadStatusEmbed(UploadStatus.Failure, requesterName, totalSizeString, 0);
-    case UploadStatus.Success:
+      return getUploadStatusEmbed(UploadStatus.FAILURE, requesterName, totalSizeString, 0);
+    case UploadStatus.SUCCESS:
       // Displayed when the bot has successfully updated the data to PhotoStation
-      return getUploadStatusEmbed(UploadStatus.Success, requesterName, totalSizeString, 1);
+      return getUploadStatusEmbed(UploadStatus.SUCCESS, requesterName, totalSizeString, 1);
   }
 };

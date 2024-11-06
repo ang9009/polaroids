@@ -1,15 +1,8 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import "dotenv/config";
-import { LocalStorage } from "node-localstorage";
-import { ensureValidPSSessionId } from "./api/photostation/session/ensureValidPSSessionId.js";
 import { getCommandsCollection } from "./utils/getCommandsCollection.js";
 import { handleInteractions } from "./utils/handleInteractions.js";
 import { registerEvents } from "./utils/registerEvents.js";
-
-// Set up local storage for FileStation session id
-global.localStorage = new LocalStorage("./session_id");
-// Update session id if necessary
-await ensureValidPSSessionId();
 
 // Initialize client and client.commands collection
 const client = new Client({

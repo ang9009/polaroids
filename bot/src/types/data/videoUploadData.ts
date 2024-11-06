@@ -23,6 +23,6 @@ export class VideoUploadData extends AttachmentUploadData {
    * @throws an Error if session ID is null
    */
   public async upload(folderPath: string): Promise<void> {
-    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.Video);
+    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.VIDEO);
   }
 }

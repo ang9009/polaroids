@@ -22,6 +22,6 @@ export class PhotoUploadData extends AttachmentUploadData {
    * @param folderPath the folder the photo will be saved to
    */
   public async upload(folderPath: string): Promise<void> {
-    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.Photo);
+    super.uploadFile(folderPath, AttachmentUploadData.UploadFileMethod.PHOTO);
   }
 }

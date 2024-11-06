@@ -1,13 +1,13 @@
 import axios from "axios";
-import { getValidatedPSData } from "../../api/photostation/session/getValidatedPSData.js";
-import { getPSApiUrlForRoute } from "../../api/photostation/utils/getPSApiUrlForRoute.js";
-import { PSApiRoutes } from "../api/PSApiRoutes.js";
+import { getValidatedPSData } from "../../api/photostation/session/getValidatedPSData";
+import { getPSApiUrlForRoute } from "../../api/photostation/utils/getPSApiUrlForRoute";
+import { PSApiRoutes } from "./../api/PSApiRoutes";
 import { People } from "./people.js";
 import { SupportedContentType } from "./supportedContentType.js";
 
 enum UploadFileMethod {
-  Photo = "uploadphoto",
-  Video = "uploadvideo",
+  PHOTO = "uploadphoto",
+  VIDEO = "uploadvideo",
 }
 
 /**

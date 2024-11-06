@@ -17,18 +17,7 @@ set polaroids up for yourself:
 
 ### Setup
 
-1. Run `npm run postinstall` in the root directory
-
-2. Create symlink between bot, db-api, and shared:
-
-```sh
-cd shared
-npm link
-cd ../db-api
-npm link shared
-cd ../bot
-npm link shared
-```
+1. Run `npm run setup` in the root directory
 
 2. Create .env files in the root, bot, and db-api directories
 

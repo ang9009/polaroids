@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.notFound = void 0;
-const statusCodes_1 = __importDefault(require("../data/statusCodes"));
+const notFoundException_1 = __importDefault(require("../types/error/notFoundException"));
 /**
  * Error handler for non-existent routes.
  * @param req request
@@ -12,8 +12,7 @@ const statusCodes_1 = __importDefault(require("../data/statusCodes"));
  * @param next next function
  */
 const notFound = (req, res, next) => {
-    const error = new Error("Not found");
-    const apiError = { status: statusCodes_1.default.NOT_FOUND, error: error };
-    next(apiError);
+    const error = new notFoundException_1.default();
+    next(error);
 };
 exports.notFound = notFound;

@@ -1,7 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { ZodError } from "zod";
 import HttpStatusCode from "../data/statusCodes";
-import { HttpException } from "../types/error/apiError";
 import {
   CreateAlbumQueryParams,
   CreateAlbumQueryParamsSchema,
@@ -13,13 +11,12 @@ const router = express.Router();
 router.post(
   "/",
   (req: Request<{}, {}, CreateAlbumQueryParams>, res: Response, next: NextFunction) => {
-    try {
-      CreateAlbumQueryParamsSchema.parse(req.body);
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const error = new HttpException(HttpStatusCode.BAD_REQUEST, JSON.stringify(err.issues));
-        return next(error);
-      }
+    const parseRes = CreateAlbumQueryParamsSchema.safeParse(req.body);
+    // !Figure out how to get the erorr message
+    //! Finish guidls first
+    if (!parseRes.success) {
+      // const error = new HttpException(HttpStatusCode.BAD_REQUEST);
+      // return next(error);
     }
     const { albumId, albumName } = req.body;
     // prisma.guild.create

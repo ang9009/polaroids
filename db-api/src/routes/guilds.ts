@@ -1,28 +1,24 @@
-import { Prisma } from "@prisma/client";
 import express, { NextFunction, Request, Response } from "express";
-import { ZodError } from "zod";
 import HttpStatusCode from "../data/statusCodes";
+import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
-import { HttpException } from "../types/error/apiError";
+import RequestException from "../types/error/requestException";
 import {
   CreateGuildQueryParams,
   CreateGuildQueryParamsSchema,
 } from "../types/request/createGuildQueryParams";
-const router = express.Router();
+import handleDbException from "../utils/handleDbException";
 
-export default router;
+const router = express.Router();
 
 // Add a guild
 router.post(
   "/",
   async (req: Request<{}, {}, CreateGuildQueryParams>, res: Response, next: NextFunction) => {
-    try {
-      CreateGuildQueryParamsSchema.parse(req.body);
-    } catch (err) {
-      if (err instanceof ZodError) {
-        const error = new HttpException(HttpStatusCode.BAD_REQUEST, JSON.stringify(err.issues));
-        return next(error);
-      }
+    const parseRes = CreateGuildQueryParamsSchema.safeParse(req.body);
+    if (!parseRes.success) {
+      const error = new RequestException(parseRes.error);
+      return next(error);
     }
 
     const { guildId } = req.body;
@@ -33,12 +29,11 @@ router.post(
         },
       });
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        const error = new HttpException(HttpStatusCode.BAD_REQUEST, err.code);
-        return next(error);
-      }
+      return handleDbException(err, next);
     }
 
-    res.status(HttpStatusCode.OK).json({ msg: "Success" });
+    res.status(HttpStatusCode.OK).json(successJson);
   }
 );
+
+export default router;

@@ -4,6 +4,7 @@ import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
 import albums from "./routes/albums";
+import guilds from "./routes/guilds";
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -17,6 +18,7 @@ app.use(logger);
 
 // Routes
 app.use("/api/album", albums);
+app.use("/api/guild", guilds);
 
 // Error handlers
 app.use(notFound);

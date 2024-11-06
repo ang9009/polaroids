@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import HttpStatusCode from "../data/statusCodes";
-import { HttpException } from "../types/apiError";
+import NotFoundException from "../types/error/notFoundException";
 
 /**
  * Error handler for non-existent routes.
@@ -9,6 +8,6 @@ import { HttpException } from "../types/apiError";
  * @param next next function
  */
 export const notFound = (req: Request, res: Response, next: NextFunction) => {
-  const error = new HttpException(HttpStatusCode.NOT_FOUND, "Not found");
+  const error = new NotFoundException();
   next(error);
 };

@@ -1,12 +1,12 @@
-// Taken from https://discordjs.guide/creating-your-bot/command-deployment.html#command-registration.
-// Run "npm run deployCommands" to run this file using tsx
-
 import { REST, Routes } from "discord.js";
 import "dotenv/config";
 import fs from "fs";
 import path from "path";
 import process from "process";
-import getDirname from "./src/utils/get_dirname.ts";
+import { getDirname } from "./src/utils/getDirname";
+
+// Taken from https://discordjs.guide/creating-your-bot/command-deployment.html#command-registration.
+// Run "npm run deployCommands" to run this file using tsx
 
 const clientId = process.env.CLIENT_ID;
 const guildId = process.env.GUILD_ID;
@@ -21,9 +21,7 @@ const commandFolders = fs.readdirSync(foldersPath);
 for (const folder of commandFolders) {
   // Grab all the command files from the commands directory you created earlier
   const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = fs
-    .readdirSync(commandsPath)
-    .filter((file) => file.endsWith(".ts"));
+  const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith(".ts"));
   // Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
@@ -32,7 +30,7 @@ for (const folder of commandFolders) {
       commands.push(command.data.toJSON());
     } else {
       console.log(
-        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
+        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
       );
     }
   }
@@ -44,19 +42,14 @@ const rest = new REST().setToken(token);
 // and deploy your commands!
 (async () => {
   try {
-    console.log(
-      `Started refreshing ${commands.length} application (/) commands.`
-    );
+    console.log(`Started refreshing ${commands.length} application (/) commands.`);
 
     // The put method is used to fully refresh all commands in the guild with the current set
-    const data = await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
-      { body: commands }
-    );
+    const data = await rest.put(Routes.applicationGuildCommands(clientId, guildId), {
+      body: commands,
+    });
 
-    console.log(
-      `Successfully reloaded ${data.length} application (/) commands.`
-    );
+    console.log(`Successfully reloaded ${data.length} application (/) commands.`);
   } catch (error) {
     // And of course, make sure you catch and log any errors!
     console.error(error);

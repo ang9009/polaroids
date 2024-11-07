@@ -7,6 +7,7 @@ import { PhotoUploadData } from "../types/data/photoUploadData.js";
 import { SupportedContentType } from "../types/data/supportedContentType.js";
 import { SupportedPhotoType } from "../types/data/supportedPhotoType.js";
 import { VideoUploadData } from "../types/data/videoUploadData.js";
+import { EventData } from "../types/discord/eventData.js";
 
 /**
  * The event that is fired when a user sends a message in a watched channel,
@@ -14,7 +15,7 @@ import { VideoUploadData } from "../types/data/videoUploadData.js";
  * stages: validating the attachments for unsupported types, converting the attachments
  * into AttachmentUploadData objects, and uploading the data to PhotoStation.
  */
-export const event = {
+const messageCreate: EventData<Message> = {
   name: "messageCreate",
   once: false,
   async execute(userMsg: Message) {
@@ -380,3 +381,5 @@ export const formatBytes = (bytes: number): string => {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };
+
+export default messageCreate;

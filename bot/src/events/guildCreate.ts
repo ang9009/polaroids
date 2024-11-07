@@ -1,8 +1,9 @@
 import { ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
 import { addGuildToDb } from "../api/addGuildToDb";
 import { PrimaryColors } from "../data/primaryColors";
+import { EventData } from "../types/discord/eventData";
 
-export const event = {
+const guildCreate: EventData<Guild> = {
   name: "guildCreate",
   once: false,
   async execute(guild: Guild) {
@@ -37,3 +38,5 @@ export const event = {
     }
   },
 };
+
+export default guildCreate;

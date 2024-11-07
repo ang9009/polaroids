@@ -71,6 +71,10 @@ docker-compose up
 
 Refer to the docker compose file for port information.
 
+### Adding events
+
+To add a new event, go to the `bot` folder and create a new file.
+
 ## Acknowledgments
 
 - Huge thanks to JBowen, who wrote this very nice [unofficial API

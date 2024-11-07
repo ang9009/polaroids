@@ -1,6 +1,7 @@
 import { Client } from "discord.js";
 import fs from "fs";
 import path from "path";
+import { EventData } from "../types/discord/eventData.js";
 import { getDirname } from "./getDirname.js";
 
 const __dirname = getDirname(import.meta.url);
@@ -19,7 +20,11 @@ export const registerEvents = async (client: Client) => {
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const eventFile = await import(filePath);
-    const event = eventFile.event;
+    const eventModule = eventFile;
+    const event: EventData<unknown> = eventModule.default;
+    if (!event) {
+      throw new Error("Could not find default export in " + file.toString());
+    }
 
     if (event.once) {
       client.once(event.name, (...args) => event.execute(...args));

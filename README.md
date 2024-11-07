@@ -71,9 +71,20 @@ docker-compose up
 
 Refer to the docker compose file for port information.
 
-## Adding events
+## Folder structure
 
-To add a new event, go to the `bot` folder and create a new file. Each event
+There are three main directories: the `bot` directory, the `db-api` directory, and the
+`shared` directory.
+
+- `bot` contains everything relevant to the polaroids Discord bot.
+- `db-api` contains everything relevant to the API that interacts with the
+  Postgres database.
+- `shared` contains error codes and response interfaces that are shared between
+  the database API and the Discord bot.
+
+### Adding events
+
+To add a new bot event, go to `bot/src/events` and create a new file. Each event
 must implement the `EventData` interface, and must be exported using a default
 export. Otherwise, the `registerEvents` function will not be able to
 find/register the event.

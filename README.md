@@ -77,9 +77,3 @@ To add a new event, go to the `bot` folder and create a new file. Each event
 must implement the `EventData` interface, and must be exported using a default
 export. Otherwise, the `registerEvents` function will not be able to
 find/register the event.
-
-## Acknowledgments
-
-- Huge thanks to JBowen, who wrote this very nice [unofficial API
-  reference](https://blog.jbowen.dev/synology/photostation/api/) for the
-  FileStation.

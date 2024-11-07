@@ -13,7 +13,7 @@ set polaroids up for yourself:
 
 - Docker and Docker Compose installed on your machine.
 - A Discord Developer Portal account.
-- A Synology FileStation.
+- A Synology NAS with FileStation on it.
 
 ### Steps
 

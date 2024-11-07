@@ -78,7 +78,8 @@ There are three main directories: the `bot` directory, the `db-api` directory, a
 
 - `bot` contains everything relevant to the polaroids Discord bot.
 - `db-api` contains everything relevant to the API that interacts with the
-  Postgres database.
+  Postgres database, which stores data about the bot's settings and the images
+  it archives.
 - `shared` contains error codes and response interfaces that are shared between
   the database API and the Discord bot.
 

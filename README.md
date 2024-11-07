@@ -15,7 +15,7 @@ set polaroids up for yourself:
 - A Discord Developer Portal account.
 - A Synology FileStation.
 
-### Setup
+### Steps
 
 1. Run `npm run setup` in the root directory
 
@@ -62,7 +62,7 @@ set polaroids up for yourself:
 
    These variables are used in `docker-compose.yml` to initialize the Postgres database.
 
-### Starting Services
+## Starting Services
 
 ```bash
 docker-compose build
@@ -71,7 +71,7 @@ docker-compose up
 
 Refer to the docker compose file for port information.
 
-### Adding events
+## Adding events
 
 To add a new event, go to the `bot` folder and create a new file. Each event
 must implement the `EventData` interface, and must be exported using a default

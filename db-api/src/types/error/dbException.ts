@@ -1,22 +1,32 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import DbApiErrorType from "shared/error-codes/DbApiErrorCode";
+import DbErrorCode from "shared/error-codes/DbErrorCode";
+import { DbExceptionResponse } from "shared/error-responses/dbExceptionResponse";
 import HttpStatusCode from "../../data/statusCodes";
-import HttpException from "./httpException";
-import { PrismaClientError } from "./prismaError";
+import getDbErrorType from "../../utils/getDbErrorType";
+import { HttpException } from "./httpException";
 
 /**
  * Represents when something goes wrong with a call using the Prisma client.
  */
 class DbException implements HttpException {
-  public readonly name: string;
-  public readonly message: string;
-  public readonly status: HttpStatusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
+  readonly name: string;
+  readonly message: string;
+  readonly dbErrorCode: DbErrorCode;
+  readonly status: HttpStatusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
 
-  public constructor(prismaError: PrismaClientError) {
+  constructor(prismaError: PrismaClientKnownRequestError) {
     this.name = "DbException";
     this.message = prismaError.message;
+    this.dbErrorCode = getDbErrorType(prismaError);
   }
 
-  public getResponse(): { [key: string]: string } {
-    return { message: this.message };
+  getResponse(): DbExceptionResponse {
+    return {
+      error: DbApiErrorType.DB_EXCEPTION,
+      message: this.message,
+      dbErrorCode: this.dbErrorCode,
+    };
   }
 }
 

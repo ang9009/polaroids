@@ -320,7 +320,7 @@ const handleUploadError = (
     UploadStatus.FAILURE,
   );
   initialMsgRef.edit({ embeds: [uploadFailureMsgEmbed] });
-  const errorEmbed = getErrorMsgEmbed(`An error occurred while processing attachments: ${errMsg}`);
+  const errorEmbed = getErrorMsgEmbed(errMsg);
   userMsg.reply({ embeds: [errorEmbed] });
 };
 

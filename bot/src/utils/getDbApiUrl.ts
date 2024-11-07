@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { DbApiRoutes } from "../types/api/dbApiRoutes";
+import { DbApiRoutes } from "../types/api/DbApiRoutes";
 
 /**
  * Creates a valid url for the database api.

@@ -12,5 +12,5 @@
     "types": ["node"],
     "outDir": "dist"
   },
-  "include": ["*.ts", "test/**/*.ts", "DbApiErrorCode.ts", "DbErrorCode.ts"]
+  "include": ["**/*"]
 }

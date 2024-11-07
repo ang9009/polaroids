@@ -1,6 +1,6 @@
-import { red } from "colors";
+import colors from "colors";
 import { NextFunction, Request, Response } from "express";
-import HttpException from "../types/error/httpException";
+import { HttpException } from "../types/error/httpException";
 
 /**
  * Universal error handler middleware.
@@ -13,8 +13,8 @@ export const errorHandler = (
   err: HttpException,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  console.error(red(JSON.stringify(err.getResponse())));
+  console.error(colors.red(JSON.stringify(err.getResponse())));
   res.status(err.status).json(err.getResponse());
 };

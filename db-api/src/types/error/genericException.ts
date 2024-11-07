@@ -1,22 +1,23 @@
+import DbApiErrorType from "shared/error-codes/DbApiErrorCode";
 import HttpStatusCode from "../../data/statusCodes";
-import HttpException from "./httpException";
+import { ErrorResponse, HttpException } from "./httpException";
 
 /**
  * A generic exception that is thrown when an unknown exception type occurs.
  * Allows for a message to be provided.
  */
 class GenericException implements HttpException {
-  public readonly status: HttpStatusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
-  public readonly name: string;
-  public readonly message: string;
+  readonly status: HttpStatusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
+  readonly name: string;
+  readonly message: string;
 
-  public constructor(message: string) {
+  constructor(message: string) {
     this.message = message;
     this.name = "RuntimeException";
   }
 
-  public getResponse(): { [key: string]: string } {
-    return { message: this.message };
+  getResponse(): ErrorResponse {
+    return { error: DbApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
   }
 }
 

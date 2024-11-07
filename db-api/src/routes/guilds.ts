@@ -33,7 +33,7 @@ router.post(
     }
 
     res.status(HttpStatusCode.OK).json(successJson);
-  }
+  },
 );
 
 export default router;

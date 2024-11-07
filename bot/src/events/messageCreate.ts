@@ -1,13 +1,12 @@
 import { Attachment, EmbedBuilder, Message, OmitPartialGroupDMChannel } from "discord.js";
 import { uploadFilesToPS } from "../api/photostation/file/uploadFilesToPS.js";
 import { getContentTypeFromMimeType } from "../api/photostation/utils/getContentTypeFromMimeType.js";
+import { PrimaryColors } from "../data/primaryColors.js";
 import { AttachmentUploadData } from "../types/data/attachmentUploadData.js";
 import { PhotoUploadData } from "../types/data/photoUploadData.js";
 import { SupportedContentType } from "../types/data/supportedContentType.js";
 import { SupportedPhotoType } from "../types/data/supportedPhotoType.js";
 import { VideoUploadData } from "../types/data/videoUploadData.js";
-import { formatBytes } from "../utils/formatBytes.js";
-import { getBlobFromUrl } from "../utils/getBlobFromUrl.js";
 
 /**
  * The event that is fired when a user sends a message in a watched channel,
@@ -15,7 +14,7 @@ import { getBlobFromUrl } from "../utils/getBlobFromUrl.js";
  * stages: validating the attachments for unsupported types, converting the attachments
  * into AttachmentUploadData objects, and uploading the data to PhotoStation.
  */
-module.exports = {
+export const event = {
   name: "messageCreate",
   once: false,
   async execute(userMsg: Message) {
@@ -116,11 +115,10 @@ enum UploadStatus {
  * @returns an EmbedBuilder with the given warning message
  */
 const getWarningMsgEmbed = (warningMsg: string): EmbedBuilder => {
-  const warningYellow = 0xffe900;
   const embed = new EmbedBuilder()
     .setTitle("Warning")
     .setDescription(warningMsg)
-    .setColor(warningYellow);
+    .setColor(PrimaryColors.WARNING_YELLOW);
   return embed;
 };
 
@@ -206,11 +204,11 @@ const getUploadStatusEmbed = (
 const getEmbedColor = (status: UploadStatus): number => {
   switch (status) {
     case UploadStatus.FAILURE:
-      return 0xfc100d; // Red
+      return PrimaryColors.FAILURE_RED; // Red
     case UploadStatus.SUCCESS:
-      return 0x4bb543; // Green
+      return PrimaryColors.SUCCESS_GREEN; // Green
     default:
-      return 0x58acec; // Blue
+      return PrimaryColors.PRIMARY_BLUE; // Blue
   }
 };
 
@@ -320,7 +318,7 @@ const handleUploadError = (
     UploadStatus.FAILURE,
   );
   initialMsgRef.edit({ embeds: [uploadFailureMsgEmbed] });
-  const errorEmbed = getErrorMsgEmbed(`An error occurred while processing attachments: ${errMsg}`);
+  const errorEmbed = getErrorMsgEmbed(errMsg);
   userMsg.reply({ embeds: [errorEmbed] });
 };
 
@@ -353,4 +351,32 @@ const getCurrentStatusMsg = (
       // Displayed when the bot has successfully updated the data to PhotoStation
       return getUploadStatusEmbed(UploadStatus.SUCCESS, requesterName, totalSizeString, 1);
   }
+};
+
+/**
+ * Takes the url to an attachment, gets the attachment and converts it into a
+ * File object.
+ * @param url the url to the attachment
+ * @returns a Blob object corresponding to the attachment
+ */
+export const getBlobFromUrl = async (url: string): Promise<Blob> => {
+  const res = await fetch(url);
+  return await res.blob();
+};
+
+/**
+ * Converts an integer number of bytes into a readable string representation.
+ * @param bytes the number of bytes
+ * @returns a corresponding string representation
+ */
+export const formatBytes = (bytes: number): string => {
+  if (!+bytes) return "0 Bytes";
+
+  const k = 1024;
+  const dm = 2;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 };

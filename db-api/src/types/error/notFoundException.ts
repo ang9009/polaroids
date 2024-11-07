@@ -1,22 +1,23 @@
+import DbApiErrorCode from "shared/error-codes/DbApiErrorCode";
+import ErrorResponse from "shared/error-responses/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
-import HttpException from "./httpException";
+import { HttpException } from "./httpException";
 
 /**
- * Represents when a request does not have the necessary parameters/parameters
- * don't have the right types.
+ * Thrown when a user tries to access a route that does not exist.
  */
 class NotFoundException implements HttpException {
-  public readonly name: string;
-  public readonly message: string;
-  public readonly status: HttpStatusCode = HttpStatusCode.BAD_REQUEST;
+  readonly name: string;
+  readonly message: string;
+  readonly status: HttpStatusCode = HttpStatusCode.BAD_REQUEST;
 
   constructor() {
     this.name = "NotFoundException";
-    this.message = "Not found";
+    this.message = "Route could not be found";
   }
 
-  public getResponse(): { [key: string]: string } {
-    return { message: this.message };
+  getResponse(): ErrorResponse {
+    return { message: this.message, error: DbApiErrorCode.NOT_FOUND_EXCEPTION };
   }
 }
 

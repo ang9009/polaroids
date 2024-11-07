@@ -1,20 +1,12 @@
-import DbApiErrorCode from "shared/DbApiErrorCode.js";
+import ErrorResponse from "shared/error-responses/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
-
-/**
- * Describes the shape of an error response.
- */
-interface ErrorResponse {
-  message: string; // Ensures all errors have a 'message' field
-  error: DbApiErrorCode;
-}
 
 /**
  * An exception that has an HTTP status code tied to it.
  */
 interface HttpException extends Error {
   readonly status: HttpStatusCode;
-  getResponse(): { [key: string]: string };
+  getResponse(): ErrorResponse;
 }
 
-export default HttpException;
+export { HttpException };

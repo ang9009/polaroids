@@ -15,7 +15,8 @@ model Guild {
     subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
 }
 
-/// Albums that correspond to existing folders in FileStation
+/// Albums that correspond to existing folders in FileStation. The relationship
+/// between Album and Guild is one-to-one
 model Album {
     albumId String @unique @db.VarChar(255) /// The folder's FileStation ID
     albumName String @unique @db.VarChar(255) /// The name of the folder on FileStation
@@ -26,7 +27,8 @@ model Album {
     guild Guild @relation(fields: [guildId], references: [guildId])
 }
 
-/// Channels within Discord servers that polaroids watches for updates
+/// Channels within Discord servers that polaroids watches for updates. The
+/// relationship between SubscribedChannel and Guild is many-to-one
 model SubscribedChannel {
   channelId String @id @db.VarChar(255) /// The channel ID, supplied by the Discord API
 

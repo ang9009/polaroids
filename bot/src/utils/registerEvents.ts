@@ -19,7 +19,7 @@ export const registerEvents = async (client: Client) => {
   for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const eventFile = await import(filePath);
-    const event = eventFile.default;
+    const event = eventFile.event;
 
     if (event.once) {
       client.once(event.name, (...args) => event.execute(...args));

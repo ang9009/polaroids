@@ -45,11 +45,11 @@ set polaroids up for yourself:
    PORT=8080
 
    # Make sure that these variables match the .env file in the root folder.
-   POSTGRES_USER=dalfie
-   POSTGRES_PASSWORD=ang900962116628Aa!
-   POSTGRES_DB=polaroids
+   POSTGRES_USER=XXXX
+   POSTGRES_PASSWORD=XXXX
+   POSTGRES_DB=XXXX
 
-   DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
+   DATABASE_URL=XXXX
    ```
 
    The `.env` file in the root folder should look like this:

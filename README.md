@@ -42,7 +42,7 @@ set polaroids up for yourself:
 
    ```sh
    # The port for the API
-   PORT=8080
+   PORT=XXXX
 
    # Make sure that these variables match the .env file in the root folder.
    POSTGRES_USER=XXXX
@@ -55,9 +55,9 @@ set polaroids up for yourself:
    The `.env` file in the root folder should look like this:
 
    ```sh
-   POSTGRES_USER=XXX
-   POSTGRES_PASSWORD=XXX
-   POSTGRES_DB=XXX
+   POSTGRES_USER=XXXX
+   POSTGRES_PASSWORD=XXXX
+   POSTGRES_DB=XXXX
    ```
 
    These variables are used in `docker-compose.yml` to initialize the Postgres database.

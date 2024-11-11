@@ -1,6 +1,11 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import DbErrorCode from "shared/error-codes/DbErrorCode";
 
+/**
+ * Returns the corresponding DbErrorCode given an error code.
+ * @param prismaError the Prisma Client error from a failed database request
+ * @returns the corresponding DbErrorCode
+ */
 function getDbErrorType(prismaError: PrismaClientKnownRequestError): DbErrorCode {
   const prismaErrorCode = prismaError.code;
 

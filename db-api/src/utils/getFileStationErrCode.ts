@@ -1,8 +1,9 @@
 import { FileStationError } from "shared/error-codes/fileStationError";
 
 /**
- *
- * @param errorCode
+ * Returns the corresponding FileStationError given an error code.
+ * @param errorCode an error code from a failed FileStation request
+ * @returns the corresponding FileStationError
  */
 function getFileStationErrCode(errorCode: string): FileStationError {
   switch (errorCode) {
@@ -30,3 +31,5 @@ function getFileStationErrCode(errorCode: string): FileStationError {
       return FileStationError.UNKNOWN_ERROR;
   }
 }
+
+export { getFileStationErrCode };

@@ -8,10 +8,15 @@ const guildCreate: EventData<Guild> = {
   once: false,
   async execute(guild: Guild) {
     const id = guild.id;
-    const embed = new EmbedBuilder()
-      .setTitle("Hello")
-      .setDescription("Hello world!")
-      .setColor(PrimaryColors.PRIMARY_BLUE);
+    const welcomeMsg = new EmbedBuilder()
+      .setTitle("Hello, I'm polaroids")
+      .setColor(PrimaryColors.PRIMARY_BLUE)
+      .setDescription(
+        "- Use `/setup` to get started\n- Once you're done, type `/help` for a list of other commands\n\nFor more information, feel free to visit my [documentation](https://github.com/ang9009/polaroids/tree/main)!\n",
+      )
+      .setFooter({
+        text: "📸 polaroids v1.0 | by dalfie",
+      });
 
     const channel = guild.channels.cache.find((channel) => {
       return (
@@ -23,17 +28,17 @@ const guildCreate: EventData<Guild> = {
     if (!channel) {
       throw new Error("Polaroids can't send messages anywhere!");
     }
-    channel.send({ embeds: [embed] });
+    channel.send({ embeds: [welcomeMsg] });
 
     try {
       await addGuildToDb(id);
     } catch (err) {
       if (err instanceof Error) {
-        const embed = new EmbedBuilder()
-          .setTitle("Error")
+        const errorMsg = new EmbedBuilder()
+          .setTitle("Something went wrong")
           .setDescription(err.message)
           .setColor(PrimaryColors.FAILURE_RED);
-        channel.send({ embeds: [embed] });
+        channel.send({ embeds: [errorMsg] });
       }
     }
   },

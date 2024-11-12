@@ -1,8 +1,9 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import "dotenv/config";
 import DbErrorCode from "shared/error-codes/DbErrorCode";
-import { isDbExceptionResponse } from "shared/error-responses/dbExceptionResponse";
 import { DbApiRoutes } from "../types/api/DbApiRoutes";
+import { ensureAxiosErrorResponse } from "../utils/ensureAxiosErrorResponse";
+import { ensureDbExceptionResponse } from "../utils/ensureDbException";
 import getDbApiUrl from "../utils/getDbApiUrl";
 
 /**
@@ -16,25 +17,15 @@ const addGuildToDb = async (guildId: string) => {
   try {
     await axios.post(url, { guildId });
   } catch (err) {
-    console.log(err);
-    if (!(err instanceof AxiosError)) {
-      throw new Error("An unknown error occurred. Please contact the developer.");
-    }
+    const error = ensureAxiosErrorResponse(err);
 
-    if (!err.response) {
-      throw new Error("Could not reach server.");
-    }
-
-    const data = err.response.data;
-    if (
-      isDbExceptionResponse(data) &&
-      data.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION
-    ) {
+    const errorData = error.response.data;
+    const dbError = ensureDbExceptionResponse(errorData);
+    if (dbError.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
       throw new Error(
-        "Polaroids was previously added to this server. An existing album will be used.",
+        "It looks like polaroids was previously added to this server. Existing settings will be used.",
       );
     }
-
     throw new Error("Something went wrong while making a request to the database.");
   }
 };

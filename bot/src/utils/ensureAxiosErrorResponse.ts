@@ -12,8 +12,10 @@ import { AxiosError, AxiosResponse } from "axios";
  */
 function ensureAxiosErrorResponse(err: unknown): AxiosError & { response: AxiosResponse } {
   if (!(err instanceof AxiosError)) {
+    console.error(err);
     throw new Error("An unknown error occurred while trying to make a request.");
   } else if (!err.response) {
+    console.error(err);
     throw new Error("Polaroids could not reach its server.");
   }
 

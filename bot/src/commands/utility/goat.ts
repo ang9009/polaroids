@@ -1,8 +1,9 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 
 export const data = new SlashCommandBuilder()
-  .setName("goat")
-  .setDescription("Check who the GOAT is");
+  .setName("setup")
+  .setDescription("Set up polaroids")
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
 
 /**
  * Informs the user of who the GOAT is.

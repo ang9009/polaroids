@@ -1,5 +1,5 @@
-import DbErrorCode from "../error-codes/DbErrorCode";
-import ErrorResponse from "./errorResponse";
+import { DbErrorCode } from "../error-codes/DbErrorCode";
+import { ErrorResponse } from "./errorResponse";
 
 /**
  * The shape of the response when a database-related exception occurs.

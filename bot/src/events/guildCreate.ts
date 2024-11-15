@@ -1,7 +1,7 @@
 import { ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
-import { addGuildToDb } from "../api/addGuildToDb";
 import { PrimaryColors } from "../data/primaryColors";
 import { EventData } from "../types/discord/eventData";
+import { addGuildToDb } from "./../../api/addGuildToDb";
 
 const guildCreate: EventData<Guild> = {
   name: "guildCreate",
@@ -18,6 +18,7 @@ const guildCreate: EventData<Guild> = {
         text: "📸 polaroids v1.0 | by dalfie",
       });
 
+    // Find a channel where the welcome message can be sent
     const channel = guild.channels.cache.find((channel) => {
       return (
         channel.type === ChannelType.GuildText &&
@@ -29,7 +30,6 @@ const guildCreate: EventData<Guild> = {
       throw new Error("Polaroids can't send messages anywhere!");
     }
     channel.send({ embeds: [welcomeMsg] });
-
     try {
       await addGuildToDb(id);
     } catch (err) {

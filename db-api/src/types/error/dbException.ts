@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import DbApiErrorType from "shared/error-codes/DbApiErrorCode";
-import DbErrorCode from "shared/error-codes/DbErrorCode";
+import { DbApiErrorType } from "shared/error-codes/dbApiErrorType";
+import { DbErrorCode } from "shared/error-codes/dbErrorCode";
 import { DbExceptionResponse } from "shared/error-responses/dbExceptionResponse";
 import HttpStatusCode from "../../data/statusCodes";
 import getDbErrorType from "../../utils/getDbErrorType";
@@ -15,12 +15,17 @@ class DbException implements HttpException {
   readonly dbErrorCode: DbErrorCode;
   readonly status: HttpStatusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
 
+  /**
+   * The constructor for a DbException.
+   * @param prismaError the related Prisma Client error
+   */
   constructor(prismaError: PrismaClientKnownRequestError) {
     this.name = "DbException";
     this.message = prismaError.message;
     this.dbErrorCode = getDbErrorType(prismaError);
   }
 
+  // eslint-disable-next-line jsdoc/require-jsdoc
   getResponse(): DbExceptionResponse {
     return {
       error: DbApiErrorType.DB_EXCEPTION,

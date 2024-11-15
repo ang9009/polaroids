@@ -1,5 +1,5 @@
 import { FileStationError } from "../error-codes/fileStationError";
-import ErrorResponse from "./errorResponse";
+import { ErrorResponse } from "./errorResponse";
 
 interface FSExceptionResponse extends ErrorResponse {
   fileStationError: FileStationError;

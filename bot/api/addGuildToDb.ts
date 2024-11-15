@@ -1,17 +1,17 @@
 import axios from "axios";
 import "dotenv/config";
-import DbErrorCode from "shared/error-codes/DbErrorCode";
-import { DbApiRoutes } from "../types/api/DbApiRoutes";
-import { ensureAxiosErrorResponse } from "../utils/ensureAxiosErrorResponse";
-import { ensureDbExceptionResponse } from "../utils/ensureDbException";
-import getDbApiUrl from "../utils/getDbApiUrl";
+import DbErrorCode from "shared/error-codes/dbErrorCode";
+import { DbApiRoutes } from "../src/data/dbApiRoutes";
+import { ensureAxiosErrorResponse } from "../src/utils/ensureAxiosErrorResponse";
+import { ensureDbExceptionResponse } from "../src/utils/ensureDbException";
+import { getDbApiUrl } from "./../src/utils/getDbApiUrl";
 
 /**
  * Updates the database with the guild id corresponding to a guild that the bot
  * was added to.
  * @param guildId the guild's id
  */
-const addGuildToDb = async (guildId: string) => {
+export const addGuildToDb = async (guildId: string) => {
   const url = getDbApiUrl(DbApiRoutes.GUILD);
 
   try {
@@ -29,5 +29,3 @@ const addGuildToDb = async (guildId: string) => {
     throw new Error("Something went wrong while making a request to the database.");
   }
 };
-
-export { addGuildToDb };

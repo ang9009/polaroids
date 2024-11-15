@@ -10,7 +10,7 @@ import { AxiosError, AxiosResponse } from "axios";
  * @param err the error object in question
  * @returns the given error as an AxiosError
  */
-function ensureAxiosErrorResponse(err: unknown): AxiosError & { response: AxiosResponse } {
+export function ensureAxiosErrorResponse(err: unknown): AxiosError & { response: AxiosResponse } {
   if (!(err instanceof AxiosError)) {
     console.error(err);
     throw new Error("An unknown error occurred while trying to make a request.");
@@ -21,5 +21,3 @@ function ensureAxiosErrorResponse(err: unknown): AxiosError & { response: AxiosR
 
   return err as AxiosError & { response: AxiosResponse };
 }
-
-export { ensureAxiosErrorResponse };

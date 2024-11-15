@@ -1,10 +1,8 @@
-import DbApiErrorType from "../error-codes/DbApiErrorCode";
+import { DbApiErrorType } from "shared/error-codes/dbApiErrorType";
 /**
  * Describes the shape of a generic error response.
  */
-interface ErrorResponse {
+export interface ErrorResponse {
   message: string; // Ensures all errors have a 'message' field
   error: DbApiErrorType;
 }
-
-export default ErrorResponse;

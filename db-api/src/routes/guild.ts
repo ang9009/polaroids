@@ -2,7 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import HttpStatusCode from "../data/httpStatusCode";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
-import RequestException from "../types/error/requestException";
+import ValidationException from "../types/error/validationException";
 import { CreateGuildQueryParamsSchema } from "../types/request/createGuildQueryParams";
 import getExceptionFromPrismaErr from "../utils/getDbExFromPrismaErr";
 
@@ -12,7 +12,7 @@ const router = express.Router();
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   const parseRes = CreateGuildQueryParamsSchema.safeParse(req.body);
   if (!parseRes.success) {
-    const error = new RequestException(parseRes.error);
+    const error = new ValidationException(parseRes.error);
     return next(error);
   }
 

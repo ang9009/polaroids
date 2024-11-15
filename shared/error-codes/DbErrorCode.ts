@@ -1,7 +1,7 @@
 /**
  * Represents all the possible database-related error codes.
  */
-enum DbErrorCode {
+export enum DbErrorCode {
   AUTHENTICATION_FAILED = "AUTHENTICATION_FAILED",
   CONNECTION_REFUSED = "CONNECTION_REFUSED",
   CONNECTION_TIMEOUT = "CONNECTION_TIMEOUT",
@@ -53,5 +53,3 @@ enum DbErrorCode {
   TOO_MANY_CONNECTIONS = "TOO_MANY_CONNECTIONS",
   UNKNOWN = "UNKNOWN",
 }
-
-export default DbErrorCode;

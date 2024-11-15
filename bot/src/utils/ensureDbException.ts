@@ -19,12 +19,10 @@ const isDbExceptionResponse = (err: unknown): err is DbExceptionResponse => {
  * @returns DbExceptionResponse
  * @throws Error if the given error is not a DbExceptionResponse
  */
-const ensureDbExceptionResponse = (error: unknown): DbExceptionResponse => {
+export const ensureDbExceptionResponse = (error: unknown): DbExceptionResponse => {
   if (!isDbExceptionResponse(error)) {
     throw Error("An unknown error occurred while making a request to the database");
   }
 
   return error as DbExceptionResponse;
 };
-
-export { ensureDbExceptionResponse };

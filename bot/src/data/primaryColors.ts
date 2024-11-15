@@ -1,3 +1,6 @@
+/**
+ * Primary colors, used mainly for embeds.
+ */
 enum PrimaryColors {
   FAILURE_RED = 0xfc100d,
   WARNING_YELLOW = 0xffe900,

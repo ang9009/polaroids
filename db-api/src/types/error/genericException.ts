@@ -1,6 +1,7 @@
-import DbApiErrorType from "shared/error-codes/DbApiErrorCode";
+import { DbApiErrorType } from "shared/error-codes/dbApiErrorType";
+import { ErrorResponse } from "shared/error-responses/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
-import { ErrorResponse, HttpException } from "./httpException";
+import { HttpException } from "./httpException";
 
 /**
  * A generic exception that is thrown when an unknown exception type occurs.
@@ -11,11 +12,16 @@ class GenericException implements HttpException {
   readonly name: string;
   readonly message: string;
 
+  /**
+   * Constructor for a GenericException.
+   * @param message the message for this exception
+   */
   constructor(message: string) {
     this.message = message;
     this.name = "RuntimeException";
   }
 
+  // eslint-disable-next-line jsdoc/require-jsdoc
   getResponse(): ErrorResponse {
     return { error: DbApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
   }

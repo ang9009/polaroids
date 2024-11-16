@@ -1,6 +1,6 @@
 import { Client, Events, GatewayIntentBits } from "discord.js";
 import "dotenv/config";
-import { getCommandsCollection } from "./utils/getCommandsCollection.js";
+import { getCommands } from "./utils/getCommands.js";
 import { handleInteractions } from "./utils/handleInteractions.js";
 import { registerEvents } from "./utils/registerEvents.js";
 
@@ -12,7 +12,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
   ],
 });
-client.commands = await getCommandsCollection();
+client.commands = await getCommands();
 
 // Handle commands from commands folder
 client.on(Events.InteractionCreate, (interaction) => handleInteractions(interaction));

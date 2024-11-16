@@ -1,10 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
-import HttpStatusCode from "../data/httpStatusCode";
-import successJson from "../data/successJson";
-import prisma from "../lib/prisma";
-import ValidationException from "../types/error/validationException";
-import { CreateAlbumQueryParamsSchema } from "../types/request/createAlbumQueryParams";
-import getDbExceptionFromPrismaErr from "../utils/getDbExFromPrismaErr";
+import HttpStatusCode from "../../../data/httpStatusCode";
+import successJson from "../../../data/successJson";
+import prisma from "../../../lib/prisma";
+import ValidationException from "../../../types/error/validationException";
+import { getDbExFromPrismaErr } from "../../../utils/getDbExFromPrismaErr";
+import { CreateAlbumQueryParamsSchema } from "../types/createAlbumQueryParams";
 
 const router = express.Router();
 
@@ -15,14 +15,13 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     const error = new ValidationException(parseRes.error);
     return next(error);
   }
-  const { albumId, albumName, guildId } = parseRes.data;
+  const { albumId, albumName } = parseRes.data;
 
   try {
-    // ! Create transaction and throw error if something happens with FileStation
+    // Create transaction and throw an error if something happens with FileStation
     await prisma.$transaction(async (tx) => {
       await tx.album.create({
         data: {
-          guildId: guildId,
           albumId: albumId,
           albumName: albumName,
         },
@@ -32,7 +31,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     if (error instanceof Error) {
       return next(error);
     } else {
-      const dbError = getDbExceptionFromPrismaErr(error);
+      const dbError = getDbExFromPrismaErr(error);
       return next(dbError);
     }
   }

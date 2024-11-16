@@ -83,9 +83,15 @@ There are three main directories: the `bot` directory, the `db-api` directory, a
 - `shared` contains error codes and response interfaces that are shared between
   the database API and the Discord bot.
 
-### Adding events
+### Adding events and commands
 
-To add a new bot event, go to `bot/src/events` and create a new file. Each event
+To add a new bot event, go to `bot/src/features`, select the associated
+feature, navigate to its `events` folder and create a new file. Each event
 must implement the `EventData` interface, and must be exported using a default
 export. Otherwise, the `registerEvents` function will not be able to
 find/register the event.
+
+Adding a command is similar: there is a `commands` folder under each feature
+folder. Create a new file in that folder and an object that implements that
+`CommandData` interface, and export it using a default export. Otherwise, the
+`deployCommands` function will not be able to find/register the command.

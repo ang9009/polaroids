@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 import "dotenv/config";
 import express from "express";
+import albums from "./features/setup/routes/albums";
+import guilds from "./features/setup/routes/guilds";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
-import albums from "./routes/album";
-import guilds from "./routes/guild";
 
 dotenv.config();
 
@@ -20,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 
 // Routes
-app.use("/api/album", albums);
-app.use("/api/guild", guilds);
+app.use("/api/albums", albums);
+app.use("/api/guilds", guilds);
 
 // Error handlers
 app.use(notFound);

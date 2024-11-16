@@ -1,17 +1,5 @@
 import { DbExceptionResponse } from "shared/error-responses/dbExceptionResponse";
-
-/**
- * Type predicate for DbExceptionResponse.
- * @param err the error in question
- * @returns whether it's a DbExceptionResponse
- */
-const isDbExceptionResponse = (err: unknown): err is DbExceptionResponse => {
-  return (
-    (err as DbExceptionResponse).dbErrorCode !== undefined &&
-    (err as DbExceptionResponse).message !== undefined &&
-    (err as DbExceptionResponse).error !== undefined
-  );
-};
+import { isDbExceptionResponse } from "./isDbExceptionResponse";
 
 /**
  * Ensures that the given error is a DbExceptionResponse.

@@ -2,8 +2,12 @@ import { z } from "zod";
 
 const CreateGuildQueryParamsSchema = z.object({
   guildId: z.string({
-    invalid_type_error: "Guild id must be a string",
-    required_error: "Guild id is required",
+    invalid_type_error: "guildId must be a string",
+    required_error: "guildId is required",
+  }),
+  albumId: z.string({
+    invalid_type_error: "albumId must be a string",
+    required_error: "albumId is required",
   }),
 });
 

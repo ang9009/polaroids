@@ -2,12 +2,12 @@ import { z } from "zod";
 
 const CreateAlbumQueryParamsSchema = z.object({
   albumId: z.string({
-    invalid_type_error: "Album id must be a string",
-    required_error: "Album id is required",
+    invalid_type_error: "albumId must be a string",
+    required_error: "albumId is required",
   }),
   albumName: z.string({
-    invalid_type_error: "Album name must be a string",
-    required_error: "Album name is required",
+    invalid_type_error: "albumName must be a string",
+    required_error: "albumName is required",
   }),
 });
 

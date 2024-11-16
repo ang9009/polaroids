@@ -1,13 +1,11 @@
 import { ChannelType, EmbedBuilder, Guild, TextChannel } from "discord.js";
-import { PrimaryColors } from "../data/primaryColors";
-import { EventData } from "../types/discord/eventData";
-import { addGuildToDb } from "./../../api/addGuildToDb";
+import { PrimaryColors } from "../../../data/primaryColors";
+import { EventData } from "../../../types/eventData";
 
 const guildCreate: EventData<Guild> = {
   name: "guildCreate",
   once: false,
   async execute(guild: Guild) {
-    const id = guild.id;
     const welcomeMsg = new EmbedBuilder()
       .setTitle("Hello, I'm polaroids")
       .setColor(PrimaryColors.PRIMARY_BLUE)
@@ -27,20 +25,9 @@ const guildCreate: EventData<Guild> = {
     }) as TextChannel;
 
     if (!channel) {
-      throw new Error("Polaroids can't send messages anywhere!");
+      throw new Error("Could not find a channel to send messages in");
     }
     channel.send({ embeds: [welcomeMsg] });
-    try {
-      await addGuildToDb(id);
-    } catch (err) {
-      if (err instanceof Error) {
-        const errorMsg = new EmbedBuilder()
-          .setTitle("Something went wrong")
-          .setDescription(err.message)
-          .setColor(PrimaryColors.FAILURE_RED);
-        channel.send({ embeds: [errorMsg] });
-      }
-    }
   },
 };
 

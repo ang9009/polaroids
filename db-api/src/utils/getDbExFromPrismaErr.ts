@@ -10,11 +10,9 @@ import { HttpException } from "../types/error/httpException";
  * @param err the error object in question
  * @returns an appropriate exception
  */
-const getDbExceptionFromPrismaErr = (err: unknown): HttpException => {
+export const getDbExFromPrismaErr = (err: unknown): HttpException => {
   if (err instanceof PrismaClientKnownRequestError) {
     return new DbException(err);
   }
   return new GenericException("An unknown database-related exception occurred: " + err);
 };
-
-export default getDbExceptionFromPrismaErr;

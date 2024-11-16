@@ -1,4 +1,4 @@
-import { DbErrorCode } from "../error-codes/DbErrorCode";
+import { DbErrorCode } from "../error-codes/dbErrorCode";
 import { ErrorResponse } from "./errorResponse";
 
 /**

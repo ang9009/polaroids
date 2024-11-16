@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 import fs from "fs";
 import path from "path";
-import { EventData } from "../types/discord/eventData.js";
+import { EventData } from "../types/eventData.js";
 import { getDirname } from "./getDirname.js";
 
 const __dirname = getDirname(import.meta.url);
@@ -13,17 +13,26 @@ const __dirname = getDirname(import.meta.url);
  */
 export const registerEvents = async (client: Client) => {
   // Retrieve all events files from events folder
-  const eventsPath = path.join(__dirname, "../events");
-  const eventFiles = fs.readdirSync(eventsPath).filter((file: string) => file.endsWith(".ts"));
+
+  const featuresPath = path.join(__dirname, "../features");
+  const eventFilePaths = fs.readdirSync(featuresPath).reduce<string[]>((acc, curr) => {
+    const featureFolderPath = path.join(featuresPath, curr);
+    const eventsFolderPath = path.join(featureFolderPath, "events");
+    const eventsFolderContents = fs.readdirSync(eventsFolderPath);
+    // Add the folder path prefix
+    const eventsFolderContentsPaths = eventsFolderContents.map((file) => {
+      return path.join(eventsFolderPath, file);
+    });
+    return acc.concat(eventsFolderContentsPaths);
+  }, []);
 
   // Attach events as listeners on the client
-  for (const file of eventFiles) {
-    const filePath = path.join(eventsPath, file);
+  for (const filePath of eventFilePaths) {
     const eventFile = await import(filePath);
     const eventModule = eventFile;
     const event: EventData<unknown> = eventModule.default;
     if (!event) {
-      throw new Error("Could not find default export in " + file.toString());
+      throw new Error("Could not find default export in " + eventFile.toString());
     }
 
     if (event.once) {

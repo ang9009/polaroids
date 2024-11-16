@@ -11,20 +11,20 @@ generator client {
 model Guild {
     guildId String @id @db.VarChar(255)/// The server ID, supplied by Discord API
     addedAt DateTime @default(now()) @db.Timestamp() /// When polaroids was added to the server
-    album Album? /// The album associated with the server
     subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
+
+    albumId String /// The id of the guild this album is associated with
+    album Album @relation(fields: [albumId], references: [albumId])
 }
 
-/// Albums that correspond to existing folders in FileStation. The relationship
-/// between Album and Guild is one-to-one
+/// Albums that correspond to existing folders in FileStation.
 model Album {
     albumId String @unique @db.VarChar(255) /// The folder's FileStation ID
     albumName String @unique @db.VarChar(255) /// The name of the folder on FileStation
     deletedAt DateTime? @db.Timestamp() /// When the album was soft deleted
-    images Image[]
 
-    guildId String @id /// The id of the guild this album is associated with
-    guild Guild @relation(fields: [guildId], references: [guildId])
+    images Image[] /// The images in this album
+    guilds Guild[] /// The guilds this album is associated with
 }
 
 /// Channels within Discord servers that polaroids watches for updates. The

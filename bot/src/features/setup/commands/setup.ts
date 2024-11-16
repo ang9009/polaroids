@@ -1,15 +1,8 @@
+import { PrimaryColors } from "../../../data/primaryColors";
+import { addGuildToDb } from "../api/addGuildToDb";
 import { CommandData } from "./../../../types/commandData";
-// const id = guild.id;
-// const result = await addGuildToDb(id);
-// if (!result.success) {
-//   const errorMsg = new EmbedBuilder()
-//     .setTitle("Something went wrong")
-//     .setDescription(result.error)
-//     .setColor(PrimaryColors.FAILURE_RED);
-//   channel.send({ embeds: [errorMsg] });
-// }
 
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 const data = new SlashCommandBuilder().setName("goat").setDescription("Check who the GOAT is");
 
@@ -18,6 +11,19 @@ const data = new SlashCommandBuilder().setName("goat").setDescription("Check who
  * @param interaction the interaction object associated with the interaction
  */
 async function execute(interaction: ChatInputCommandInteraction) {
+  const id = interaction.guildId;
+  if (!id) {
+    throw Error("Could not get guild id");
+  }
+  const result = await addGuildToDb(id);
+  if (!result.success) {
+    const errorMsg = new EmbedBuilder()
+      .setTitle("Something went wrong")
+      .setDescription(result.error)
+      .setColor(PrimaryColors.FAILURE_RED);
+    interaction.reply({ embeds: [errorMsg] });
+  }
+
   await interaction.reply("Lucia Nunez is the goat");
 }
 

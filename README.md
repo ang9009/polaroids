@@ -92,6 +92,7 @@ export. Otherwise, the `registerEvents` function will not be able to
 find/register the event.
 
 Adding a command is similar: there is a `commands` folder under each feature
-folder. Create a new file in that folder and an object that implements that
-`CommandData` interface, and export it using a default export. Otherwise, the
-`deployCommands` function will not be able to find/register the command.
+folder. Create a new file in that folder, and in it, create a object that
+implements the `CommandData` interface, then export it using a default export.
+Otherwise, the `deployCommands` function will not be able to find/register the
+command.

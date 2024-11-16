@@ -16,12 +16,13 @@ if (!clientId || !guildId || !token) {
 }
 
 const cmdsData = await getCommands();
+// We need to PUT the JSON data of each command, not the command objects
 const cmdsJSONData = cmdsData.map((cmdData) => cmdData.data.toJSON());
 
 // Construct and prepare an instance of the REST module
 const rest = new REST().setToken(token);
 
-// and deploy your commands!
+// Deploy commands
 (async () => {
   try {
     console.log(`Started refreshing ${cmdsJSONData.length} application (/) commands.`);

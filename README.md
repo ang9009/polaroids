@@ -96,3 +96,11 @@ folder. Create a new file in that folder, and in it, create a object that
 implements the `CommandData` interface, then export it using a default export.
 Otherwise, the `deployCommands` function will not be able to find/register the
 command.
+
+## Types overview
+
+### Result
+
+The `Result` type used in the `bot` folder is primarily used for API calls. This
+is especially useful when you need to return a warning message based on some API
+exception, which can't really be classified as an error.

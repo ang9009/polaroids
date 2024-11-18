@@ -3,8 +3,10 @@ import { CommandData } from "../../../types/commandData";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
 const data = new SlashCommandBuilder()
-  .setName("setalbum")
-  .setDescription("Set the album that polaroids will send photos from this server to");
+  .setName("watch")
+  .setDescription(
+    "Ask polaroids to watch this channel for updates and automatically upload any photos or videos sent",
+  );
 
 /**
  * Registers the guild with polaroids, and associates an album with the guild.

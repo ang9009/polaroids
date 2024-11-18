@@ -1,3 +1,4 @@
+import { Collection } from "discord.js";
 import fs from "fs";
 import path from "path";
 import { CommandData } from "../types/commandData.js";
@@ -10,7 +11,7 @@ const __dirname = getDirname(import.meta.url);
  * list of CommandData objects.
  * @returns a list of CommandData objects
  */
-export const getCommands = async (): Promise<CommandData[]> => {
+export const getCommands = async (): Promise<Collection<string, CommandData>> => {
   const featuresPath = path.join(__dirname, "../features");
   const commandFilePaths = fs.readdirSync(featuresPath).reduce<string[]>((acc, curr) => {
     // Get the events folder path for the current feature
@@ -27,7 +28,7 @@ export const getCommands = async (): Promise<CommandData[]> => {
     // Concatenate the list of events to the result
     return acc.concat(eventsFolderFilePaths);
   }, []);
-  const commands: CommandData[] = [];
+  const commands: Collection<string, CommandData> = new Collection();
 
   for (const filePath of commandFilePaths) {
     const commandFile = await import(filePath);
@@ -35,7 +36,7 @@ export const getCommands = async (): Promise<CommandData[]> => {
     if (!command) {
       throw new Error("Could not find default export in " + commandFile.toString());
     }
-    commands.push(command);
+    commands.set(command.data.name, command);
   }
 
   return commands;

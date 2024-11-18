@@ -14,7 +14,7 @@ const data = new SlashCommandBuilder()
  * @param interaction the interaction object associated with the interaction
  */
 async function execute(interaction: ChatInputCommandInteraction) {
-  // TODO: Check if databsae already has guild id added. If it does, show an
+  // TODO: Check if databsae already has channel added. If it does, show an
   // error message
 
   //   TODO: Use the selection menu that discord.js provides

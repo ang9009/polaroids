@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 import "dotenv/config";
 import express from "express";
-import albums from "./features/albumManagement/routes/albums";
-import guilds from "./features/guildTracking/routes/guilds";
+import albums from "./features/album-management/routes/albums";
+import guilds from "./features/guild-tracking/routes/guilds";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";

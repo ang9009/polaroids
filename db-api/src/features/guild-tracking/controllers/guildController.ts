@@ -38,14 +38,15 @@ export const addGuild = async (req: Request, res: Response, next: NextFunction) 
 
 /**
  * Deletes a guild from the Postgres database.
- * Route: DELETE /api/guilds
+ * Route: DELETE /api/guilds/:guildId
  * @param req request object
  * @param res result object
  * @param next next function
  * @returns void
  */
 export const deleteGuild = async (req: Request, res: Response, next: NextFunction) => {
-  const parseRes = GuildQueryParamsSchema.safeParse(req.query);
+  const parseRes = GuildQueryParamsSchema.safeParse(req.params);
+  console.log(req.params);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);

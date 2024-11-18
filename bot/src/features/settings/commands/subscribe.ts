@@ -2,7 +2,7 @@ import { CommandData } from "../../../types/commandData";
 
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
-const data = new SlashCommandBuilder().setName("watch").setDescription(
+const data = new SlashCommandBuilder().setName("subscribe").setDescription(
   `Ask polaroids to watch this channel for media and automatically
      upload it to a specified album`,
 );
@@ -14,7 +14,9 @@ const data = new SlashCommandBuilder().setName("watch").setDescription(
  */
 async function execute(interaction: ChatInputCommandInteraction) {
   // TODO: Check if databsae already has channel added. If it does, show a
-  // warning message
+  // warning message and an option to change the album attached
+  // "polaroids is already watching this channel. Would you like to link a
+  // different album to this channel?"
 
   //   TODO: Use the selection menu that discord.js provides
   //   TODO: try using defer for loading state

@@ -9,7 +9,7 @@
     "lint": "eslint src",
     "build": "tsc",
     "start": "node .",
-    "deploycommands": "tsx deploy_commands.js"
+    "deploycommands": "tsx deployCommands"
   },
   "author": "",
   "license": "ISC",

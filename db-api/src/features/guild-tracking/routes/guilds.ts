@@ -7,6 +7,6 @@ const router = express.Router();
 router.post("/", addGuild);
 
 // Delete a guild
-router.delete("/", deleteGuild);
+router.delete("/:guildId", deleteGuild);
 
 export default router;

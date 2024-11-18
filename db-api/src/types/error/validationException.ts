@@ -22,7 +22,7 @@ class ValidationException implements HttpException {
     this.status = HttpStatusCode.BAD_REQUEST;
     this.name = "ValidationException";
     this.zodError = zodError;
-    this.message = "Request body has missing or invalid parameters";
+    this.message = "Request has missing or invalid parameters";
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc

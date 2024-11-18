@@ -15,6 +15,10 @@ export const getCommands = async (): Promise<CommandData[]> => {
   const commandFilePaths = fs.readdirSync(featuresPath).reduce<string[]>((acc, curr) => {
     // Get the events folder path for the current feature
     const commandsFolderPath = path.join(featuresPath, curr, "commands");
+    // If the events folder doesn't exist, skip this feature
+    if (!fs.existsSync(commandsFolderPath)) {
+      return acc;
+    }
     const commandsFolderFiles = fs.readdirSync(commandsFolderPath);
     // Add the folder path prefix
     const eventsFolderFilePaths = commandsFolderFiles.map((file) => {

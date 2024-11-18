@@ -9,40 +9,36 @@ generator client {
 
 /// Servers that polaroids has been added to
 model Guild {
-    guildId String @id @db.VarChar(255)/// The server ID, supplied by Discord API
-    addedAt DateTime @default(now()) @db.Timestamp() /// When polaroids was added to the server
-    subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
-
-    albumId String /// The id of the guild this album is associated with
-    album Album @relation(fields: [albumId], references: [albumId])
+  guildId String @id @db.VarChar(255)/// The server ID, supplied by Discord API
+  addedAt DateTime @default(now()) @db.Timestamp() /// When polaroids was added to the server
+  subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
 }
 
 /// Albums that correspond to existing folders in FileStation.
 model Album {
-    albumId String @unique @db.VarChar(255) /// The folder's FileStation ID
-    albumName String @unique @db.VarChar(255) /// The name of the folder on FileStation
-    deletedAt DateTime? @db.Timestamp() /// When the album was soft deleted
+  albumName String @unique @db.VarChar(255) /// The name of the folder on FileStation
 
-    images Image[] /// The images in this album
-    guilds Guild[] /// The guilds this album is associated with
+  images Image[] /// The images in this album
+  channels SubscribedChannel[] /// The channels this album is associated with
 }
 
-/// Channels within Discord servers that polaroids watches for updates. The
-/// relationship between SubscribedChannel and Guild is many-to-one
+/// Channels within Discord servers that polaroids watches for updates
 model SubscribedChannel {
   channelId String @id @db.VarChar(255) /// The channel ID, supplied by the Discord API
 
   guildId String /// The id of the guild this channel is associated with
-  guild Guild @relation(fields: [guildId], references: [guildId])
+  guild Guild @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
+
+  albumName String? /// The id of the album this channel is associated with
+  album Album? @relation(fields: [albumName], references: [albumName], onDelete: SetNull)
 }
 
 
 /// Images that correspond to to images saved to FileStation
 model Image {
-  imageId String @id @db.VarChar(255) /// The image's FileStation ID
-  deletedAt DateTime? @db.Timestamp() /// When the image was soft deleted
+  imageId String @id @db.VarChar(255) /// The image's id
   description String? @db.VarChar(255) /// A description of the image
 
-  albumId String /// The ID of the album the image is in
-  album Album @relation(fields: [albumId], references: [albumId])
+  albumName String /// The name of the album the image is in
+  album Album @relation(fields: [albumName], references: [albumName], onDelete: Cascade)
 }

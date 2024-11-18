@@ -15,14 +15,13 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     const error = new ValidationException(parseRes.error);
     return next(error);
   }
-  const { albumId, albumName } = parseRes.data;
+  const { albumName } = parseRes.data;
 
   try {
     // Create transaction and throw an error if something happens with FileStation
     await prisma.$transaction(async (tx) => {
       await tx.album.create({
         data: {
-          albumId: albumId,
           albumName: albumName,
         },
       });

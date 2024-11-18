@@ -18,6 +18,9 @@ export const registerEvents = async (client: Client) => {
   const eventFilePaths = fs.readdirSync(featuresPath).reduce<string[]>((acc, curr) => {
     // Get the events folder path for the current feature
     const eventsFolderPath = path.join(featuresPath, curr, "events");
+    if (!fs.existsSync(eventsFolderPath)) {
+      return acc;
+    }
     const eventsFolderContents = fs.readdirSync(eventsFolderPath);
     // Add the folder path prefix
     const eventsFolderContentsPaths = eventsFolderContents.map((file) => {
@@ -31,7 +34,7 @@ export const registerEvents = async (client: Client) => {
     const eventFile = await import(filePath);
     const event: EventData<unknown> = eventFile.default;
     if (!event) {
-      throw new Error("Could not find default export in " + eventFile.toString());
+      throw new Error("Could not find default export in " + filePath);
     }
 
     if (event.once) {

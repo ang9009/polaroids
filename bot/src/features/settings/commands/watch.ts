@@ -2,11 +2,10 @@ import { CommandData } from "../../../types/commandData";
 
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 
-const data = new SlashCommandBuilder()
-  .setName("watch")
-  .setDescription(
-    "Ask polaroids to watch this channel for updates and automatically upload any photos or videos sent",
-  );
+const data = new SlashCommandBuilder().setName("watch").setDescription(
+  `Ask polaroids to watch this channel for media and automatically
+     upload it to a specified album`,
+);
 
 /**
  * Registers the guild with polaroids, and associates an album with the guild.
@@ -14,8 +13,8 @@ const data = new SlashCommandBuilder()
  * @param interaction the interaction object associated with the interaction
  */
 async function execute(interaction: ChatInputCommandInteraction) {
-  // TODO: Check if databsae already has channel added. If it does, show an
-  // error message
+  // TODO: Check if databsae already has channel added. If it does, show a
+  // warning message
 
   //   TODO: Use the selection menu that discord.js provides
   //   TODO: try using defer for loading state

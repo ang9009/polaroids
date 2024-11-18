@@ -94,8 +94,14 @@ find/register the event.
 Adding a command is similar: there is a `commands` folder under each feature
 folder. Create a new file in that folder, and in it, create a object that
 implements the `CommandData` interface, then export it using a default export.
-Otherwise, the `deployCommands` function will not be able to find/register the
+Otherwise, the `deploycommands` function will not be able to find/register the
 command.
+
+Once you've added a command, run the following while inside of the `bot` folder:
+
+```
+npm run deploycommands
+```
 
 ## Types overview
 

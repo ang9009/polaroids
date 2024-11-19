@@ -12,7 +12,9 @@ const guildCreate: EventData<Guild> = {
       .setTitle("Hello, I'm polaroids")
       .setColor(PrimaryColors.PRIMARY_BLUE)
       .setDescription(
-        "- Use `/subscribe` in a media-dedicated channel to get started\n- Type `/help` for a list of other commands\n\nFor more information, feel free to visit my [documentation](https://github.com/ang9009/polaroids/tree/main)!\n",
+        `- Use \`/subscribe\` in a media-dedicated channel to get started
+        \n- Type \`/help\` for a list of other commands
+        \n\nFor more information, feel free to visit my [documentation](https://github.com/ang9009/polaroids/tree/main)!\n`,
       )
       .setFooter({
         text: "📸 polaroids v1.0 | by dalfie",

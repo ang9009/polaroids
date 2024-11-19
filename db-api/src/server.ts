@@ -3,6 +3,7 @@ import "dotenv/config";
 import express from "express";
 import albums from "./features/album-management/routes/albums";
 import guilds from "./features/guild-tracking/routes/guilds";
+import subscribedChannels from "./features/settings/routes/subscribedChannels";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -22,6 +23,7 @@ app.use(logger);
 // Routes
 app.use("/api/albums", albums);
 app.use("/api/guilds", guilds);
+app.use("/api/subscribed-channels", subscribedChannels);
 
 // Error handlers
 app.use(notFound);

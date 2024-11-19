@@ -21,6 +21,7 @@ const cmdsJSONData = cmdsData.map((cmdData) => cmdData.data.toJSON());
 
 // Construct and prepare an instance of the REST module
 const rest = new REST().setToken(token);
+// Register commands globally
 await rest.put(Routes.applicationCommands(clientId), { body: cmdsJSONData });
 
 // Deploy commands

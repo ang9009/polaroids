@@ -3,4 +3,5 @@
  */
 export enum DbApiRoutes {
   GUILD = "/guilds",
+  SUBSCRIBED_CHANNELS = "/subscribed-channels",
 }

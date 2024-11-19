@@ -3,7 +3,7 @@ import { EventData } from "../../../types/eventData";
 import { deleteGuildFromDb } from "../api/deleteGuildFromDb";
 
 const guildDelete: EventData<Guild> = {
-  name: Events.GuildDelete,
+  event: Events.GuildDelete,
   once: false,
   async execute(guild: Guild) {
     await deleteGuildFromDb(guild.id);

@@ -5,7 +5,7 @@ import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { addGuildToDb } from "../api/addGuildToDb";
 
 const guildCreate: EventData<Guild> = {
-  name: Events.GuildCreate,
+  event: Events.GuildCreate,
   once: false,
   async execute(guild: Guild) {
     const welcomeMsg = new EmbedBuilder()

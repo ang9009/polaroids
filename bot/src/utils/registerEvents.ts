@@ -32,15 +32,15 @@ export const registerEvents = async (client: Client) => {
   // Attach events as listeners on the client
   for (const filePath of eventFilePaths) {
     const eventFile = await import(filePath);
-    const event: EventData<unknown> = eventFile.default;
-    if (!event) {
+    const eventData: EventData<unknown> = eventFile.default;
+    if (!eventData) {
       throw new Error("Could not find default export in " + filePath);
     }
 
-    if (event.once) {
-      client.once(event.name, (...args) => event.execute(...args));
+    if (eventData.once) {
+      client.once(eventData.event.toString(), (...args) => eventData.execute(...args));
     } else {
-      client.on(event.name, (...args) => event.execute(...args));
+      client.on(eventData.event.toString(), (...args) => eventData.execute(...args));
     }
   }
 };

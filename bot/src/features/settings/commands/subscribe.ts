@@ -23,12 +23,12 @@ async function execute(interaction: ChatInputCommandInteraction) {
   const isSubscribed = await channelIsSubscribed(interaction.channelId);
   if (isSubscribed) {
     const confirm = new ButtonBuilder()
-      .setCustomId("confirm")
+      .setCustomId("confirm-update-album")
       .setLabel("Confirm")
       .setStyle(ButtonStyle.Primary);
 
     const cancel = new ButtonBuilder()
-      .setCustomId("cancel")
+      .setCustomId("cancel-update-album")
       .setLabel("Cancel")
       .setStyle(ButtonStyle.Secondary);
 

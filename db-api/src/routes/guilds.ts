@@ -1,5 +1,5 @@
 import express from "express";
-import { addGuild, deleteGuild } from "../../guild-tracking/controllers/guildController";
+import { addGuild, deleteGuild } from "../controllers/guildController";
 
 const router = express.Router();
 

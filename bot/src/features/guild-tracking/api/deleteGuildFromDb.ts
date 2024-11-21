@@ -7,7 +7,7 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
  * @param guildId the guild id to be deleted
  */
 export const deleteGuildFromDb = async (guildId: string) => {
-  const url = getDbApiUrl(DbApiRoutes.GUILD);
+  const url = getDbApiUrl(DbApiRoutes.GUILDS);
 
   await axios.delete(`${url}/${guildId}`);
 };

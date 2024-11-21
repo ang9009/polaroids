@@ -7,6 +7,7 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
  * Checks if polaroids has subscribed to a given channel.
  * @param channelId the id of the channel in question
  * @returns a boolean
+ * @throws Error if something goes wrong with the request
  */
 export const channelIsSubscribed = async (channelId: string): Promise<boolean> => {
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "is-subscribed", channelId);

@@ -8,6 +8,8 @@ export default [
     files: ["**/*.{js,mjs,cjs,ts}"],
     plugins: { jsdoc },
     rules: {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["warning"],
       "jsdoc/require-description": "warn",
       "jsdoc/require-jsdoc": [
         "warn",

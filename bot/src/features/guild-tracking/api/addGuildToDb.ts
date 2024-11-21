@@ -15,7 +15,7 @@ import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
  * @returns an appropriate Result object
  */
 export const addGuildToDb = async (guildId: string): Promise<Result<void>> => {
-  const url = getDbApiUrl(DbApiRoutes.GUILD);
+  const url = getDbApiUrl(DbApiRoutes.GUILDS);
 
   try {
     await axios.post(url, { guildId });

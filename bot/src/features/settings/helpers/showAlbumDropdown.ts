@@ -1,34 +1,33 @@
 import {
   ActionRowBuilder,
-  ButtonInteraction,
-  CacheType,
   ComponentType,
+  InteractionResponse,
+  Message,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { Album } from "../../../../../../../db-api/node_modules/.prisma/client/index.d";
-import { getErrorEmbed } from "../../../../../utils/getErrorEmbed";
-import { getAlbums } from "../../../api/getAlbumNames";
-import { handleAlbumSelected } from "../../subscribe";
+import { Album } from "../../../../../db-api/node_modules/.prisma/client";
+import { getAlbums } from "../api/getAlbumNames";
+import { AlbumSelection } from "../data/albumSelection";
+import { DropdownInteraction } from "../data/dropdownInteraction";
+import { AlbumSelectionType } from "./../data/albumSelectionType";
 
 /**
  * Shows a dropdown menu which allows the user to select from a list of existing
- * albums, or create a new album.
+ * albums, or create a new album. Calls a given callback function when the user
+ * makes their selection.
  * @param interaction the interaction with the user
+ * @param selection a callback function that is called when the user makes a selection
  */
-
-export const showAlbumDropdown = async (interaction: ButtonInteraction<CacheType>) => {
+export const showAlbumDropdown = async (
+  interaction: DropdownInteraction,
+  callback: (selection: AlbumSelection) => void,
+) => {
   let albums: Album[];
-  try {
-    albums = await getAlbums();
-  } catch (err) {
-    console.error("An error occurred trying to get the list of album names in showAlbumDropdown");
-    const errEmbed = getErrorEmbed("An error occurred. Please contact dalfie.");
-    interaction.update({ embeds: [errEmbed] });
-    return;
-  }
+  albums = await getAlbums();
 
   const menuAlbumOptions: StringSelectMenuOptionBuilder[] = [];
+
   // At the top of the menu, add an option for creating a new menu
   const createNewOptionValue = Math.random().toString(); // Create a random value to avoid album name conflicts
   const createNewOption = new StringSelectMenuOptionBuilder()
@@ -55,10 +54,13 @@ export const showAlbumDropdown = async (interaction: ButtonInteraction<CacheType
 
   const msg =
     "Select an album to link with this channel. Photos sent here will be uploaded to the selected album.";
-  const response = await interaction.update({
-    content: msg,
-    components: [row],
-  });
+  const response = await updateInteraction(
+    {
+      content: msg,
+      components: [row],
+    },
+    interaction,
+  );
 
   // Handle the album selection
   const collector = response.createMessageComponentCollector({
@@ -68,10 +70,17 @@ export const showAlbumDropdown = async (interaction: ButtonInteraction<CacheType
   collector.on("collect", async (selectInteraction) => {
     const selection = selectInteraction.values[0];
     if (selection === createNewOptionValue) {
-      selectInteraction.reply("Show modal");
+      callback({ type: AlbumSelectionType.CREATE_NEW });
     } else {
-      handleAlbumSelected(selectInteraction);
+      callback({ albumName: selection, type: AlbumSelectionType.EXISTING });
     }
     interaction.deleteReply();
   });
+};
+
+const updateInteraction = async (
+  options: any,
+  interaction: DropdownInteraction,
+): Promise<InteractionResponse<boolean> | Message<boolean>> => {
+  return interaction.isButton() ? interaction.update(options) : interaction.reply(options);
 };

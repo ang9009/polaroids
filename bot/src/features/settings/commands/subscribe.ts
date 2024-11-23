@@ -7,7 +7,8 @@ import {
   StringSelectMenuInteraction,
 } from "discord.js";
 import { channelIsSubscribed } from "../api/channelIsSubscribed";
-import { handleSubscribedInteraction } from "./helpers/subscribe/handleSubscribedInteraction";
+import { handleNotSubscribed } from "../helpers/handleNotSubscribed";
+import { handleSubscribed } from "../helpers/handleSubscribed";
 
 /**
  * The slash command object for "subscribe", which is exported below. This
@@ -27,9 +28,9 @@ const data = new SlashCommandBuilder().setName("subscribe").setDescription(
 const execute = async (interaction: ChatInputCommandInteraction) => {
   const isSubscribed = await channelIsSubscribed(interaction.channelId);
   if (isSubscribed) {
-    await handleSubscribedInteraction(interaction);
+    await handleSubscribed(interaction);
   } else {
-    interaction.reply("Not subscribed to this channel: " + interaction.channelId);
+    await handleNotSubscribed(interaction);
   }
 };
 

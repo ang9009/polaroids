@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-const guildQueryParamsSchema = z.object({
+const GuildQueryParamsSchema = z.object({
   guildId: z.string({
     invalid_type_error: "guildId must be a string",
     required_error: "guildId is required",
   }),
 });
 
-type guildQueryParams = z.infer<typeof guildQueryParamsSchema>;
+type GuildQueryParams = z.infer<typeof GuildQueryParamsSchema>;
 
-export { guildQueryParams, guildQueryParamsSchema };
+export { GuildQueryParams, GuildQueryParamsSchema };

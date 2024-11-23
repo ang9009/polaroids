@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const addSubChannelBodySchema = z.object({
+export const AddSubChannelBodySchema = z.object({
   channelId: z.string({
     invalid_type_error: "channelId must be a string",
     required_error: "channelId is required",
@@ -15,4 +15,4 @@ export const addSubChannelBodySchema = z.object({
   }),
 });
 
-export type addSubChannelBodyParams = z.infer<typeof addSubChannelBodySchema>;
+export type AddSubChannelBodyParams = z.infer<typeof AddSubChannelBodySchema>;

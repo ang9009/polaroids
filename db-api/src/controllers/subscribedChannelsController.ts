@@ -6,8 +6,8 @@ import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { addSubChannelBodySchema } from "../types/query-params/addSubChannelBodySchema";
-import { isSubscribedQueryParamsSchema } from "../types/query-params/isSubscribedQueryParamsSchema";
+import { AddSubChannelBodySchema } from "../types/query-params/addSubChannelBodySchema";
+import { IsSubscribedQueryParamsSchema } from "../types/query-params/isSubscribedQueryParamsSchema";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 /**
@@ -19,7 +19,7 @@ export const channelIsSubscribed = async (
   res: Response<IsSubscribedResponse>,
   next: NextFunction,
 ) => {
-  const parseRes = isSubscribedQueryParamsSchema.safeParse(req.params);
+  const parseRes = IsSubscribedQueryParamsSchema.safeParse(req.params);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -40,8 +40,12 @@ export const channelIsSubscribed = async (
  * Adds a subscribed channel to the database.
  * Route: POST /api/subscribed-channels
  */
-export const addSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {
-  const parseRes = addSubChannelBodySchema.safeParse(req.body);
+export const addSubscribedChannel = async (
+  req: Request<ValidationException>,
+  res: Response,
+  next: NextFunction,
+) => {
+  const parseRes = AddSubChannelBodySchema.safeParse(req.body);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -61,5 +65,5 @@ export const addSubscribedChannel = async (req: Request, res: Response, next: Ne
     return next(error);
   }
 
-  res.status(HttpStatusCode.OK).json(successJson);
+  res.status(HttpStatusCode.CREATED).json(successJson);
 };

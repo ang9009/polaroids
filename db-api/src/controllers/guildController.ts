@@ -6,7 +6,7 @@ import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { guildQueryParamsSchema } from "../types/query-params/guildQueryParams";
+import { GuildQueryParamsSchema } from "../types/query-params/guildQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 /**
@@ -14,7 +14,7 @@ import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
  * Route: POST /api/guilds
  */
 export const addGuild = async (req: Request, res: Response, next: NextFunction) => {
-  const parseRes = guildQueryParamsSchema.safeParse(req.body);
+  const parseRes = GuildQueryParamsSchema.safeParse(req.body);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -44,7 +44,7 @@ export const addGuild = async (req: Request, res: Response, next: NextFunction) 
  * @returns void
  */
 export const deleteGuild = async (req: Request, res: Response, next: NextFunction) => {
-  const parseRes = guildQueryParamsSchema.safeParse(req.params);
+  const parseRes = GuildQueryParamsSchema.safeParse(req.params);
   console.log(req.params);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);

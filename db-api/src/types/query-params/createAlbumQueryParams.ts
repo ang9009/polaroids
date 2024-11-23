@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-const createAlbumQueryParamsSchema = z.object({
+const CreateAlbumQueryParamsSchema = z.object({
   albumName: z.string({
     invalid_type_error: "albumName must be a string",
     required_error: "albumName is required",
   }),
 });
 
-type createAlbumQueryParams = z.infer<typeof createAlbumQueryParamsSchema>;
+type CreateAlbumQueryParams = z.infer<typeof CreateAlbumQueryParamsSchema>;
 
-export { createAlbumQueryParams, createAlbumQueryParamsSchema };
+export { CreateAlbumQueryParams, CreateAlbumQueryParamsSchema };

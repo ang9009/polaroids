@@ -13,18 +13,21 @@ const __dirname = getDirname(import.meta.url);
  */
 export const getCommands = async (): Promise<Collection<string, CommandData>> => {
   const featuresPath = path.join(__dirname, "../features");
+  // Get the paths for all the command files
   const commandFilePaths = fs.readdirSync(featuresPath).reduce<string[]>((acc, curr) => {
-    // Get the events folder path for the current feature
+    // Get the commands folder path for the current feature
     const commandsFolderPath = path.join(featuresPath, curr, "commands");
-    // If the events folder doesn't exist, skip this feature
+    // If the commands folder doesn't exist, skip this feature
     if (!fs.existsSync(commandsFolderPath)) {
       return acc;
     }
-    const commandsFolderFiles = fs.readdirSync(commandsFolderPath);
-    // Add the folder path prefix
-    const eventsFolderFilePaths = commandsFolderFiles.map((file) => {
-      return path.join(commandsFolderPath, file);
-    });
+    // Get the Dirents for all the commands (commands must be files)
+    const commandsFolderFiles = fs.readdirSync(commandsFolderPath, { withFileTypes: true });
+    const eventsFolderFilePaths = commandsFolderFiles
+      .filter((dirent) => dirent.isFile())
+      .map((dirent) => {
+        return path.join(dirent.parentPath, dirent.name);
+      });
     // Concatenate the list of events to the result
     return acc.concat(eventsFolderFilePaths);
   }, []);
@@ -34,7 +37,8 @@ export const getCommands = async (): Promise<Collection<string, CommandData>> =>
     const commandFile = await import(filePath);
     const command: CommandData = commandFile.default;
     if (!command) {
-      throw new Error("Could not find default export in " + commandFile.toString());
+      console.error("Could not find default export in " + commandFile.toString());
+      continue;
     }
     commands.set(command.data.name, command);
   }

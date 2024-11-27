@@ -1,30 +1,36 @@
 import {
   ActionRowBuilder,
+  CacheType,
+  ChatInputCommandInteraction,
   ComponentType,
   StringSelectMenuBuilder,
+  StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { Album } from "../../../../../db-api/node_modules/.prisma/client";
 import { getAlbums } from "../api/getAlbumNames";
-import { AlbumDropdownInteraction } from "../data/albumDropdownInteraction";
 import { AlbumSelection } from "../data/albumSelection";
+import { Album } from "./../../../../../db-api/node_modules/.prisma/client/index.d";
 import { AlbumSelectionType } from "./../data/albumSelectionType";
 
 /**
  * Shows a dropdown menu which allows the user to select from a list of existing
  * albums, or create a new album. Calls a given callback function and deletes
  * the interaction reply when the user makes their selection.
- * @param message the message shown above the dropdown
+ * @param msg the message shown above the dropdown
  * @param interaction the interaction with the user
- * @param selection a callback function that is called when the user makes a selection
+ * @param callback a callback function that is called when the user makes a
+ *        selection. This function provides the selected album (selection) and the new
+ *        interaction object (interaction) to the caller.
  */
 export const showAlbumDropdown = async (
-  messsage: string,
-  interaction: AlbumDropdownInteraction,
-  callback: (selection: AlbumSelection) => void,
+  msg: string,
+  interaction: ChatInputCommandInteraction,
+  callback: (
+    selection: AlbumSelection,
+    interaction: StringSelectMenuInteraction<CacheType>,
+  ) => void,
 ) => {
-  let albums: Album[];
-  albums = await getAlbums();
+  const albums: Album[] = await getAlbums();
 
   const menuAlbumOptions: StringSelectMenuOptionBuilder[] = [];
 
@@ -52,8 +58,6 @@ export const showAlbumDropdown = async (
     .addOptions(menuAlbumOptions);
   const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(dropdown);
 
-  const msg =
-    "Select an album to link with this channel. Photos sent here will be uploaded to the selected album.";
   const response = await interaction.reply({
     content: msg,
     components: [row],
@@ -67,9 +71,9 @@ export const showAlbumDropdown = async (
   collector.on("collect", async (selectInteraction) => {
     const selection = selectInteraction.values[0];
     if (selection === createNewOptionValue) {
-      callback({ type: AlbumSelectionType.CREATE_NEW });
+      callback({ type: AlbumSelectionType.CREATE_NEW }, selectInteraction);
     } else {
-      callback({ albumName: selection, type: AlbumSelectionType.EXISTING });
+      callback({ albumName: selection, type: AlbumSelectionType.EXISTING }, selectInteraction);
     }
     interaction.deleteReply();
   });

@@ -8,6 +8,10 @@ generator client {
   previewFeatures = ["relationJoins"]
 }
 
+generator zod {
+  provider = "zod-prisma-types"
+}
+
 /// Servers that polaroids has been added to
 model Guild {
   guildId String @id @db.VarChar(255)/// The server ID, supplied by Discord API

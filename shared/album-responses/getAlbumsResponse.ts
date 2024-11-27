@@ -1,5 +1,8 @@
-import { Album } from "./../../db-api/node_modules/.prisma/client/index.d";
+import { z } from "zod";
+import { AlbumSchema } from "./../../db-api/generated/zod/index";
 
-export interface GetAlbumsResponse {
-  albums: Album[];
-}
+const GetAlbumsResponseSchema = z.array(AlbumSchema);
+
+type GetAlbumsResponse = z.infer<typeof GetAlbumsResponseSchema>;
+
+export { GetAlbumsResponse, GetAlbumsResponseSchema };

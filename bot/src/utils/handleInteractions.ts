@@ -1,4 +1,5 @@
 import { Interaction } from "discord.js";
+import { getErrorEmbed } from "./getErrorEmbed";
 
 /**
  * Handles interactions/commands executed by users.
@@ -19,14 +20,15 @@ export const handleInteractions = async (interaction: Interaction) => {
     await command.execute(interaction);
   } catch (error) {
     console.error(error);
+    const errEmbed = getErrorEmbed("There was an error while executing this command!");
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
+        embeds: [errEmbed],
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        embeds: [errEmbed],
         ephemeral: true,
       });
     }

@@ -7,12 +7,13 @@ import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
 /**
- * Checks if polaroids has subscribed to a given channel.
+ * Checks if polaroids has subscribed to a given channel. If it has, this
+ * returns the album that the channel is linked to as well.
  * @param channelId the id of the channel in question
  * @returns a boolean
  * @throws Error if something goes wrong with the request
  */
-export const channelIsSubscribed = async (channelId: string): Promise<IsSubscribedResponse> => {
+export const getChannelSubData = async (channelId: string): Promise<IsSubscribedResponse> => {
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "is-subscribed", channelId);
   let res;
   try {
@@ -23,11 +24,11 @@ export const channelIsSubscribed = async (channelId: string): Promise<IsSubscrib
     throw Error(msg);
   }
 
-  const parsedRes = IsSubscribedResponseSchema.safeParse(res);
+  const parsedRes = IsSubscribedResponseSchema.safeParse(res.data);
   if (parsedRes.success) {
     return parsedRes.data;
   } else {
-    const msg = "channelIsSubscribed request failed. Response: " + res.data;
+    const msg = "Failed to parse channelIsSubscribed request response: " + parsedRes.error;
     console.error(msg);
     throw Error(msg);
   }

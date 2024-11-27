@@ -2,7 +2,7 @@ import { CommandData } from "../../../types/commandData";
 
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { IsSubscribedResponse } from "shared/subbed-channels-responses/isSubscribedResponse";
-import { channelIsSubscribed } from "../api/channelIsSubscribed";
+import { getChannelSubData } from "../api/getChannelSubData";
 import { handleAlreadySubscribed } from "../helpers/handleAlreadySubscribed";
 import { handleNotSubscribed } from "../helpers/handleNotSubscribed";
 
@@ -21,7 +21,7 @@ const data = new SlashCommandBuilder().setName("subscribe").setDescription(
  * @param interaction the interaction object associated with the interaction
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  const channelSubData: IsSubscribedResponse = await channelIsSubscribed(interaction.channelId);
+  const channelSubData: IsSubscribedResponse = await getChannelSubData(interaction.channelId);
 
   if (channelSubData.isSubscribed) {
     await handleAlreadySubscribed(interaction, channelSubData.linkedAlbum!);

@@ -6,6 +6,9 @@ const router = express.Router();
 // Get all existing albums
 router.get("/", getAlbums);
 
+// Check if an album exists
+router.get("/album-exists/:albumName");
+
 // Create an album
 // router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 //   const parseRes = CreateAlbumQueryParamsSchema.safeParse(req.body);

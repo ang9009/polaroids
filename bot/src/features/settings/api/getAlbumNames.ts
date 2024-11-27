@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetAlbumsResponse } from "shared/album-responses/getAlbumsResponse";
+import { GetAlbumsResponseSchema } from "shared/album-responses/getAlbumsResponse";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 import { Album } from "./../../../../../db-api/node_modules/.prisma/client/index.d";
@@ -16,9 +16,9 @@ export const getAlbums = async (): Promise<Album[]> => {
   } catch (err) {
     throw Error("getAlbumNames Axios request failed: " + err);
   }
-  const albums = (res.data as GetAlbumsResponse).albums;
-  if (albums != undefined) {
-    return albums;
+  const parsedRes = GetAlbumsResponseSchema.safeParse(res.data);
+  if (parsedRes.success) {
+    return parsedRes.data;
   } else {
     throw Error("Unexpected return type from getAlbumNames request");
   }

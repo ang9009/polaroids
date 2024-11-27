@@ -26,5 +26,11 @@ export const getAlbums = async (
     return next(error);
   }
 
-  res.status(HttpStatusCode.OK).json({ albums });
+  res.status(HttpStatusCode.OK).json(albums);
 };
+
+/**
+ * Returns whether an album exists.
+ * Route: GET /api/album-exists/:albumName
+ */
+// export const albumExists = async (req: Request, res: Response<>, next: NextFunction) => {};

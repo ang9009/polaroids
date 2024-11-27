@@ -26,12 +26,19 @@ export const channelIsSubscribed = async (
   }
 
   const { channelId } = parseRes.data;
-  const channelCount = await prisma.subscribedChannel.count({
+  const channelData = await prisma.subscribedChannel.findFirst({
+    relationLoadStrategy: "join",
+    select: {
+      albumName: true,
+    },
     where: {
       channelId: channelId,
     },
   });
-  const response: IsSubscribedResponse = { isSubscribed: channelCount !== 0 };
+  const response: IsSubscribedResponse = {
+    isSubscribed: !!channelData,
+    linkedAlbum: channelData?.albumName,
+  };
 
   res.status(HttpStatusCode.OK).json(response);
 };

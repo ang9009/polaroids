@@ -45,7 +45,6 @@ export const addGuild = async (req: Request, res: Response, next: NextFunction) 
  */
 export const deleteGuild = async (req: Request, res: Response, next: NextFunction) => {
   const parseRes = GuildQueryParamsSchema.safeParse(req.params);
-  console.log(req.params);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);

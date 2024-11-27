@@ -1,5 +1,5 @@
 import express from "express";
-import { getAlbums } from "../controllers/albumController";
+import { albumExists, getAlbums } from "../controllers/albumController";
 
 const router = express.Router();
 
@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", getAlbums);
 
 // Check if an album exists
-router.get("/album-exists/:albumName");
+router.get("/album-exists/:albumName", albumExists);
 
 // Create an album
 // router.post("/", async (req: Request, res: Response, next: NextFunction) => {

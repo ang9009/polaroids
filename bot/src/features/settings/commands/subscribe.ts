@@ -1,20 +1,15 @@
 import { CommandData } from "../../../types/commandData";
 
-import {
-  CacheType,
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  StringSelectMenuInteraction,
-} from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { IsSubscribedResponse } from "shared/subbed-channels-responses/isSubscribedResponse";
 import { channelIsSubscribed } from "../api/channelIsSubscribed";
+import { handleAlreadySubscribed } from "../helpers/handleAlreadySubscribed";
 import { handleNotSubscribed } from "../helpers/handleNotSubscribed";
-import { handleSubscribed } from "../helpers/handleSubscribed";
 
 /**
- * The slash command object for "subscribe", which is exported below. This
- * command walks the user through subscribing polaroids to updates in a channel.
- * Users can choose to create a new album, or select an existing one to link to
- * the channel this command was called in.
+ * The slash command object for "subscribe", which is exported below. Users can
+ * choose to create a new album, or select an existing one to link to the
+ * channel this command was called in.
  */
 const data = new SlashCommandBuilder().setName("subscribe").setDescription(
   `Ask polaroids to watch this channel for media and automatically
@@ -26,15 +21,14 @@ const data = new SlashCommandBuilder().setName("subscribe").setDescription(
  * @param interaction the interaction object associated with the interaction
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  const isSubscribed = await channelIsSubscribed(interaction.channelId);
-  if (isSubscribed) {
-    await handleSubscribed(interaction);
+  const channelSubData: IsSubscribedResponse = await channelIsSubscribed(interaction.channelId);
+
+  if (channelSubData.isSubscribed) {
+    await handleAlreadySubscribed(interaction, channelSubData.linkedAlbum!);
   } else {
     await handleNotSubscribed(interaction);
   }
 };
-
-export const handleAlbumSelected = (interaction: StringSelectMenuInteraction<CacheType>) => {};
 
 const commandData: CommandData = {
   data,

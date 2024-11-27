@@ -1,26 +1,26 @@
 import {
   ActionRowBuilder,
   ComponentType,
-  InteractionResponse,
-  Message,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
 import { Album } from "../../../../../db-api/node_modules/.prisma/client";
 import { getAlbums } from "../api/getAlbumNames";
+import { AlbumDropdownInteraction } from "../data/albumDropdownInteraction";
 import { AlbumSelection } from "../data/albumSelection";
-import { DropdownInteraction } from "../data/dropdownInteraction";
 import { AlbumSelectionType } from "./../data/albumSelectionType";
 
 /**
  * Shows a dropdown menu which allows the user to select from a list of existing
- * albums, or create a new album. Calls a given callback function when the user
- * makes their selection.
+ * albums, or create a new album. Calls a given callback function and deletes
+ * the interaction reply when the user makes their selection.
+ * @param message the message shown above the dropdown
  * @param interaction the interaction with the user
  * @param selection a callback function that is called when the user makes a selection
  */
 export const showAlbumDropdown = async (
-  interaction: DropdownInteraction,
+  messsage: string,
+  interaction: AlbumDropdownInteraction,
   callback: (selection: AlbumSelection) => void,
 ) => {
   let albums: Album[];
@@ -54,13 +54,10 @@ export const showAlbumDropdown = async (
 
   const msg =
     "Select an album to link with this channel. Photos sent here will be uploaded to the selected album.";
-  const response = await updateInteraction(
-    {
-      content: msg,
-      components: [row],
-    },
-    interaction,
-  );
+  const response = await interaction.reply({
+    content: msg,
+    components: [row],
+  });
 
   // Handle the album selection
   const collector = response.createMessageComponentCollector({
@@ -76,11 +73,4 @@ export const showAlbumDropdown = async (
     }
     interaction.deleteReply();
   });
-};
-
-const updateInteraction = async (
-  options: any,
-  interaction: DropdownInteraction,
-): Promise<InteractionResponse<boolean> | Message<boolean>> => {
-  return interaction.isButton() ? interaction.update(options) : interaction.reply(options);
 };

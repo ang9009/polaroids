@@ -9,7 +9,7 @@ export default [
     plugins: { jsdoc },
     rules: {
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": ["warning"],
+      "@typescript-eslint/no-unused-vars": ["warn"],
       "jsdoc/require-description": "warn",
       "jsdoc/require-jsdoc": [
         "warn",

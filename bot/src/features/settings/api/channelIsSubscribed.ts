@@ -1,5 +1,8 @@
 import axios from "axios";
-import { IsSubscribedResponse } from "shared/subbed-channels-responses/isSubscribedResponse";
+import {
+  IsSubscribedResponse,
+  IsSubscribedResponseSchema,
+} from "shared/subbed-channels-responses/isSubscribedResponse";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
@@ -9,7 +12,7 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
  * @returns a boolean
  * @throws Error if something goes wrong with the request
  */
-export const channelIsSubscribed = async (channelId: string): Promise<boolean> => {
+export const channelIsSubscribed = async (channelId: string): Promise<IsSubscribedResponse> => {
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "is-subscribed", channelId);
   let res;
   try {
@@ -19,9 +22,10 @@ export const channelIsSubscribed = async (channelId: string): Promise<boolean> =
     console.error(msg);
     throw Error(msg);
   }
-  const isSubscribed = (res.data as IsSubscribedResponse).isSubscribed;
-  if (isSubscribed != undefined) {
-    return isSubscribed;
+
+  const parsedRes = IsSubscribedResponseSchema.safeParse(res);
+  if (parsedRes.success) {
+    return parsedRes.data;
   } else {
     const msg = "channelIsSubscribed request failed. Response: " + res.data;
     console.error(msg);

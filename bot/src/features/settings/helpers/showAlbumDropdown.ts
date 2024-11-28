@@ -8,7 +8,7 @@ import {
   StringSelectMenuOptionBuilder,
 } from "discord.js";
 import { getAlbums } from "../api/getAlbumNames";
-import { AlbumSelection } from "../data/albumSelection";
+import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
 import { Album } from "./../../../../../db-api/node_modules/.prisma/client/index.d";
 import { AlbumSelectionType } from "./../data/albumSelectionType";
 
@@ -18,15 +18,15 @@ import { AlbumSelectionType } from "./../data/albumSelectionType";
  * the interaction reply when the user makes their selection.
  * @param msg the message shown above the dropdown
  * @param interaction the interaction with the user
- * @param callback a callback function that is called when the user makes a
+ * @param onAlbumSelect a callback function that is called when the user makes a
  *        selection. This function provides the selected album (selection) and the new
  *        interaction object (interaction) to the caller.
  */
 export const showAlbumDropdown = async (
   msg: string,
   interaction: ChatInputCommandInteraction,
-  callback: (
-    selection: AlbumSelection,
+  onAlbumSelect: (
+    selection: AlbumDropdownSelection,
     interaction: StringSelectMenuInteraction<CacheType>,
   ) => void,
 ) => {
@@ -71,9 +71,9 @@ export const showAlbumDropdown = async (
   collector.on("collect", async (selectInteraction) => {
     const selection = selectInteraction.values[0];
     if (selection === createNewOptionValue) {
-      callback({ type: AlbumSelectionType.CREATE_NEW }, selectInteraction);
+      onAlbumSelect({ type: AlbumSelectionType.CREATE_NEW }, selectInteraction);
     } else {
-      callback({ albumName: selection, type: AlbumSelectionType.EXISTING }, selectInteraction);
+      onAlbumSelect({ albumName: selection, type: AlbumSelectionType.EXISTING }, selectInteraction);
     }
     interaction.deleteReply();
   });

@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
 import { showAlbumDropdown } from "./showAlbumDropdown";
-import { AlbumSelection } from "../data/albumSelection";
 
 export const handleNotSubscribed = async (interaction: ChatInputCommandInteraction) => {
-  await showAlbumDropdown(interaction, (albumSelection: AlbumSelection) => {});
+  await showAlbumDropdown(interaction, (albumSelection: AlbumDropdownSelection) => {});
 };

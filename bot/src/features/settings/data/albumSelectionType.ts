@@ -1,11 +1,6 @@
+// Represents the two types of album selections a user can make when linking
+// a channel to an album using /subscribe.
 export enum AlbumSelectionType {
-  CREATE_NEW,
-  EXISTING,
+  CREATE_NEW, // Create a new album
+  EXISTING, // Use an existing album
 }
-
-// ! Write a handleError function that returns an embed/ replies to the
-//! interaction with an error embed
-
-// ! Look for other areas to clean up code
-
-// ! Start using Zod for api functions

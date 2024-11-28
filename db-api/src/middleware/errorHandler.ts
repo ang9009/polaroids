@@ -13,7 +13,7 @@ export const errorHandler = (
   err: HttpException,
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   console.error(colors.red(JSON.stringify(err.getResponse())));
   res.status(err.status).json(err.getResponse());

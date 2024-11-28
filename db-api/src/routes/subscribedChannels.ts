@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { channelIsSubscribed } from "../controllers/subscribedChannelsController";
+import {
+  addSubscribedChannel,
+  channelIsSubscribed,
+} from "../controllers/subscribedChannelsController";
 
 const router = Router();
 
@@ -7,6 +10,6 @@ const router = Router();
 router.get("/is-subscribed/:channelId", channelIsSubscribed);
 
 // Add a subscribed channel
-router.post("/");
+router.post("/", addSubscribedChannel);
 
 export default router;

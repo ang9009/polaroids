@@ -1,4 +1,6 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import { AlbumSelectionType } from "../data/albumSelectionType";
+import { AlbumSelectionData } from "../data/finalAlbumSelection";
 import { handleAlbumSelection } from "./handleAlbumSelection";
 
 /**
@@ -15,5 +17,10 @@ export const handleAlreadySubscribed = async (
     `This channel is currently linked to album **${albumName}**. ` +
     "Select an album from the dropdown below to change this.";
 
-  await handleAlbumSelection(interaction, msg);
+  await handleAlbumSelection(interaction, msg, (albumData: AlbumSelectionData) => {
+    if (albumData.type === AlbumSelectionType.CREATE_NEW) {
+    }
+  });
+
+  // createAlbumFromModalInputs(interaction)
 };

@@ -9,7 +9,7 @@ import { FSApiRoute } from "../data/fsApiRoute";
  */
 export const getFSApiUrlForRoute = (route: FSApiRoute): string => {
   const { FS_API_URL } = process.env;
-  if (route == null || FS_API_URL == null) {
+  if (route === null || FS_API_URL === null) {
     throw Error("Route argument was null");
   }
 

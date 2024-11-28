@@ -5,9 +5,13 @@ import tseslint from "typescript-eslint";
 
 export default [
   {
-    files: ["**/*.{js,mjs,cjs,ts}"],
+    ignores: ["**/dist/**"],
+  },
+  {
+    files: ["src/**/*.{ts}"],
     plugins: { jsdoc },
     rules: {
+      eqeqeq: ["error", "always"],
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": ["warn"],
       "jsdoc/require-description": "warn",

@@ -1,7 +1,9 @@
 import { ErrorResponse } from "./errorResponse";
 
 export interface ValidationExceptionResponse extends ErrorResponse {
-  // Matches the shape of the fieldErrors property from a flattened ZodError.
-  // See https://zod.dev/ERROR_HANDLING?id=post-processing-issues
-  errors: { [x: string]: { message: string; errorCode: string }[] | undefined };
+  // See https://zod.dev/ERROR_HANDLING?id=flattening-errors
+  errors: {
+    formErrors: unknown[]; // This could be an array of any type of errors
+    fieldErrors: { [key: string]: { message: string; errorCode: string }[] | undefined }; // Maps field names to error objects
+  };
 }

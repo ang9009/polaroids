@@ -60,11 +60,7 @@ export const channelIsSubscribed = async (
  *                            non-null if the albumRequestType is CREATE_NEW.
  * }
  */
-export const addSubscribedChannel = async (
-  req: Request<ValidationException>,
-  res: Response,
-  next: NextFunction
-) => {
+export const addSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {
   const parseRes = AddSubChannelBodySchema.safeParse(req.body);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
@@ -76,7 +72,7 @@ export const addSubscribedChannel = async (
     if (albumRequestType === AlbumRequestType.CREATE_NEW) {
       await prisma.$transaction(async (tx) => {
         // Create the album
-        tx.album.create({
+        await tx.album.create({
           data: {
             name: albumName,
             description: albumDesc!,
@@ -84,7 +80,7 @@ export const addSubscribedChannel = async (
         });
 
         // Link the channel to the album
-        tx.subscribedChannel.create({
+        await tx.subscribedChannel.create({
           data: {
             channelId: channelId,
             guildId: guildId,
@@ -109,3 +105,9 @@ export const addSubscribedChannel = async (
 
   res.status(HttpStatusCode.CREATED).json(successJson);
 };
+
+/**
+ * Changes the linked album that a channel that is already subscribed to.
+ * Route: GET /api/subscribed-channels/is-subscribed/:id
+ */
+export const updateChannelAlbum = (req: Request, res: Response, next: NextFunction) => {};

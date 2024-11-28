@@ -35,7 +35,7 @@ class ValidationException implements HttpException {
     return {
       error: DbApiErrorType.REQUEST_EXCEPTION,
       message: this.message,
-      errors: flattened.fieldErrors,
+      errors: { formErrors: flattened.formErrors, fieldErrors: flattened.fieldErrors },
     };
   }
 }

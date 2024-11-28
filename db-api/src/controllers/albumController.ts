@@ -17,12 +17,12 @@ import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 export const getAlbums = async (
   req: Request,
   res: Response<GetAlbumsResponse>,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   let albums: Album[];
   try {
     albums = await prisma.album.findMany({
-      orderBy: [{ albumName: "asc" }],
+      orderBy: [{ name: "asc" }],
     });
   } catch (err) {
     const error = getDbExFromPrismaErr(err);
@@ -39,7 +39,7 @@ export const getAlbums = async (
 export const albumExists = async (
   req: Request,
   res: Response<AlbumExistsResponse>,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   const reqParams = AlbumNameQueryParamSchema.safeParse(req.params);
   if (!reqParams.success) {
@@ -51,7 +51,7 @@ export const albumExists = async (
   try {
     album = await prisma.album.findFirst({
       where: {
-        albumName: reqParams.data.albumName,
+        name: reqParams.data.albumName,
       },
     });
   } catch (err) {

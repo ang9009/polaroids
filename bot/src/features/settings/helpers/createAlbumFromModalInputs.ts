@@ -1,11 +1,7 @@
-import { ModalSubmitInteraction } from "discord.js";
-
 /**
  * Creates an album based on the fields in the given modal submit interaction
  * object. A helper method used in handleAlbumSelection.
- * @param interaction the modal submit interaction
+ * @param albumName the name of the album
+ * @param albumDesc the album's description
  */
-export const createAlbumFromModalInputs = (interaction: ModalSubmitInteraction) => {
-  const albumName = interaction.fields.getTextInputValue("albumNameField");
-  const albumDescField = interaction.fields.getTextInputValue("albumDescField");
-};
+export const createAlbumFromModalInputs = (albumName: string, albumDesc: string) => {};

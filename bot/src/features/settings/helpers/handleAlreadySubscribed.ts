@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
+import { createAlbumFromModalInputs } from "./createAlbumFromModalInputs";
 import { handleAlbumSelection } from "./handleAlbumSelection";
 
 /**
@@ -19,6 +20,7 @@ export const handleAlreadySubscribed = async (
 
   await handleAlbumSelection(interaction, msg, (albumData: AlbumSelectionData) => {
     if (albumData.type === AlbumSelectionType.CREATE_NEW) {
+      createAlbumFromModalInputs(albumData.albumName, albumData.albumDesc);
     }
   });
 

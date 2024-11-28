@@ -1,8 +1,5 @@
 import { Router } from "express";
-import {
-  addSubscribedChannel,
-  channelIsSubscribed,
-} from "../controllers/subscribedChannelsController";
+import { addSubscribedChannel, channelIsSubscribed } from "../controllers/subbedChannelsController";
 
 const router = Router();
 

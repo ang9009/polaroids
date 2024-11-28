@@ -21,7 +21,7 @@ model Guild {
 
 /// Albums that correspond to existing folders in FileStation.
 model Album {
-  albumName String @unique @db.VarChar(255) /// The name of the folder on FileStation
+  name String @unique @db.VarChar(255) /// The name of the folder on FileStation
   description String @db.VarChar(255) /// The album's description
 
   images Image[] /// The images in this album
@@ -36,7 +36,7 @@ model SubscribedChannel {
   guild Guild @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
 
   albumName String /// The id of the album this channel is associated with
-  album Album @relation(fields: [albumName], references: [albumName], onDelete: Cascade)
+  album Album @relation(fields: [albumName], references: [name], onDelete: Cascade)
 }
 
 
@@ -46,5 +46,5 @@ model Image {
   description String? @db.VarChar(255) /// A description of the image
 
   albumName String /// The name of the album the image is in
-  album Album @relation(fields: [albumName], references: [albumName], onDelete: Cascade)
+  album Album @relation(fields: [albumName], references: [name], onDelete: Cascade)
 }

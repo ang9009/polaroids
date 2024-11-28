@@ -1,7 +1,8 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import { checkAlbumExists } from "../api/checkAlbumExists";
+import { createAlbumFromModalInputs } from "../api/createAlbumFromModalInputs";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
-import { createAlbumFromModalInputs } from "./createAlbumFromModalInputs";
 import { handleAlbumSelection } from "./handleAlbumSelection";
 
 /**
@@ -18,9 +19,15 @@ export const handleAlreadySubscribed = async (
     `This channel is currently linked to album **${albumName}**. ` +
     "Select an album from the dropdown below to change this.";
 
-  await handleAlbumSelection(interaction, msg, (albumData: AlbumSelectionData) => {
+  await handleAlbumSelection(interaction, msg, async (albumData: AlbumSelectionData) => {
     if (albumData.type === AlbumSelectionType.CREATE_NEW) {
-      createAlbumFromModalInputs(albumData.albumName, albumData.albumDesc);
+      const { type, albumName, albumDesc } = albumData;
+      const albumExists = await checkAlbumExists(albumName);
+      if (albumExists) {
+        interaction.reply("An album with this name already exists! Cancelling operation.");
+      } else {
+        createAlbumFromModalInputs(albumData.albumName, albumData.albumDesc);
+      }
     }
   });
 

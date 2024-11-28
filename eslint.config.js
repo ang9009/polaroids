@@ -8,7 +8,7 @@ export default [
     ignores: ["**/dist/**"],
   },
   {
-    files: ["src/**/*.{ts}"],
+    files: ["**/*.{ts}"],
     plugins: { jsdoc },
     rules: {
       eqeqeq: ["error", "always"],

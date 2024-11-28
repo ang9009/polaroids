@@ -8,7 +8,7 @@
     "dev": "(cd bot && npm run dev); (cd db-api && npm run dev)",
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "(npm i); (cd db-api && npm i); (cd bot && npm i); (cd shared && npm i)",
-    "lint": "eslint db-api && eslint bot"
+    "lint": "eslint ."
   },
   "author": "",
   "license": "ISC",

@@ -6,7 +6,7 @@ import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { GuildQueryParamsSchema } from "../types/query-params/guildQueryParams";
+import { GuildQueryParamsSchema } from "../types/request-schemas/guildQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 /**

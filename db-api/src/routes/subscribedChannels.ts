@@ -13,7 +13,10 @@ router.get("/is-subscribed/:channelId", channelIsSubscribed);
 // Add a subscribed channel
 router.post("/", addSubscribedChannel);
 
-// Change the linked album that a channel that is already subscribed to
-router.patch("/", updateChannelAlbum);
+// Link a channel that polaroids is already subscribed to another existing album
+router.patch("/link-existing-album", updateChannelAlbum);
+
+// Create a new album, then link an existing channel to it
+router.patch("/link-new-album");
 
 export default router;

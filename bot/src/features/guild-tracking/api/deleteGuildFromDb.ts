@@ -9,5 +9,9 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 export const deleteGuildFromDb = async (guildId: string) => {
   const url = getDbApiUrl(DbApiRoutes.GUILDS);
 
-  await axios.delete(`${url}/${guildId}`);
+  try {
+    await axios.delete(`${url}/${guildId}`);
+  } catch (err) {
+    console.log("Failed to delete guildId");
+  }
 };

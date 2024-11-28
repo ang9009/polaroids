@@ -1,4 +1,4 @@
-import { FileStationError } from "shared/error-codes/fileStationError";
+import { FileStationError } from "shared/src/error-codes/fileStationError";
 
 /**
  * Returns the corresponding FileStationError given an error code.

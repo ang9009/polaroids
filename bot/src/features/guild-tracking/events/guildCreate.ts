@@ -40,6 +40,7 @@ const guildCreate: EventData<Guild> = {
       return;
     }
 
+    console.log("Successfully saved guild id");
     channel.send({ embeds: [welcomeMsg] });
   },
 };

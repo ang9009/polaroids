@@ -1,5 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { DbError } from "shared/error-codes/DbError";
+import { DbError } from "shared/src/error-codes/dbError";
 
 /**
  * Maps prisma errors to their respective DbErrorCodes.

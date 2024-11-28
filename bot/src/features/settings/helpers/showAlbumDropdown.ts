@@ -46,9 +46,9 @@ export const showAlbumDropdown = async (
   // Add the rest of the albums as options
   for (const album of albums) {
     const option = new StringSelectMenuOptionBuilder()
-      .setLabel(album.albumName)
+      .setLabel(album.name)
       .setDescription(album.description)
-      .setValue(album.albumName);
+      .setValue(album.name);
     menuAlbumOptions.push(option);
   }
 

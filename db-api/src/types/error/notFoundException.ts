@@ -1,5 +1,5 @@
-import { DbApiErrorType } from "shared/error-codes/dbApiErrorType";
 import ErrorResponse from "shared/error-responses/errorResponse";
+import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";
 

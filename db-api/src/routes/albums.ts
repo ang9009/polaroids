@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/", getAlbums);
 
 // Check if an album exists
-router.get("/album-exists/:albumName", albumExists);
+router.head("/album-exists/:albumName", albumExists);
 
 // Create an album
 // router.post("/", async (req: Request, res: Response, next: NextFunction) => {

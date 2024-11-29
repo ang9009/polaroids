@@ -15,14 +15,14 @@ export const AddSubChannelReqBodySchema = z
         invalid_type_error: "albumName must be a string",
         required_error: "albumName is required",
       })
-      .min(4)
+      .min(1)
       .max(20),
     albumDesc: z
       .string({
         invalid_type_error: "albumDesc must be a string",
       })
-      .min(10)
-      .max(50)
+      .min(1)
+      .max(40)
       .optional(),
     guildId: z.string({
       invalid_type_error: "guildId must be a string",

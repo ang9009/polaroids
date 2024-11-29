@@ -1,5 +1,4 @@
-import axios from "axios";
-import { AlbumExistsResponseSchema } from "shared/src/album-responses/albumExistsResponse";
+import axios, { isAxiosError } from "axios";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
@@ -10,16 +9,14 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
  */
 export const checkAlbumExists = async (albumName: string): Promise<boolean> => {
   const url = getDbApiUrl(DbApiRoutes.ALBUMS, "album-exists", `${albumName}`);
-  let res;
   try {
-    res = await axios.get(url);
+    await axios.head(url);
   } catch (err) {
+    if (isAxiosError(err) && err.status === 404) {
+      return false;
+    }
     throw Error("albumExists Axios request failed: " + err);
   }
 
-  const parsedRes = AlbumExistsResponseSchema.safeParse(res.data);
-  if (!parsedRes.success) {
-    throw Error("Got unexpected response from albumExists request");
-  }
-  return parsedRes.data.albumExists;
+  return true;
 };

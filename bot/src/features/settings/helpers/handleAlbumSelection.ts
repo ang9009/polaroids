@@ -1,62 +1,56 @@
-import {
-  CacheType,
-  ChatInputCommandInteraction,
-  ModalBuilder,
-  ModalSubmitInteraction,
-  StringSelectMenuInteraction,
-} from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
+import { checkAlbumExists } from "../api/checkAlbumExists";
+import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
+import { setChannelAlbum } from "../api/setChannelAlbum";
+import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum";
+import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
-import { getCreateAlbumModal } from "./getCreateAlbumModal";
-import { showAlbumDropdown } from "./showAlbumDropdown";
+import { startAlbumDropdownInteraction } from "./startAlbumDropdownInteraction";
 
 /**
- * Deals with user interactions with the album dropdown. If the user wants to
- * create a new album, this opens a modal where the user can fill in the album's
- * details. Otherwise, this sets the album this channel is linked to to the newly
- * specified album.
- * @param interaction the ongoing command interaction
- * @param message the message shown above the dropdown
- * @param onSelectionComplete a callback function that is called when the user
- *        finishes selecting/creating the desired album
+ * Handles album selection by showing an album dropdown menu, then saving the
+ * user's desired settings according to their choices.
+ * @param msg the message shown above the dropdown menu
+ * @param alreadySubscribed whether the channel is already subscribed to
+ * @param interaction the ongoing interaction
  */
 export const handleAlbumSelection = async (
+  msg: string,
+  alreadySubscribed: boolean,
   interaction: ChatInputCommandInteraction,
-  message: string,
-  onSelectionComplete: (
-    albumData: AlbumSelectionData,
-    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
-  ) => void,
 ) => {
-  await showAlbumDropdown(message, interaction, async (selection, interaction) => {
-    // If the user wants to create a new album
-    if (selection.type === AlbumSelectionType.CREATE_NEW) {
-      // Show a modal for the user to enter the details of the album
-      const title = "Create & Link Album";
-      const modal: ModalBuilder = getCreateAlbumModal(title);
-      await interaction.showModal(modal);
+  await startAlbumDropdownInteraction(
+    interaction,
+    msg,
+    async (albumData: AlbumSelectionData, interaction) => {
+      const { channelId, guildId } = interaction;
+      if (!guildId || !channelId) {
+        throw Error("guildId or channelId is undefined for some reason");
+      }
 
-      // eslint-disable-next-line jsdoc/require-jsdoc
-      const filter = (interaction: ModalSubmitInteraction) =>
-        interaction.customId === "createAlbumModal";
+      if (albumData.type === AlbumSelectionType.CREATE_NEW) {
+        const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
+        const albumExists = await checkAlbumExists(newAlbumName);
+        if (albumExists) {
+          return interaction.reply("An album with this name already exists! Please try again.");
+        }
 
-      interaction.awaitModalSubmit({ filter, time: 60_000 }).then((interaction) => {
-        const albumName: string = interaction.fields.getTextInputValue("albumNameField");
-        const albumDesc: string = interaction.fields.getTextInputValue("albumDescField");
-        const albumData: AlbumSelectionData = {
-          type: AlbumSelectionType.CREATE_NEW,
-          albumName,
-          albumDesc,
-        };
-        onSelectionComplete(albumData, interaction);
-      });
-    } else {
-      // If the user wants to use an existing album
-      const albumData: AlbumSelectionData = {
-        type: AlbumSelectionType.EXISTING,
-        albumName: selection.albumName,
-      };
-      onSelectionComplete(albumData, interaction);
-    }
-  });
+        if (alreadySubscribed) {
+          await createAlbumAndLinkChannel(newAlbumName, newAlbumDesc, channelId, guildId);
+        } else {
+          await subscribeChannelWithNewAlbum(newAlbumName, newAlbumDesc, channelId, guildId);
+        }
+      } else {
+        const { albumName: newAlbumName } = albumData;
+        if (alreadySubscribed) {
+          await setChannelAlbum(newAlbumName, channelId, guildId);
+        } else {
+          await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
+        }
+      }
+
+      interaction.reply(`Successfully linked channel to new album **${albumData.albumName}**.`);
+    },
+  );
 };

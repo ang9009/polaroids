@@ -1,4 +1,3 @@
-import { AlbumExistsResponse } from "shared/src/album-responses/albumExistsResponse";
 import { GetAlbumsResponse } from "shared/src/album-responses/getAlbumsResponse";
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
@@ -34,13 +33,9 @@ export const getAlbums = async (
 
 /**
  * Returns whether an album with the given name exists.
- * Route: GET /api/albums/album-exists/:albumName
+ * Route: HEAD /api/albums/album-exists/:albumName
  */
-export const albumExists = async (
-  req: Request,
-  res: Response<AlbumExistsResponse>,
-  next: NextFunction
-) => {
+export const albumExists = async (req: Request, res: Response, next: NextFunction) => {
   const reqParams = AlbumNameQueryParamSchema.safeParse(req.params);
   if (!reqParams.success) {
     const error = new ValidationException(reqParams.error);
@@ -58,6 +53,11 @@ export const albumExists = async (
     const error = getDbExFromPrismaErr(err);
     return next(error);
   }
+  const albumExists: boolean = !!album;
 
-  res.status(HttpStatusCode.OK).json({ albumExists: !!album });
+  if (albumExists) {
+    res.status(HttpStatusCode.OK).end();
+  } else {
+    res.status(HttpStatusCode.NOT_FOUND).end();
+  }
 };

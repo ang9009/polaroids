@@ -14,7 +14,7 @@ export const getCreateAlbumModal = (title: string): ModalBuilder => {
     .setCustomId("albumNameField")
     .setLabel("Album name")
     .setStyle(TextInputStyle.Short)
-    .setPlaceholder("Enter a unique album name...")
+    .setPlaceholder("Enter album name...")
     .setMinLength(1)
     .setMaxLength(20)
     .setRequired();

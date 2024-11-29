@@ -3,8 +3,7 @@ import { CommandData } from "../../../types/commandData";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { IsSubscribedResponse } from "shared/src/subbed-channels-responses/isSubscribedResponse";
 import { getChannelSubData } from "../api/getChannelSubData";
-import { handleAlreadySubscribed } from "../helpers/handleAlreadySubscribed";
-import { handleNotSubscribed } from "../helpers/handleNotSubscribed";
+import { handleAlbumSelection } from "../helpers/handleAlbumSelection";
 
 /**
  * The slash command object for "subscribe", which is exported below. Users can
@@ -22,11 +21,16 @@ const data = new SlashCommandBuilder().setName("subscribe").setDescription(
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
   const channelSubData: IsSubscribedResponse = await getChannelSubData(interaction.channelId);
+  let msg: string;
 
   if (channelSubData.isSubscribed) {
-    await handleAlreadySubscribed(interaction, channelSubData.linkedAlbum!);
+    msg =
+      `This channel is currently linked to album **${channelSubData.linkedAlbum!}**. ` +
+      "Select a new album from the dropdown below to change this, or use `/unsubscribe` to unsubscribe.\n";
+    await handleAlbumSelection(msg, true, interaction);
   } else {
-    await handleNotSubscribed(interaction);
+    msg = "Select an album to link this channel to.";
+    await handleAlbumSelection(msg, false, interaction);
   }
 };
 

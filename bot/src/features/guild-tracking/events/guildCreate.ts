@@ -1,7 +1,6 @@
 import { ChannelType, EmbedBuilder, Events, Guild, TextChannel } from "discord.js";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { EventData } from "../../../types/eventData";
-import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { addGuildToDb } from "../api/addGuildToDb";
 
 const guildCreate: EventData<Guild> = {
@@ -33,12 +32,7 @@ const guildCreate: EventData<Guild> = {
     }
 
     // Add guild id to database
-    const result = await addGuildToDb(guild.id);
-    if (!result.success) {
-      const errorMsg = getErrorEmbed(result.error);
-      channel.send({ embeds: [errorMsg] });
-      return;
-    }
+    await addGuildToDb(guild.id);
 
     console.log("Successfully saved guild id");
     channel.send({ embeds: [welcomeMsg] });

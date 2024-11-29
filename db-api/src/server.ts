@@ -6,7 +6,7 @@ import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
 import albums from "./routes/albums";
 import guilds from "./routes/guilds";
-import subscribedChannels from "./routes/subscribedChannels";
+import subscribedChannels from "./routes/subbedChannels";
 
 dotenv.config();
 

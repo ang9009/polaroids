@@ -1,7 +1,7 @@
 import { CommandData } from "../../../types/commandData";
 
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { IsSubscribedResponse } from "shared/subbed-channels-responses/isSubscribedResponse";
+import { IsSubscribedResponse } from "shared/src/subbed-channels-responses/isSubscribedResponse";
 import { getChannelSubData } from "../api/getChannelSubData";
 import { handleAlreadySubscribed } from "../helpers/handleAlreadySubscribed";
 import { handleNotSubscribed } from "../helpers/handleNotSubscribed";

@@ -1,11 +1,12 @@
-import { DbErrorCode } from "../src/error-codes/dbErrorCode";
-import { ErrorResponse } from "./errorResponse";
+import { z } from "zod";
+import { DbErrorCode } from "../error-codes/dbErrorCode";
+import { ErrorResponseSchema } from "./errorResponse";
+
+export const DbExceptionResponseSchema = ErrorResponseSchema.extend({
+  dbErrorCode: z.nativeEnum(DbErrorCode),
+});
 
 /**
  * The shape of the response when a database-related exception occurs.
  */
-interface DbExceptionResponse extends ErrorResponse {
-  dbErrorCode: DbErrorCode;
-}
-
-export { DbExceptionResponse };
+export type DbExceptionResponse = z.infer<typeof DbExceptionResponseSchema>;

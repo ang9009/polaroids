@@ -2,7 +2,7 @@ import axios from "axios";
 import {
   IsSubscribedResponse,
   IsSubscribedResponseSchema,
-} from "shared/subbed-channels-responses/isSubscribedResponse";
+} from "shared/src/subbed-channels-responses/isSubscribedResponse";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
@@ -19,17 +19,13 @@ export const getChannelSubData = async (channelId: string): Promise<IsSubscribed
   try {
     res = await axios.get(url);
   } catch (err) {
-    const msg = "channelIsSubscribed Axios request failed: " + err;
-    console.error(msg);
-    throw Error(msg);
+    throw Error("channelIsSubscribed Axios request failed: " + err);
   }
 
   const parsedRes = IsSubscribedResponseSchema.safeParse(res.data);
   if (parsedRes.success) {
     return parsedRes.data;
   } else {
-    const msg = "Failed to parse channelIsSubscribed request response: " + parsedRes.error;
-    console.error(msg);
-    throw Error(msg);
+    throw Error("Failed to parse channelIsSubscribed request response: " + parsedRes.error);
   }
 };

@@ -12,6 +12,6 @@ export const deleteGuildFromDb = async (guildId: string) => {
   try {
     await axios.delete(`${url}/${guildId}`);
   } catch (err) {
-    console.log("Failed to delete guildId");
+    console.error("Failed to delete guildId: " + err);
   }
 };

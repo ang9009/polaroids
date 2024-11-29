@@ -1,4 +1,10 @@
-import { ChatInputCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
+import {
+  CacheType,
+  ChatInputCommandInteraction,
+  ModalBuilder,
+  ModalSubmitInteraction,
+  StringSelectMenuInteraction,
+} from "discord.js";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
 import { getCreateAlbumModal } from "./getCreateAlbumModal";
@@ -17,7 +23,10 @@ import { showAlbumDropdown } from "./showAlbumDropdown";
 export const handleAlbumSelection = async (
   interaction: ChatInputCommandInteraction,
   message: string,
-  onSelectionComplete: (albumData: AlbumSelectionData) => void,
+  onSelectionComplete: (
+    albumData: AlbumSelectionData,
+    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
+  ) => void,
 ) => {
   await showAlbumDropdown(message, interaction, async (selection, interaction) => {
     // If the user wants to create a new album
@@ -39,7 +48,7 @@ export const handleAlbumSelection = async (
           albumName,
           albumDesc,
         };
-        onSelectionComplete(albumData);
+        onSelectionComplete(albumData, interaction);
       });
     } else {
       // If the user wants to use an existing album
@@ -47,7 +56,7 @@ export const handleAlbumSelection = async (
         type: AlbumSelectionType.EXISTING,
         albumName: selection.albumName,
       };
-      onSelectionComplete(albumData);
+      onSelectionComplete(albumData, interaction);
     }
   });
 };

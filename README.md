@@ -97,6 +97,9 @@ implements the `CommandData` interface, then export it using a default export.
 Otherwise, the `deploycommands` function will not be able to find/register the
 command.
 
+Note that errors thrown by events or commands are caught and logged by the bot
+in `handleInteractions`, so throwing errors is fine.
+
 Once you've added/changed a command, run the following while inside of the `bot`
 folder to update the bot:
 

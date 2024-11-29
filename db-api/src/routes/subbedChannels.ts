@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   addSubscribedChannel,
   channelIsSubscribed,
+  createAlbumAndLinkChannel,
   updateChannelAlbum,
 } from "../controllers/subbedChannelsController";
 
@@ -10,13 +11,13 @@ const router = Router();
 // Check if polaroids has already subscribed to a channel
 router.get("/is-subscribed/:channelId", channelIsSubscribed);
 
-// Add a subscribed channel
+// Add a subscribed channel (with the option of also creating a new album for it)
 router.post("/", addSubscribedChannel);
 
 // Link a channel that polaroids is already subscribed to another existing album
 router.patch("/link-existing-album", updateChannelAlbum);
 
 // Create a new album, then link an existing channel to it
-router.patch("/link-new-album");
+router.patch("/link-new-album", createAlbumAndLinkChannel);
 
 export default router;

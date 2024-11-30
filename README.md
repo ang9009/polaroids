@@ -1,6 +1,6 @@
 # polaroids
 
-A photo organization system consisting of a Discord bot that automatically uploads
+A photos/videos organization system consisting of a Discord bot that automatically uploads
 media to my Synology FileStation, and a website that displays this media.
 
 ## Setup

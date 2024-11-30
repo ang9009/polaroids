@@ -1,6 +1,6 @@
 # polaroids
 
-A photo storage system consisting of a Discord bot that automatically uploads
+A photo organization system consisting of a Discord bot that automatically uploads
 media to my Synology FileStation, and a website that displays this media.
 
 ## Setup
@@ -35,8 +35,9 @@ set polaroids up for yourself:
    PS_API_PASSWORD=XXX
    ```
 
-   Your FileStation API url should be prefixed with "/photo/webapi". Make sure
+   Your FileStation API url should be prefixed with "/webapi". Make sure
    that the user associated with your login details has admin permissions.
+   More information about the FileStation API can be found [here](https://global.download.synology.com/download/Document/Software/DeveloperGuide/Package/FileStation/All/enu/Synology_File_Station_API_Guide.pdf).
 
    The `.env` file in the `db-api` folder should look like this:
 

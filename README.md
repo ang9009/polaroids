@@ -37,7 +37,7 @@ set polaroids up for yourself:
 
    Your FileStation API url should be prefixed with "/webapi". Make sure
    that the user associated with your login details has admin permissions.
-   More information about the FileStation APi can be found (here)[https://global.download.synology.com/download/Document/Software/DeveloperGuide/Package/FileStation/All/enu/Synology_File_Station_API_Guide.pdf].
+   More information about the FileStation API can be found (here)[https://global.download.synology.com/download/Document/Software/DeveloperGuide/Package/FileStation/All/enu/Synology_File_Station_API_Guide.pdf].
 
    The `.env` file in the `db-api` folder should look like this:
 

@@ -34,7 +34,8 @@ export const registerEvents = async (client: Client) => {
     const eventFile = await import(filePath);
     const eventData: EventData<unknown> = eventFile.default;
     if (!eventData) {
-      throw new Error("Could not find default export in " + filePath);
+      console.error("registerEvents could not find a default export in " + filePath);
+      continue;
     }
 
     if (eventData.once) {

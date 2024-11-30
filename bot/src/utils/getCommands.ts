@@ -37,7 +37,7 @@ export const getCommands = async (): Promise<Collection<string, CommandData>> =>
     const commandFile = await import(filePath);
     const command: CommandData = commandFile.default;
     if (!command) {
-      console.error("Could not find default export in " + commandFile.toString());
+      console.error("getCommands could not find a default export in " + filePath);
       continue;
     }
     commands.set(command.data.name, command);

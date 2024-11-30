@@ -1,8 +1,8 @@
 import axios from "axios";
 import { GetAlbumsResponseSchema } from "shared/src/album-responses/getAlbumsResponse";
+import { Album } from "../../../../../db-api/node_modules/.prisma/client";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
-import { Album } from "./../../../../../db-api/node_modules/.prisma/client/index.d";
 
 /**
  * Gets a list of all of the existing album names.

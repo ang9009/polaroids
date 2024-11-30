@@ -14,8 +14,10 @@ export const checkAlbumExists = async (albumName: string): Promise<boolean> => {
   } catch (err) {
     if (isAxiosError(err) && err.status === 404) {
       return false;
+    } else {
+      // Unknown error
+      throw Error("albumExists Axios request failed: " + err);
     }
-    throw Error("albumExists Axios request failed: " + err);
   }
 
   return true;

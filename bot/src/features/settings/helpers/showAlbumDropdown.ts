@@ -7,10 +7,10 @@ import {
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
+import { Album } from "../../../../../db-api/node_modules/.prisma/client";
 import { getAlbums } from "../api/getAlbumNames";
 import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
-import { Album } from "./../../../../../db-api/node_modules/.prisma/client/index.d";
-import { AlbumSelectionType } from "./../data/albumSelectionType";
+import { AlbumSelectionType } from "../data/albumSelectionType";
 
 /**
  * Shows a dropdown menu which allows the user to select from a list of existing

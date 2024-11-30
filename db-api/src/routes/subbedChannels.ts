@@ -3,10 +3,14 @@ import {
   addSubscribedChannel,
   channelIsSubscribed,
   createAlbumAndLinkChannel,
+  getAllSubbedChannels,
   updateChannelAlbum,
 } from "../controllers/subbedChannelsController";
 
 const router = Router();
+
+// Get all subscribed channels
+router.get("/", getAllSubbedChannels);
 
 // Check if polaroids has already subscribed to a channel
 router.get("/is-subscribed/:channelId", channelIsSubscribed);

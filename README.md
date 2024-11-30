@@ -28,11 +28,6 @@ set polaroids up for yourself:
    TOKEN=XXX
    CLIENT_ID=XXX
    GUILD_ID=XXX
-
-   # Your FileStation details
-   PS_API_URL=XXX
-   PS_API_USERNAME=XXX
-   PS_API_PASSWORD=XXX
    ```
 
    Your FileStation API url should be prefixed with "/webapi". Make sure
@@ -42,6 +37,12 @@ set polaroids up for yourself:
    The `.env` file in the `db-api` folder should look like this:
 
    ```sh
+   # FileStation details
+   FS_API_URL=XXXX
+   FS_API_USERNAME=XXXX
+   FS_API_PASSWORD=XXXX
+   FS_SID_KEY=XXXX # This can be whatever you want
+
    # The port for the API
    PORT=XXXX
 

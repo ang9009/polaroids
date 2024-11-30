@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 // Get all subscribed channels
-router.get("/", getAllSubbedChannels);
+router.get("/:guildId", getAllSubbedChannels);
 
 // Check if polaroids has already subscribed to a channel
 router.get("/is-subscribed/:channelId", channelIsSubscribed);

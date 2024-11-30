@@ -18,7 +18,7 @@ import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 import { CreateAndLinkAlbumSchema } from "./../../node_modules/shared/src/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
 
 /**
- * Used to get the ids of all the subscribed channels.
+ * Used to get the ids of all the subscribed channels for a given guild.
  * Route: GET /api/subscribed-channels/:guildId
  */
 export const getAllSubbedChannels = async (
@@ -26,7 +26,7 @@ export const getAllSubbedChannels = async (
   res: Response<GetSubbedChannelsResponse>,
   next: NextFunction
 ) => {
-  const parseRes = GetAllSubbedChannelsReqSchema.safeParse(req.body);
+  const parseRes = GetAllSubbedChannelsReqSchema.safeParse(req.params);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);

@@ -3,8 +3,8 @@ import {
   IsSubscribedResponse,
   IsSubscribedResponseSchema,
 } from "shared/src/subbed-channels-responses/isSubscribedResponse";
-import { DbApiRoutes } from "../../../data/dbApiRoutes";
-import { getDbApiUrl } from "../../../utils/getDbApiUrl";
+import { DbApiRoutes } from "../data/dbApiRoutes";
+import { getDbApiUrl } from "../utils/getDbApiUrl";
 
 /**
  * Checks if polaroids has subscribed to a given channel. If it has, this

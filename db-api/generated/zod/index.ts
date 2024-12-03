@@ -20,7 +20,7 @@ export const AlbumScalarFieldEnumSchema = z.enum(['name','description']);
 
 export const SubscribedChannelScalarFieldEnumSchema = z.enum(['channelId','guildId','albumName']);
 
-export const ImageScalarFieldEnumSchema = z.enum(['imageId','description','albumName']);
+export const MediaScalarFieldEnumSchema = z.enum(['mediaId','description','albumName']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -96,28 +96,28 @@ export const SubscribedChannelSchema = z.object({
 export type SubscribedChannel = z.infer<typeof SubscribedChannelSchema>
 
 /////////////////////////////////////////
-// IMAGE SCHEMA
+// MEDIA SCHEMA
 /////////////////////////////////////////
 
 /**
- * Images that correspond to to images saved to FileStation
+ * Corresponds to images/videos saved to FileStation
  */
-export const ImageSchema = z.object({
+export const MediaSchema = z.object({
   /**
-   * The image's id
+   * The media's id
    */
-  imageId: z.string(),
+  mediaId: z.string(),
   /**
-   * A description of the image
+   * A description of the media
    */
   description: z.string().nullable(),
   /**
-   * The name of the album the image is in
+   * The name of the album the media is in
    */
   albumName: z.string(),
 })
 
-export type Image = z.infer<typeof ImageSchema>
+export type Media = z.infer<typeof MediaSchema>
 
 /////////////////////////////////////////
 // SELECT & INCLUDE
@@ -155,7 +155,7 @@ export const GuildSelectSchema: z.ZodType<Prisma.GuildSelect> = z.object({
 //------------------------------------------------------
 
 export const AlbumIncludeSchema: z.ZodType<Prisma.AlbumInclude> = z.object({
-  images: z.union([z.boolean(),z.lazy(() => ImageFindManyArgsSchema)]).optional(),
+  media: z.union([z.boolean(),z.lazy(() => MediaFindManyArgsSchema)]).optional(),
   channels: z.union([z.boolean(),z.lazy(() => SubscribedChannelFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AlbumCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -170,14 +170,14 @@ export const AlbumCountOutputTypeArgsSchema: z.ZodType<Prisma.AlbumCountOutputTy
 }).strict();
 
 export const AlbumCountOutputTypeSelectSchema: z.ZodType<Prisma.AlbumCountOutputTypeSelect> = z.object({
-  images: z.boolean().optional(),
+  media: z.boolean().optional(),
   channels: z.boolean().optional(),
 }).strict();
 
 export const AlbumSelectSchema: z.ZodType<Prisma.AlbumSelect> = z.object({
   name: z.boolean().optional(),
   description: z.boolean().optional(),
-  images: z.union([z.boolean(),z.lazy(() => ImageFindManyArgsSchema)]).optional(),
+  media: z.union([z.boolean(),z.lazy(() => MediaFindManyArgsSchema)]).optional(),
   channels: z.union([z.boolean(),z.lazy(() => SubscribedChannelFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AlbumCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -203,20 +203,20 @@ export const SubscribedChannelSelectSchema: z.ZodType<Prisma.SubscribedChannelSe
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
 }).strict()
 
-// IMAGE
+// MEDIA
 //------------------------------------------------------
 
-export const ImageIncludeSchema: z.ZodType<Prisma.ImageInclude> = z.object({
+export const MediaIncludeSchema: z.ZodType<Prisma.MediaInclude> = z.object({
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
 }).strict()
 
-export const ImageArgsSchema: z.ZodType<Prisma.ImageDefaultArgs> = z.object({
-  select: z.lazy(() => ImageSelectSchema).optional(),
-  include: z.lazy(() => ImageIncludeSchema).optional(),
+export const MediaArgsSchema: z.ZodType<Prisma.MediaDefaultArgs> = z.object({
+  select: z.lazy(() => MediaSelectSchema).optional(),
+  include: z.lazy(() => MediaIncludeSchema).optional(),
 }).strict();
 
-export const ImageSelectSchema: z.ZodType<Prisma.ImageSelect> = z.object({
-  imageId: z.boolean().optional(),
+export const MediaSelectSchema: z.ZodType<Prisma.MediaSelect> = z.object({
+  mediaId: z.boolean().optional(),
   description: z.boolean().optional(),
   albumName: z.boolean().optional(),
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
@@ -276,14 +276,14 @@ export const AlbumWhereInputSchema: z.ZodType<Prisma.AlbumWhereInput> = z.object
   NOT: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  images: z.lazy(() => ImageListRelationFilterSchema).optional(),
+  media: z.lazy(() => MediaListRelationFilterSchema).optional(),
   channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
 }).strict();
 
 export const AlbumOrderByWithRelationInputSchema: z.ZodType<Prisma.AlbumOrderByWithRelationInput> = z.object({
   name: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
-  images: z.lazy(() => ImageOrderByRelationAggregateInputSchema).optional(),
+  media: z.lazy(() => MediaOrderByRelationAggregateInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
@@ -296,7 +296,7 @@ export const AlbumWhereUniqueInputSchema: z.ZodType<Prisma.AlbumWhereUniqueInput
   OR: z.lazy(() => AlbumWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  images: z.lazy(() => ImageListRelationFilterSchema).optional(),
+  media: z.lazy(() => MediaListRelationFilterSchema).optional(),
   channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
 }).strict());
 
@@ -367,50 +367,50 @@ export const SubscribedChannelScalarWhereWithAggregatesInputSchema: z.ZodType<Pr
   albumName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
-export const ImageWhereInputSchema: z.ZodType<Prisma.ImageWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => ImageWhereInputSchema),z.lazy(() => ImageWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => ImageWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => ImageWhereInputSchema),z.lazy(() => ImageWhereInputSchema).array() ]).optional(),
-  imageId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+export const MediaWhereInputSchema: z.ZodType<Prisma.MediaWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MediaWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
+  mediaId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   album: z.union([ z.lazy(() => AlbumRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
 }).strict();
 
-export const ImageOrderByWithRelationInputSchema: z.ZodType<Prisma.ImageOrderByWithRelationInput> = z.object({
-  imageId: z.lazy(() => SortOrderSchema).optional(),
+export const MediaOrderByWithRelationInputSchema: z.ZodType<Prisma.MediaOrderByWithRelationInput> = z.object({
+  mediaId: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional(),
   album: z.lazy(() => AlbumOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const ImageWhereUniqueInputSchema: z.ZodType<Prisma.ImageWhereUniqueInput> = z.object({
-  imageId: z.string()
+export const MediaWhereUniqueInputSchema: z.ZodType<Prisma.MediaWhereUniqueInput> = z.object({
+  mediaId: z.string()
 })
 .and(z.object({
-  imageId: z.string().optional(),
-  AND: z.union([ z.lazy(() => ImageWhereInputSchema),z.lazy(() => ImageWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => ImageWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => ImageWhereInputSchema),z.lazy(() => ImageWhereInputSchema).array() ]).optional(),
+  mediaId: z.string().optional(),
+  AND: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MediaWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   album: z.union([ z.lazy(() => AlbumRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
 }).strict());
 
-export const ImageOrderByWithAggregationInputSchema: z.ZodType<Prisma.ImageOrderByWithAggregationInput> = z.object({
-  imageId: z.lazy(() => SortOrderSchema).optional(),
+export const MediaOrderByWithAggregationInputSchema: z.ZodType<Prisma.MediaOrderByWithAggregationInput> = z.object({
+  mediaId: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional(),
-  _count: z.lazy(() => ImageCountOrderByAggregateInputSchema).optional(),
-  _max: z.lazy(() => ImageMaxOrderByAggregateInputSchema).optional(),
-  _min: z.lazy(() => ImageMinOrderByAggregateInputSchema).optional()
+  _count: z.lazy(() => MediaCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => MediaMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => MediaMinOrderByAggregateInputSchema).optional()
 }).strict();
 
-export const ImageScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.ImageScalarWhereWithAggregatesInput> = z.object({
-  AND: z.union([ z.lazy(() => ImageScalarWhereWithAggregatesInputSchema),z.lazy(() => ImageScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  OR: z.lazy(() => ImageScalarWhereWithAggregatesInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => ImageScalarWhereWithAggregatesInputSchema),z.lazy(() => ImageScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  imageId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+export const MediaScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.MediaScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => MediaScalarWhereWithAggregatesInputSchema),z.lazy(() => MediaScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MediaScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MediaScalarWhereWithAggregatesInputSchema),z.lazy(() => MediaScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  mediaId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
@@ -457,28 +457,28 @@ export const GuildUncheckedUpdateManyInputSchema: z.ZodType<Prisma.GuildUnchecke
 export const AlbumCreateInputSchema: z.ZodType<Prisma.AlbumCreateInput> = z.object({
   name: z.string(),
   description: z.string(),
-  images: z.lazy(() => ImageCreateNestedManyWithoutAlbumInputSchema).optional(),
+  media: z.lazy(() => MediaCreateNestedManyWithoutAlbumInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateInput> = z.object({
   name: z.string(),
   description: z.string(),
-  images: z.lazy(() => ImageUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
+  media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUpdateInputSchema: z.ZodType<Prisma.AlbumUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  images: z.lazy(() => ImageUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  media: z.lazy(() => MediaUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  images: z.lazy(() => ImageUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  media: z.lazy(() => MediaUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
@@ -537,43 +537,43 @@ export const SubscribedChannelUncheckedUpdateManyInputSchema: z.ZodType<Prisma.S
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const ImageCreateInputSchema: z.ZodType<Prisma.ImageCreateInput> = z.object({
-  imageId: z.string(),
+export const MediaCreateInputSchema: z.ZodType<Prisma.MediaCreateInput> = z.object({
+  mediaId: z.string(),
   description: z.string().optional().nullable(),
-  album: z.lazy(() => AlbumCreateNestedOneWithoutImagesInputSchema)
+  album: z.lazy(() => AlbumCreateNestedOneWithoutMediaInputSchema)
 }).strict();
 
-export const ImageUncheckedCreateInputSchema: z.ZodType<Prisma.ImageUncheckedCreateInput> = z.object({
-  imageId: z.string(),
+export const MediaUncheckedCreateInputSchema: z.ZodType<Prisma.MediaUncheckedCreateInput> = z.object({
+  mediaId: z.string(),
   description: z.string().optional().nullable(),
   albumName: z.string()
 }).strict();
 
-export const ImageUpdateInputSchema: z.ZodType<Prisma.ImageUpdateInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUpdateInputSchema: z.ZodType<Prisma.MediaUpdateInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
-  album: z.lazy(() => AlbumUpdateOneRequiredWithoutImagesNestedInputSchema).optional()
+  album: z.lazy(() => AlbumUpdateOneRequiredWithoutMediaNestedInputSchema).optional()
 }).strict();
 
-export const ImageUncheckedUpdateInputSchema: z.ZodType<Prisma.ImageUncheckedUpdateInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUncheckedUpdateInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const ImageCreateManyInputSchema: z.ZodType<Prisma.ImageCreateManyInput> = z.object({
-  imageId: z.string(),
+export const MediaCreateManyInputSchema: z.ZodType<Prisma.MediaCreateManyInput> = z.object({
+  mediaId: z.string(),
   description: z.string().optional().nullable(),
   albumName: z.string()
 }).strict();
 
-export const ImageUpdateManyMutationInputSchema: z.ZodType<Prisma.ImageUpdateManyMutationInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUpdateManyMutationInputSchema: z.ZodType<Prisma.MediaUpdateManyMutationInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export const ImageUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ImageUncheckedUpdateManyInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -661,13 +661,13 @@ export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAg
   _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
 
-export const ImageListRelationFilterSchema: z.ZodType<Prisma.ImageListRelationFilter> = z.object({
-  every: z.lazy(() => ImageWhereInputSchema).optional(),
-  some: z.lazy(() => ImageWhereInputSchema).optional(),
-  none: z.lazy(() => ImageWhereInputSchema).optional()
+export const MediaListRelationFilterSchema: z.ZodType<Prisma.MediaListRelationFilter> = z.object({
+  every: z.lazy(() => MediaWhereInputSchema).optional(),
+  some: z.lazy(() => MediaWhereInputSchema).optional(),
+  none: z.lazy(() => MediaWhereInputSchema).optional()
 }).strict();
 
-export const ImageOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ImageOrderByRelationAggregateInput> = z.object({
+export const MediaOrderByRelationAggregateInputSchema: z.ZodType<Prisma.MediaOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -734,20 +734,20 @@ export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
   nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 
-export const ImageCountOrderByAggregateInputSchema: z.ZodType<Prisma.ImageCountOrderByAggregateInput> = z.object({
-  imageId: z.lazy(() => SortOrderSchema).optional(),
+export const MediaCountOrderByAggregateInputSchema: z.ZodType<Prisma.MediaCountOrderByAggregateInput> = z.object({
+  mediaId: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const ImageMaxOrderByAggregateInputSchema: z.ZodType<Prisma.ImageMaxOrderByAggregateInput> = z.object({
-  imageId: z.lazy(() => SortOrderSchema).optional(),
+export const MediaMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMaxOrderByAggregateInput> = z.object({
+  mediaId: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const ImageMinOrderByAggregateInputSchema: z.ZodType<Prisma.ImageMinOrderByAggregateInput> = z.object({
-  imageId: z.lazy(() => SortOrderSchema).optional(),
+export const MediaMinOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMinOrderByAggregateInput> = z.object({
+  mediaId: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -820,11 +820,11 @@ export const SubscribedChannelUncheckedUpdateManyWithoutGuildNestedInputSchema: 
   deleteMany: z.union([ z.lazy(() => SubscribedChannelScalarWhereInputSchema),z.lazy(() => SubscribedChannelScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const ImageCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.ImageCreateNestedManyWithoutAlbumInput> = z.object({
-  create: z.union([ z.lazy(() => ImageCreateWithoutAlbumInputSchema),z.lazy(() => ImageCreateWithoutAlbumInputSchema).array(),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => ImageCreateManyAlbumInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
+export const MediaCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaCreateNestedManyWithoutAlbumInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.SubscribedChannelCreateNestedManyWithoutAlbumInput> = z.object({
@@ -834,11 +834,11 @@ export const SubscribedChannelCreateNestedManyWithoutAlbumInputSchema: z.ZodType
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const ImageUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
-  create: z.union([ z.lazy(() => ImageCreateWithoutAlbumInputSchema),z.lazy(() => ImageCreateWithoutAlbumInputSchema).array(),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => ImageCreateManyAlbumInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
+export const MediaUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
@@ -848,18 +848,18 @@ export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema: 
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const ImageUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.ImageUpdateManyWithoutAlbumNestedInput> = z.object({
-  create: z.union([ z.lazy(() => ImageCreateWithoutAlbumInputSchema),z.lazy(() => ImageCreateWithoutAlbumInputSchema).array(),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => ImageUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => ImageUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => ImageCreateManyAlbumInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => ImageUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => ImageUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => ImageUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => ImageUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => ImageScalarWhereInputSchema),z.lazy(() => ImageScalarWhereInputSchema).array() ]).optional(),
+export const MediaUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.MediaUpdateManyWithoutAlbumNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.SubscribedChannelUpdateManyWithoutAlbumNestedInput> = z.object({
@@ -876,18 +876,18 @@ export const SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema: z.ZodType
   deleteMany: z.union([ z.lazy(() => SubscribedChannelScalarWhereInputSchema),z.lazy(() => SubscribedChannelScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const ImageUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.ImageUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
-  create: z.union([ z.lazy(() => ImageCreateWithoutAlbumInputSchema),z.lazy(() => ImageCreateWithoutAlbumInputSchema).array(),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => ImageCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => ImageUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => ImageUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => ImageCreateManyAlbumInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => ImageWhereUniqueInputSchema),z.lazy(() => ImageWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => ImageUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => ImageUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => ImageUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => ImageUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => ImageScalarWhereInputSchema),z.lazy(() => ImageScalarWhereInputSchema).array() ]).optional(),
+export const MediaUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
+  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
@@ -932,9 +932,9 @@ export const AlbumUpdateOneRequiredWithoutChannelsNestedInputSchema: z.ZodType<P
   update: z.union([ z.lazy(() => AlbumUpdateToOneWithWhereWithoutChannelsInputSchema),z.lazy(() => AlbumUpdateWithoutChannelsInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutChannelsInputSchema) ]).optional(),
 }).strict();
 
-export const AlbumCreateNestedOneWithoutImagesInputSchema: z.ZodType<Prisma.AlbumCreateNestedOneWithoutImagesInput> = z.object({
-  create: z.union([ z.lazy(() => AlbumCreateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutImagesInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutImagesInputSchema).optional(),
+export const AlbumCreateNestedOneWithoutMediaInputSchema: z.ZodType<Prisma.AlbumCreateNestedOneWithoutMediaInput> = z.object({
+  create: z.union([ z.lazy(() => AlbumCreateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutMediaInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutMediaInputSchema).optional(),
   connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional()
 }).strict();
 
@@ -942,12 +942,12 @@ export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.Nu
   set: z.string().optional().nullable()
 }).strict();
 
-export const AlbumUpdateOneRequiredWithoutImagesNestedInputSchema: z.ZodType<Prisma.AlbumUpdateOneRequiredWithoutImagesNestedInput> = z.object({
-  create: z.union([ z.lazy(() => AlbumCreateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutImagesInputSchema) ]).optional(),
-  connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutImagesInputSchema).optional(),
-  upsert: z.lazy(() => AlbumUpsertWithoutImagesInputSchema).optional(),
+export const AlbumUpdateOneRequiredWithoutMediaNestedInputSchema: z.ZodType<Prisma.AlbumUpdateOneRequiredWithoutMediaNestedInput> = z.object({
+  create: z.union([ z.lazy(() => AlbumCreateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutMediaInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutMediaInputSchema).optional(),
+  upsert: z.lazy(() => AlbumUpsertWithoutMediaInputSchema).optional(),
   connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional(),
-  update: z.union([ z.lazy(() => AlbumUpdateToOneWithWhereWithoutImagesInputSchema),z.lazy(() => AlbumUpdateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutImagesInputSchema) ]).optional(),
+  update: z.union([ z.lazy(() => AlbumUpdateToOneWithWhereWithoutMediaInputSchema),z.lazy(() => AlbumUpdateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutMediaInputSchema) ]).optional(),
 }).strict();
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
@@ -1104,23 +1104,23 @@ export const SubscribedChannelScalarWhereInputSchema: z.ZodType<Prisma.Subscribe
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
-export const ImageCreateWithoutAlbumInputSchema: z.ZodType<Prisma.ImageCreateWithoutAlbumInput> = z.object({
-  imageId: z.string(),
+export const MediaCreateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaCreateWithoutAlbumInput> = z.object({
+  mediaId: z.string(),
   description: z.string().optional().nullable()
 }).strict();
 
-export const ImageUncheckedCreateWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUncheckedCreateWithoutAlbumInput> = z.object({
-  imageId: z.string(),
+export const MediaUncheckedCreateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedCreateWithoutAlbumInput> = z.object({
+  mediaId: z.string(),
   description: z.string().optional().nullable()
 }).strict();
 
-export const ImageCreateOrConnectWithoutAlbumInputSchema: z.ZodType<Prisma.ImageCreateOrConnectWithoutAlbumInput> = z.object({
-  where: z.lazy(() => ImageWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => ImageCreateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema) ]),
+export const MediaCreateOrConnectWithoutAlbumInputSchema: z.ZodType<Prisma.MediaCreateOrConnectWithoutAlbumInput> = z.object({
+  where: z.lazy(() => MediaWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const ImageCreateManyAlbumInputEnvelopeSchema: z.ZodType<Prisma.ImageCreateManyAlbumInputEnvelope> = z.object({
-  data: z.union([ z.lazy(() => ImageCreateManyAlbumInputSchema),z.lazy(() => ImageCreateManyAlbumInputSchema).array() ]),
+export const MediaCreateManyAlbumInputEnvelopeSchema: z.ZodType<Prisma.MediaCreateManyAlbumInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => MediaCreateManyAlbumInputSchema),z.lazy(() => MediaCreateManyAlbumInputSchema).array() ]),
   skipDuplicates: z.boolean().optional()
 }).strict();
 
@@ -1144,27 +1144,27 @@ export const SubscribedChannelCreateManyAlbumInputEnvelopeSchema: z.ZodType<Pris
   skipDuplicates: z.boolean().optional()
 }).strict();
 
-export const ImageUpsertWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUpsertWithWhereUniqueWithoutAlbumInput> = z.object({
-  where: z.lazy(() => ImageWhereUniqueInputSchema),
-  update: z.union([ z.lazy(() => ImageUpdateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedUpdateWithoutAlbumInputSchema) ]),
-  create: z.union([ z.lazy(() => ImageCreateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedCreateWithoutAlbumInputSchema) ]),
+export const MediaUpsertWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpsertWithWhereUniqueWithoutAlbumInput> = z.object({
+  where: z.lazy(() => MediaWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => MediaUpdateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutAlbumInputSchema) ]),
+  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const ImageUpdateWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUpdateWithWhereUniqueWithoutAlbumInput> = z.object({
-  where: z.lazy(() => ImageWhereUniqueInputSchema),
-  data: z.union([ z.lazy(() => ImageUpdateWithoutAlbumInputSchema),z.lazy(() => ImageUncheckedUpdateWithoutAlbumInputSchema) ]),
+export const MediaUpdateWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpdateWithWhereUniqueWithoutAlbumInput> = z.object({
+  where: z.lazy(() => MediaWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => MediaUpdateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const ImageUpdateManyWithWhereWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUpdateManyWithWhereWithoutAlbumInput> = z.object({
-  where: z.lazy(() => ImageScalarWhereInputSchema),
-  data: z.union([ z.lazy(() => ImageUpdateManyMutationInputSchema),z.lazy(() => ImageUncheckedUpdateManyWithoutAlbumInputSchema) ]),
+export const MediaUpdateManyWithWhereWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpdateManyWithWhereWithoutAlbumInput> = z.object({
+  where: z.lazy(() => MediaScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => MediaUpdateManyMutationInputSchema),z.lazy(() => MediaUncheckedUpdateManyWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const ImageScalarWhereInputSchema: z.ZodType<Prisma.ImageScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => ImageScalarWhereInputSchema),z.lazy(() => ImageScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => ImageScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => ImageScalarWhereInputSchema),z.lazy(() => ImageScalarWhereInputSchema).array() ]).optional(),
-  imageId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+export const MediaScalarWhereInputSchema: z.ZodType<Prisma.MediaScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MediaScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
+  mediaId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
@@ -1203,13 +1203,13 @@ export const GuildCreateOrConnectWithoutSubscribedChannelsInputSchema: z.ZodType
 export const AlbumCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreateWithoutChannelsInput> = z.object({
   name: z.string(),
   description: z.string(),
-  images: z.lazy(() => ImageCreateNestedManyWithoutAlbumInputSchema).optional()
+  media: z.lazy(() => MediaCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutChannelsInput> = z.object({
   name: z.string(),
   description: z.string(),
-  images: z.lazy(() => ImageUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
+  media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumCreateOrConnectWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutChannelsInput> = z.object({
@@ -1252,50 +1252,50 @@ export const AlbumUpdateToOneWithWhereWithoutChannelsInputSchema: z.ZodType<Pris
 export const AlbumUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutChannelsInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  images: z.lazy(() => ImageUpdateManyWithoutAlbumNestedInputSchema).optional()
+  media: z.lazy(() => MediaUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutChannelsInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  images: z.lazy(() => ImageUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
+  media: z.lazy(() => MediaUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
-export const AlbumCreateWithoutImagesInputSchema: z.ZodType<Prisma.AlbumCreateWithoutImagesInput> = z.object({
+export const AlbumCreateWithoutMediaInputSchema: z.ZodType<Prisma.AlbumCreateWithoutMediaInput> = z.object({
   name: z.string(),
   description: z.string(),
   channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
-export const AlbumUncheckedCreateWithoutImagesInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutImagesInput> = z.object({
+export const AlbumUncheckedCreateWithoutMediaInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutMediaInput> = z.object({
   name: z.string(),
   description: z.string(),
   channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
-export const AlbumCreateOrConnectWithoutImagesInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutImagesInput> = z.object({
+export const AlbumCreateOrConnectWithoutMediaInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutMediaInput> = z.object({
   where: z.lazy(() => AlbumWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => AlbumCreateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutImagesInputSchema) ]),
+  create: z.union([ z.lazy(() => AlbumCreateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutMediaInputSchema) ]),
 }).strict();
 
-export const AlbumUpsertWithoutImagesInputSchema: z.ZodType<Prisma.AlbumUpsertWithoutImagesInput> = z.object({
-  update: z.union([ z.lazy(() => AlbumUpdateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutImagesInputSchema) ]),
-  create: z.union([ z.lazy(() => AlbumCreateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutImagesInputSchema) ]),
+export const AlbumUpsertWithoutMediaInputSchema: z.ZodType<Prisma.AlbumUpsertWithoutMediaInput> = z.object({
+  update: z.union([ z.lazy(() => AlbumUpdateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutMediaInputSchema) ]),
+  create: z.union([ z.lazy(() => AlbumCreateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutMediaInputSchema) ]),
   where: z.lazy(() => AlbumWhereInputSchema).optional()
 }).strict();
 
-export const AlbumUpdateToOneWithWhereWithoutImagesInputSchema: z.ZodType<Prisma.AlbumUpdateToOneWithWhereWithoutImagesInput> = z.object({
+export const AlbumUpdateToOneWithWhereWithoutMediaInputSchema: z.ZodType<Prisma.AlbumUpdateToOneWithWhereWithoutMediaInput> = z.object({
   where: z.lazy(() => AlbumWhereInputSchema).optional(),
-  data: z.union([ z.lazy(() => AlbumUpdateWithoutImagesInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutImagesInputSchema) ]),
+  data: z.union([ z.lazy(() => AlbumUpdateWithoutMediaInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutMediaInputSchema) ]),
 }).strict();
 
-export const AlbumUpdateWithoutImagesInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutImagesInput> = z.object({
+export const AlbumUpdateWithoutMediaInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutMediaInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
-export const AlbumUncheckedUpdateWithoutImagesInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutImagesInput> = z.object({
+export const AlbumUncheckedUpdateWithoutMediaInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutMediaInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
@@ -1321,8 +1321,8 @@ export const SubscribedChannelUncheckedUpdateManyWithoutGuildInputSchema: z.ZodT
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const ImageCreateManyAlbumInputSchema: z.ZodType<Prisma.ImageCreateManyAlbumInput> = z.object({
-  imageId: z.string(),
+export const MediaCreateManyAlbumInputSchema: z.ZodType<Prisma.MediaCreateManyAlbumInput> = z.object({
+  mediaId: z.string(),
   description: z.string().optional().nullable()
 }).strict();
 
@@ -1331,18 +1331,18 @@ export const SubscribedChannelCreateManyAlbumInputSchema: z.ZodType<Prisma.Subsc
   guildId: z.string()
 }).strict();
 
-export const ImageUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUpdateWithoutAlbumInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpdateWithoutAlbumInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export const ImageUncheckedUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUncheckedUpdateWithoutAlbumInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUncheckedUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateWithoutAlbumInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export const ImageUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodType<Prisma.ImageUncheckedUpdateManyWithoutAlbumInput> = z.object({
-  imageId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const MediaUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyWithoutAlbumInput> = z.object({
+  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
@@ -1566,70 +1566,70 @@ export const SubscribedChannelFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.Subs
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageFindFirstArgsSchema: z.ZodType<Prisma.ImageFindFirstArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereInputSchema.optional(),
-  orderBy: z.union([ ImageOrderByWithRelationInputSchema.array(),ImageOrderByWithRelationInputSchema ]).optional(),
-  cursor: ImageWhereUniqueInputSchema.optional(),
+export const MediaFindFirstArgsSchema: z.ZodType<Prisma.MediaFindFirstArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereInputSchema.optional(),
+  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
+  cursor: MediaWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ ImageScalarFieldEnumSchema,ImageScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ MediaScalarFieldEnumSchema,MediaScalarFieldEnumSchema.array() ]).optional(),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageFindFirstOrThrowArgsSchema: z.ZodType<Prisma.ImageFindFirstOrThrowArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereInputSchema.optional(),
-  orderBy: z.union([ ImageOrderByWithRelationInputSchema.array(),ImageOrderByWithRelationInputSchema ]).optional(),
-  cursor: ImageWhereUniqueInputSchema.optional(),
+export const MediaFindFirstOrThrowArgsSchema: z.ZodType<Prisma.MediaFindFirstOrThrowArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereInputSchema.optional(),
+  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
+  cursor: MediaWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ ImageScalarFieldEnumSchema,ImageScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ MediaScalarFieldEnumSchema,MediaScalarFieldEnumSchema.array() ]).optional(),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageFindManyArgsSchema: z.ZodType<Prisma.ImageFindManyArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereInputSchema.optional(),
-  orderBy: z.union([ ImageOrderByWithRelationInputSchema.array(),ImageOrderByWithRelationInputSchema ]).optional(),
-  cursor: ImageWhereUniqueInputSchema.optional(),
+export const MediaFindManyArgsSchema: z.ZodType<Prisma.MediaFindManyArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereInputSchema.optional(),
+  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
+  cursor: MediaWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ ImageScalarFieldEnumSchema,ImageScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ MediaScalarFieldEnumSchema,MediaScalarFieldEnumSchema.array() ]).optional(),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageAggregateArgsSchema: z.ZodType<Prisma.ImageAggregateArgs> = z.object({
-  where: ImageWhereInputSchema.optional(),
-  orderBy: z.union([ ImageOrderByWithRelationInputSchema.array(),ImageOrderByWithRelationInputSchema ]).optional(),
-  cursor: ImageWhereUniqueInputSchema.optional(),
+export const MediaAggregateArgsSchema: z.ZodType<Prisma.MediaAggregateArgs> = z.object({
+  where: MediaWhereInputSchema.optional(),
+  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
+  cursor: MediaWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
 }).strict() ;
 
-export const ImageGroupByArgsSchema: z.ZodType<Prisma.ImageGroupByArgs> = z.object({
-  where: ImageWhereInputSchema.optional(),
-  orderBy: z.union([ ImageOrderByWithAggregationInputSchema.array(),ImageOrderByWithAggregationInputSchema ]).optional(),
-  by: ImageScalarFieldEnumSchema.array(),
-  having: ImageScalarWhereWithAggregatesInputSchema.optional(),
+export const MediaGroupByArgsSchema: z.ZodType<Prisma.MediaGroupByArgs> = z.object({
+  where: MediaWhereInputSchema.optional(),
+  orderBy: z.union([ MediaOrderByWithAggregationInputSchema.array(),MediaOrderByWithAggregationInputSchema ]).optional(),
+  by: MediaScalarFieldEnumSchema.array(),
+  having: MediaScalarWhereWithAggregatesInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
 }).strict() ;
 
-export const ImageFindUniqueArgsSchema: z.ZodType<Prisma.ImageFindUniqueArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereUniqueInputSchema,
+export const MediaFindUniqueArgsSchema: z.ZodType<Prisma.MediaFindUniqueArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.ImageFindUniqueOrThrowArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereUniqueInputSchema,
+export const MediaFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.MediaFindUniqueOrThrowArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
@@ -1783,52 +1783,52 @@ export const SubscribedChannelDeleteManyArgsSchema: z.ZodType<Prisma.SubscribedC
   where: SubscribedChannelWhereInputSchema.optional(),
 }).strict() ;
 
-export const ImageCreateArgsSchema: z.ZodType<Prisma.ImageCreateArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  data: z.union([ ImageCreateInputSchema,ImageUncheckedCreateInputSchema ]),
+export const MediaCreateArgsSchema: z.ZodType<Prisma.MediaCreateArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  data: z.union([ MediaCreateInputSchema,MediaUncheckedCreateInputSchema ]),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageUpsertArgsSchema: z.ZodType<Prisma.ImageUpsertArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereUniqueInputSchema,
-  create: z.union([ ImageCreateInputSchema,ImageUncheckedCreateInputSchema ]),
-  update: z.union([ ImageUpdateInputSchema,ImageUncheckedUpdateInputSchema ]),
+export const MediaUpsertArgsSchema: z.ZodType<Prisma.MediaUpsertArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereUniqueInputSchema,
+  create: z.union([ MediaCreateInputSchema,MediaUncheckedCreateInputSchema ]),
+  update: z.union([ MediaUpdateInputSchema,MediaUncheckedUpdateInputSchema ]),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageCreateManyArgsSchema: z.ZodType<Prisma.ImageCreateManyArgs> = z.object({
-  data: z.union([ ImageCreateManyInputSchema,ImageCreateManyInputSchema.array() ]),
+export const MediaCreateManyArgsSchema: z.ZodType<Prisma.MediaCreateManyArgs> = z.object({
+  data: z.union([ MediaCreateManyInputSchema,MediaCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
-export const ImageCreateManyAndReturnArgsSchema: z.ZodType<Prisma.ImageCreateManyAndReturnArgs> = z.object({
-  data: z.union([ ImageCreateManyInputSchema,ImageCreateManyInputSchema.array() ]),
+export const MediaCreateManyAndReturnArgsSchema: z.ZodType<Prisma.MediaCreateManyAndReturnArgs> = z.object({
+  data: z.union([ MediaCreateManyInputSchema,MediaCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
-export const ImageDeleteArgsSchema: z.ZodType<Prisma.ImageDeleteArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  where: ImageWhereUniqueInputSchema,
+export const MediaDeleteArgsSchema: z.ZodType<Prisma.MediaDeleteArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  where: MediaWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageUpdateArgsSchema: z.ZodType<Prisma.ImageUpdateArgs> = z.object({
-  select: ImageSelectSchema.optional(),
-  include: ImageIncludeSchema.optional(),
-  data: z.union([ ImageUpdateInputSchema,ImageUncheckedUpdateInputSchema ]),
-  where: ImageWhereUniqueInputSchema,
+export const MediaUpdateArgsSchema: z.ZodType<Prisma.MediaUpdateArgs> = z.object({
+  select: MediaSelectSchema.optional(),
+  include: MediaIncludeSchema.optional(),
+  data: z.union([ MediaUpdateInputSchema,MediaUncheckedUpdateInputSchema ]),
+  where: MediaWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const ImageUpdateManyArgsSchema: z.ZodType<Prisma.ImageUpdateManyArgs> = z.object({
-  data: z.union([ ImageUpdateManyMutationInputSchema,ImageUncheckedUpdateManyInputSchema ]),
-  where: ImageWhereInputSchema.optional(),
+export const MediaUpdateManyArgsSchema: z.ZodType<Prisma.MediaUpdateManyArgs> = z.object({
+  data: z.union([ MediaUpdateManyMutationInputSchema,MediaUncheckedUpdateManyInputSchema ]),
+  where: MediaWhereInputSchema.optional(),
 }).strict() ;
 
-export const ImageDeleteManyArgsSchema: z.ZodType<Prisma.ImageDeleteManyArgs> = z.object({
-  where: ImageWhereInputSchema.optional(),
+export const MediaDeleteManyArgsSchema: z.ZodType<Prisma.MediaDeleteManyArgs> = z.object({
+  where: MediaWhereInputSchema.optional(),
 }).strict() ;

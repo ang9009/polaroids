@@ -1,5 +1,5 @@
-import { ErrorResponse } from "shared/error-responses/errorResponse";
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import { ErrorResponse } from "shared/src/error-responses/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";
 
@@ -7,13 +7,13 @@ import { HttpException } from "./httpException";
  * A generic exception that is thrown when an unknown exception type occurs.
  * Allows for a message to be provided.
  */
-class GenericException implements HttpException {
+class UnknownException implements HttpException {
   readonly status: HttpStatusCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
   readonly name: string;
   readonly message: string;
 
   /**
-   * Constructor for a GenericException.
+   * Constructor for an UnknownException.
    * @param message the message for this exception
    */
   constructor(message: string) {
@@ -27,4 +27,4 @@ class GenericException implements HttpException {
   }
 }
 
-export default GenericException;
+export default UnknownException;

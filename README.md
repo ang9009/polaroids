@@ -41,7 +41,7 @@ set polaroids up for yourself:
    FS_API_URL=XXXX
    FS_API_USERNAME=XXXX
    FS_API_PASSWORD=XXXX
-   FS_SID_KEY=XXXX # This can be whatever you want
+   FS_SESSION_ID_KEY=XXXX # This can be whatever you want
 
    # The port for the API
    PORT=XXXX

@@ -1,19 +1,18 @@
 import dotenv from "dotenv";
 import "dotenv/config";
 import express from "express";
-import { updateFSSessionId } from "./api/updateFSSessionId";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
-import albums from "./routes/albums";
-import guilds from "./routes/guilds";
-import subscribedChannels from "./routes/subbedChannels";
+import albums from "./routes/albums.routes";
+import guilds from "./routes/guilds.routes";
+import subscribedChannels from "./routes/subbedChannels.routes";
 
 dotenv.config();
 
 const port = process.env.PORT || 5000;
 const app = express();
-await updateFSSessionId();
+// await updateFSSessionId();
 
 // Body parser middleware
 app.use(express.json());

@@ -24,7 +24,7 @@ model Album {
   name String @unique @db.VarChar(255) /// The name of the folder on FileStation
   description String @db.VarChar(255) /// The album's description
 
-  images Image[] /// The images in this album
+  media Media[] /// The media in this album
   channels SubscribedChannel[] /// The channels this album is associated with
 }
 
@@ -40,11 +40,11 @@ model SubscribedChannel {
 }
 
 
-/// Images that correspond to to images saved to FileStation
-model Image {
-  imageId String @id @db.VarChar(255) /// The image's id
-  description String? @db.VarChar(255) /// A description of the image
+/// Corresponds to images/videos saved to FileStation
+model Media {
+  mediaId String @id @db.VarChar(255) /// The media's id
+  description String? @db.VarChar(255) /// A description of the media
 
-  albumName String /// The name of the album the image is in
+  albumName String /// The name of the album the media is in
   album Album @relation(fields: [albumName], references: [name], onDelete: Cascade)
 }

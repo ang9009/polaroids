@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-// The response shape that is returned when getting a session id from FileStation
-export const FileStationAuthResSchema = z.object({
-  data: z.object({
-    sid: z.string(),
-  }),
-  success: z.boolean(),
+// The response shape of the data property that is returned when getting a session id
+// from FileStation
+export const FileStationAuthDataSchema = z.object({
+  sid: z.string(),
 });
+
+export type FileStationAuthData = z.infer<typeof FileStationAuthDataSchema>;

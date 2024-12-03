@@ -5,7 +5,7 @@ import {
   createAlbumAndLinkChannel,
   getAllSubbedChannels,
   updateChannelAlbum,
-} from "../controllers/subbedChannelsController";
+} from "../controllers/subbedChannels.controller";
 
 const router = Router();
 

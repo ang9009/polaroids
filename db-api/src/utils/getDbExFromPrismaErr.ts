@@ -1,6 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import DbException from "../types/error/dbException";
-import GenericException from "../types/error/genericException";
+import UnknownException from "../types/error/genericException";
 import { HttpException } from "../types/error/httpException";
 
 /**
@@ -14,5 +14,5 @@ export const getDbExFromPrismaErr = (err: unknown): HttpException => {
   if (err instanceof PrismaClientKnownRequestError) {
     return new DbException(err);
   }
-  return new GenericException("An unknown database-related exception occurred: " + err);
+  return new UnknownException("An unknown database-related exception occurred: " + err);
 };

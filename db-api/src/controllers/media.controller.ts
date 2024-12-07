@@ -1,15 +1,15 @@
 import { UploadMediaRequestSchema } from "shared/src/media-requests/UploadMediaRequest";
-import { getDbExFromPrismaErr } from "./../utils/getDbExFromPrismaErr";
 /* eslint-disable jsdoc/require-param */
-import { Media } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import successJson from "../data/successJson";
-import prisma from "../lib/prisma";
 import UnknownException from "../types/error/genericException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
+import { Media } from "@prisma/client";
+import prisma from "../lib/prisma";
+import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array(
   "files",

@@ -3,25 +3,11 @@ import { getValue, setValue } from "node-global-storage";
 import puppeteer, { Browser, Page } from "puppeteer";
 import { sessionIdKey, synoTokenKey } from "../data/constants";
 
-type SynoTokenResponse = {
-  SynoToken: string;
-};
-
-/**
- * Determines whether a response is a SynoTokenResponse.
- * @param synoTokenRes the response object in question
- * @returns whether it is a SynoTokenResponse
- */
-const isSynoTokenResponse = (synoTokenRes: unknown): synoTokenRes is SynoTokenResponse => {
-  return (synoTokenRes as SynoTokenResponse).SynoToken !== undefined;
-};
-
 /**
  * Updates the FileStation session id and SYNO-TOKEN stored in localstorage.
  */
 export const updateFSCredentials = async () => {
   console.log("Updating session id...");
-
   const { FS_API_URL } = process.env;
   const url = `${FS_API_URL}/webman/index.cgi`;
 
@@ -54,6 +40,19 @@ async function updateSessionId(browser: Browser) {
   setValue(sessionIdKey, sessionIdCookie.value);
 }
 
+type SynoTokenResponse = {
+  SynoToken: string;
+};
+
+/**
+ * Determines whether a response is a SynoTokenResponse.
+ * @param synoTokenRes the response object in question
+ * @returns whether it is a SynoTokenResponse
+ */
+const isSynoTokenResponse = (synoTokenRes: unknown): synoTokenRes is SynoTokenResponse => {
+  return (synoTokenRes as SynoTokenResponse).SynoToken !== undefined;
+};
+
 /**
  * Waits for the syno token response, which is received after logging in successfully.
  * @param page the login page
@@ -84,6 +83,8 @@ async function submitLoginForm(page: Page) {
   }
   await usernameField.type(FS_API_USERNAME!);
   await passwordField.type(FS_API_PASSWORD!);
-  await page.click("#ext-gen22"); // "Remember me"
-  await page.click("#ext-gen23");
+  const rememberMeBtnId = "#ext-gen22";
+  const submitBtnId = "#ext-gen23";
+  await page.click(rememberMeBtnId);
+  await page.click(submitBtnId);
 }

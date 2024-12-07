@@ -1,20 +1,27 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const statusCodes_1 = __importDefault(require("../../data/statusCodes"));
+import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import HttpStatusCode from "../../data/statusCodes";
+import getDbErrorType from "../../utils/getDbErrorType";
 /**
  * Represents when something goes wrong with a call using the Prisma client.
  */
 class DbException {
+    /**
+     * The constructor for a DbException.
+     * @param prismaError the related Prisma Client error
+     */
     constructor(prismaError) {
-        this.status = statusCodes_1.default.INTERNAL_SERVER_ERROR;
+        this.status = HttpStatusCode.INTERNAL_SERVER_ERROR;
         this.name = "DbException";
         this.message = prismaError.message;
+        this.dbErrorCode = getDbErrorType(prismaError);
     }
+    // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
-        return { message: this.message };
+        return {
+            error: DbApiErrorType.DB_EXCEPTION,
+            message: this.message,
+            dbErrorCode: this.dbErrorCode,
+        };
     }
 }
-exports.default = DbException;
+export default DbException;

@@ -14,6 +14,8 @@ const messageCreate: EventData<Message> = {
     if (!isSubscribed) {
       return;
     }
+    const attachments = [...message.attachments.values()];
+    const attachmentFileUrls = attachments.map((attachment) => attachment.url);
   },
 };
 

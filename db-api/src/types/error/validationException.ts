@@ -1,5 +1,5 @@
-import { ValidationExceptionResponse } from "shared/error-responses/validationExceptionResponse";
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import { ValidationExceptionResponse } from "shared/src/error-responses/validationExceptionResponse";
 import { ZodError, ZodIssue } from "zod";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.errorHandler = void 0;
-const colors_1 = require("colors");
+import colors from "colors";
 /**
  * Universal error handler middleware.
  * @param err the error object
@@ -9,8 +6,7 @@ const colors_1 = require("colors");
  * @param res response
  * @param next next function
  */
-const errorHandler = (err, req, res, next) => {
-    console.error((0, colors_1.red)(JSON.stringify(err.getResponse())));
+export const errorHandler = (err, req, res, next) => {
+    console.error(colors.red(JSON.stringify(err.getResponse())));
     res.status(err.status).json(err.getResponse());
 };
-exports.errorHandler = errorHandler;

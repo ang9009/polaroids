@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import HttpException from "../types/error/httpException";
+import { HttpException } from "../types/error/httpException";
 /**
  * Universal error handler middleware.
  * @param err the error object

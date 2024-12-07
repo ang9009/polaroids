@@ -1,21 +1,20 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const statusCodes_1 = __importDefault(require("../../data/statusCodes"));
+import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import HttpStatusCode from "../../data/statusCodes";
 /**
- * Represents when a request does not have the necessary parameters/parameters
- * don't have the right types.
+ * Thrown when a user tries to access a route that does not exist.
  */
 class NotFoundException {
+    /**
+     * Constructor for a NotFoundException.
+     */
     constructor() {
-        this.status = statusCodes_1.default.BAD_REQUEST;
+        this.status = HttpStatusCode.BAD_REQUEST;
         this.name = "NotFoundException";
-        this.message = "Not found";
+        this.message = "Route could not be found";
     }
+    // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
-        return { message: this.message };
+        return { message: this.message, error: DbApiErrorType.NOT_FOUND_EXCEPTION };
     }
 }
-exports.default = NotFoundException;
+export default NotFoundException;

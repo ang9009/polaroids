@@ -16,7 +16,7 @@ export const updateFSCredentials = async () => {
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
 
-  // Submit login form and get syno token request response
+  // Submit login form and get syno token and session id
   await submitLoginForm(page);
   await updateSynoToken(page);
   await updateSessionId(browser);
@@ -34,7 +34,7 @@ export const updateFSCredentials = async () => {
 async function updateSessionId(browser: Browser) {
   const cookies = await browser.cookies();
   if (cookies.length < 2) {
-    throw Error("Got unexpected number of cookies");
+    throw Error("Expected 2 cookies, but got " + cookies.length);
   }
   const sessionIdCookie = cookies[1];
   setValue(sessionIdKey, sessionIdCookie.value);

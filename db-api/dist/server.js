@@ -1,26 +1,29 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-require("dotenv/config");
-const express_1 = __importDefault(require("express"));
-const errorHandler_1 = require("./middleware/errorHandler");
-const logger_1 = require("./middleware/logger");
-const notFound_1 = require("./middleware/notFound");
-const albums_1 = __importDefault(require("./routes/albums"));
-const guilds_1 = __importDefault(require("./routes/guilds"));
+import dotenv from "dotenv";
+import "dotenv/config";
+import express from "express";
+import { updateFSCredentials } from "./api/updateFSCredentials";
+import { errorHandler } from "./middleware/errorHandler";
+import { logger } from "./middleware/logger";
+import { notFound } from "./middleware/notFound";
+import albums from "./routes/albums.routes";
+import guilds from "./routes/guilds.routes";
+import media from "./routes/media.routes";
+import subscribedChannels from "./routes/subbedChannels.routes";
+dotenv.config();
 const port = process.env.PORT || 5000;
-const app = (0, express_1.default)();
+const app = express();
+await updateFSCredentials();
 // Body parser middleware
-app.use(express_1.default.json());
-app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 // Logger middleware
-app.use(logger_1.logger);
+app.use(logger);
 // Routes
-app.use("/api/album", albums_1.default);
-app.use("/api/guild", guilds_1.default);
+app.use("/api/albums", albums);
+app.use("/api/guilds", guilds);
+app.use("/api/subscribed-channels", subscribedChannels);
+app.use("/api/media", media);
 // Error handlers
-app.use(notFound_1.notFound);
-app.use(errorHandler_1.errorHandler);
+app.use(notFound);
+app.use(errorHandler);
 app.listen(port, () => console.log(`Server running on port ${port}`));

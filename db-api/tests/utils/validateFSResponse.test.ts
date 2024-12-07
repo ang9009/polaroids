@@ -1,8 +1,8 @@
 import { AxiosRequestHeaders, AxiosResponse } from "axios";
 import { expect, test } from "vitest";
-import { FileStationAuthDataSchema } from "../types/response-schemas/FileStationAuthRes";
-import { FileStationResponse } from "../types/response-schemas/FileStationResponse";
-import { validateFSResponse } from "../utils/validateFSResponse";
+import { FileStationAuthDataSchema } from "../../src/types/response-schemas/FileStationAuthRes";
+import { FileStationResponse } from "../../src/types/response-schemas/FileStationResponse";
+import { validateFSResponse } from "./../../src/utils/validateFSResponse";
 
 test("validateFSResponse returns expected object", () => {
   const fsResponse: FileStationResponse = {

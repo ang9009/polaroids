@@ -14,7 +14,6 @@ export const uploadFilesToFS = async (files: Express.Multer.File[]) => {
     }
   } catch (err) {
     if (isAxiosError(err)) {
-      console.log(err.response);
       throw Error("An error occurred while trying to upload files to FileStation: " + err.code);
     }
   }
@@ -42,8 +41,6 @@ async function uploadFile(file: Express.Multer.File) {
   form.append("overwrite", "false");
   form.append("path", FS_FOLDER_PATH!);
   form.append("file", blob, file.originalname);
-  console.log(url, headers, form);
 
-  const res = await axios.post(url, form, { headers: headers });
-  console.log(res.data);
+  await axios.post(url, form, { headers: headers });
 }

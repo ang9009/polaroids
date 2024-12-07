@@ -21,6 +21,8 @@ import { AlbumSelectionType } from "../data/albumSelectionType";
  * @param onAlbumSelect a callback function that is called when the user makes a
  *        selection. This function provides the selected album (selection) and the new
  *        interaction object (interaction) to the caller.
+ * @param linkedAlbum the album that this channel is already linked to. This
+ *        album will be omitted from the dropdown.
  */
 export const showAlbumDropdown = async (
   msg: string,
@@ -29,6 +31,7 @@ export const showAlbumDropdown = async (
     selection: AlbumDropdownSelection,
     interaction: StringSelectMenuInteraction<CacheType>,
   ) => void,
+  linkedAlbum?: string,
 ) => {
   const albums: Album[] = await getAlbums();
 
@@ -45,6 +48,9 @@ export const showAlbumDropdown = async (
 
   // Add the rest of the albums as options
   for (const album of albums) {
+    if (album.name === linkedAlbum) {
+      continue;
+    }
     const option = new StringSelectMenuOptionBuilder()
       .setLabel(album.name)
       .setDescription(album.description)

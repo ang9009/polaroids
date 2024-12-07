@@ -24,10 +24,11 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   let msg: string;
 
   if (channelSubData.isSubscribed) {
+    const linkedAlbum = channelSubData.linkedAlbum!;
     msg =
-      `This channel is currently linked to album **${channelSubData.linkedAlbum!}**. ` +
+      `This channel is currently linked to album **${linkedAlbum}**. ` +
       "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
-    await handleAlbumSelection(msg, true, interaction);
+    await handleAlbumSelection(msg, true, interaction, linkedAlbum);
   } else {
     msg = "Select an album to link this channel to.";
     await handleAlbumSelection(msg, false, interaction);

@@ -6,14 +6,16 @@ import { getChannelSubData } from "../../../api/getChannelSubData";
 import { handleAlbumSelection } from "../helpers/handleAlbumSelection";
 
 /**
- * The slash command object for "subscribe", which is exported below. Users can
- * choose to create a new album, or select an existing one to link to the
- * channel this command was called in.
+ * A command used to subscribe polaroids to changes in a channel, and uploads attachments
+ * to an album that is specified after this command is invoked. Users can choose to create
+ * a new album, or select an existing one to link to the channel this command was called in.
  */
-const data = new SlashCommandBuilder().setName("subscribe").setDescription(
-  `Ask polaroids to watch this channel for media and automatically
-     upload it to a specified album`,
-);
+const data = new SlashCommandBuilder()
+  .setName("subscribe")
+  .setDescription(
+    "Ask polaroids to watch this channel for media" +
+      " and automatically upload it to a specified album",
+  );
 
 /**
  * The execute function for the "subscribe" command.

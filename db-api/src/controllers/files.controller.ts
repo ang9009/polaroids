@@ -1,4 +1,4 @@
-import { UploadMediaRequestSchema } from "shared/src/media-requests/UploadMediaRequest";
+import { UploadFilesReqBodySchema } from "shared/src/file-requests/UploadFilesReqBody";
 /* eslint-disable jsdoc/require-param */
 import { File } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
@@ -32,7 +32,7 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  */
 export const uploadFiles = async (req: Request, res: Response, next: NextFunction) => {
   upload(req, res, async (err) => {
-    const parseRes = UploadMediaRequestSchema.safeParse(req.body);
+    const parseRes = UploadFilesReqBodySchema.safeParse(req.body);
     if (!parseRes.success) {
       const error = new ValidationException(parseRes.error);
       return next(error);

@@ -6,7 +6,7 @@ import { FileData } from "../types/fileData";
  * @param files the files to be uploaded
  * @param albumName the name of the album the file will be associated with
  */
-export const uploadMedia = async (files: FileData[], albumName: string) => {
+export const uploadFiles = async (files: FileData[], albumName: string) => {
   const { DB_API_URL } = process.env;
   const url = `${DB_API_URL}/files`;
   const formData = new FormData();

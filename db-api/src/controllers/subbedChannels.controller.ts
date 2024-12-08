@@ -1,5 +1,6 @@
 import { GetSubbedChannelsResponse } from "shared/src/subbed-channels-responses/getSubbedChannelsResponse";
 import { GetAllSubbedChannelsReqSchema } from "./../../../bot/node_modules/shared/src/subbed-channel-requests/getAllSubbedChannelsReq";
+import { UnsubChannelReqSchema } from "./../../node_modules/shared/src/subbed-channel-requests/unsubChannelReq";
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
 
@@ -15,7 +16,7 @@ import ValidationException from "../types/error/validationException";
 import { AddSubChannelReqBodySchema } from "../types/request-schemas/addSubChannelReqBody";
 import { IsSubscribedQueryParamsSchema } from "../types/request-schemas/isSubscribedQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
-import { CreateAndLinkAlbumSchema } from "./../../node_modules/shared/src/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
+import { CreateAndLinkAlbumReqSchema } from "./../../node_modules/shared/src/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
 
 /**
  * Used to get the ids of all the subscribed channels for a given guild.
@@ -199,7 +200,7 @@ export const createAlbumAndLinkChannel = async (
   res: Response,
   next: NextFunction
 ) => {
-  const parseRes = CreateAndLinkAlbumSchema.safeParse(req.body);
+  const parseRes = CreateAndLinkAlbumReqSchema.safeParse(req.body);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -224,6 +225,34 @@ export const createAlbumAndLinkChannel = async (
           albumName: albumName,
         },
       });
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+
+  res.status(HttpStatusCode.OK).json(successJson);
+};
+
+/**
+ * Unsubscribes a given channel from polaroids by removing it its channel id
+ * from the database.
+ *
+ * Route: DELETE /api/subscribed-channels/:channelId
+ */
+export const removeSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {
+  const parsedRequest = UnsubChannelReqSchema.safeParse(req.params);
+  if (!parsedRequest.success) {
+    const error = new ValidationException(parsedRequest.error);
+    return next(error);
+  }
+  const { channelId } = parsedRequest.data;
+
+  try {
+    await prisma.subscribedChannel.delete({
+      where: {
+        channelId: channelId,
+      },
     });
   } catch (err) {
     const error = getDbExFromPrismaErr(err);

@@ -4,6 +4,7 @@ import {
   channelIsSubscribed,
   createAlbumAndLinkChannel,
   getAllSubbedChannels,
+  removeSubscribedChannel,
   updateChannelAlbum,
 } from "../controllers/subbedChannels.controller";
 
@@ -23,5 +24,8 @@ router.patch("/link-existing-album", updateChannelAlbum);
 
 // Create a new album, then link an existing channel to it
 router.patch("/link-new-album", createAlbumAndLinkChannel);
+
+// Unsubscribes polaroids from the specified channel
+router.delete("/:channelId", removeSubscribedChannel);
 
 export default router;

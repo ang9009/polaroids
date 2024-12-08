@@ -4,7 +4,7 @@ import { getChannelSubData } from "../../../api/getChannelSubData";
 import { EventData } from "../../../types/eventData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { getFileDataFromUrl } from "../api/getFileDataFromUrl";
-import { uploadMedia } from "../api/uploadMedia";
+import { uploadFiles } from "../api/uploadFiles";
 
 const messageCreate: EventData<Message> = {
   event: Events.MessageCreate,
@@ -35,7 +35,7 @@ const messageCreate: EventData<Message> = {
     const attachmentFiles = await Promise.all(attachmentFilePromises);
     try {
       // Since isSubscribed is true, linkedAlbum will not be undefined
-      await uploadMedia(attachmentFiles, linkedAlbum!);
+      await uploadFiles(attachmentFiles, linkedAlbum!);
     } catch (err) {
       if (isAxiosError(err)) {
         console.error(`Something went wrong while attempting to upload images: ${err.message}`);

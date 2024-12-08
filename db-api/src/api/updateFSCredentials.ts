@@ -7,7 +7,7 @@ import { sessionIdKey, synoTokenKey } from "../data/constants";
  * Updates the FileStation session id and SYNO-TOKEN stored in localstorage.
  */
 export const updateFSCredentials = async () => {
-  console.log("Updating session id...");
+  console.log("Updating FileStation credentials...");
   const { FS_API_URL } = process.env;
   const url = `${FS_API_URL}/webman/index.cgi`;
 

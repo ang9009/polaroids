@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const FileStationResponseSchema = z.discriminatedUnion("success", [
+export const FSResponseSchema = z.discriminatedUnion("success", [
   z.object({
     success: z.literal(true),
     data: z.any(),
@@ -13,4 +13,4 @@ export const FileStationResponseSchema = z.discriminatedUnion("success", [
   }),
 ]);
 
-export type FileStationResponse = z.infer<typeof FileStationResponseSchema>;
+export type FSResponse = z.infer<typeof FSResponseSchema>;

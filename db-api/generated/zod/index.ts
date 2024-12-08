@@ -20,7 +20,7 @@ export const AlbumScalarFieldEnumSchema = z.enum(['name','description']);
 
 export const SubscribedChannelScalarFieldEnumSchema = z.enum(['channelId','guildId','albumName']);
 
-export const MediaScalarFieldEnumSchema = z.enum(['mediaId','description','albumName']);
+export const FileScalarFieldEnumSchema = z.enum(['fileId','fileName','description','albumName']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -96,28 +96,32 @@ export const SubscribedChannelSchema = z.object({
 export type SubscribedChannel = z.infer<typeof SubscribedChannelSchema>
 
 /////////////////////////////////////////
-// MEDIA SCHEMA
+// FILE SCHEMA
 /////////////////////////////////////////
 
 /**
  * Corresponds to images/videos saved to FileStation
  */
-export const MediaSchema = z.object({
+export const FileSchema = z.object({
   /**
-   * The media's id
+   * The file's id
    */
-  mediaId: z.string(),
+  fileId: z.string(),
   /**
-   * A description of the media
+   * The file's name
+   */
+  fileName: z.string(),
+  /**
+   * A description of the photo/video
    */
   description: z.string().nullable(),
   /**
-   * The name of the album the media is in
+   * The name of the album the photo/video is in
    */
   albumName: z.string(),
 })
 
-export type Media = z.infer<typeof MediaSchema>
+export type File = z.infer<typeof FileSchema>
 
 /////////////////////////////////////////
 // SELECT & INCLUDE
@@ -155,7 +159,7 @@ export const GuildSelectSchema: z.ZodType<Prisma.GuildSelect> = z.object({
 //------------------------------------------------------
 
 export const AlbumIncludeSchema: z.ZodType<Prisma.AlbumInclude> = z.object({
-  media: z.union([z.boolean(),z.lazy(() => MediaFindManyArgsSchema)]).optional(),
+  media: z.union([z.boolean(),z.lazy(() => FileFindManyArgsSchema)]).optional(),
   channels: z.union([z.boolean(),z.lazy(() => SubscribedChannelFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AlbumCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -177,7 +181,7 @@ export const AlbumCountOutputTypeSelectSchema: z.ZodType<Prisma.AlbumCountOutput
 export const AlbumSelectSchema: z.ZodType<Prisma.AlbumSelect> = z.object({
   name: z.boolean().optional(),
   description: z.boolean().optional(),
-  media: z.union([z.boolean(),z.lazy(() => MediaFindManyArgsSchema)]).optional(),
+  media: z.union([z.boolean(),z.lazy(() => FileFindManyArgsSchema)]).optional(),
   channels: z.union([z.boolean(),z.lazy(() => SubscribedChannelFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AlbumCountOutputTypeArgsSchema)]).optional(),
 }).strict()
@@ -203,20 +207,21 @@ export const SubscribedChannelSelectSchema: z.ZodType<Prisma.SubscribedChannelSe
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
 }).strict()
 
-// MEDIA
+// FILE
 //------------------------------------------------------
 
-export const MediaIncludeSchema: z.ZodType<Prisma.MediaInclude> = z.object({
+export const FileIncludeSchema: z.ZodType<Prisma.FileInclude> = z.object({
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
 }).strict()
 
-export const MediaArgsSchema: z.ZodType<Prisma.MediaDefaultArgs> = z.object({
-  select: z.lazy(() => MediaSelectSchema).optional(),
-  include: z.lazy(() => MediaIncludeSchema).optional(),
+export const FileArgsSchema: z.ZodType<Prisma.FileDefaultArgs> = z.object({
+  select: z.lazy(() => FileSelectSchema).optional(),
+  include: z.lazy(() => FileIncludeSchema).optional(),
 }).strict();
 
-export const MediaSelectSchema: z.ZodType<Prisma.MediaSelect> = z.object({
-  mediaId: z.boolean().optional(),
+export const FileSelectSchema: z.ZodType<Prisma.FileSelect> = z.object({
+  fileId: z.boolean().optional(),
+  fileName: z.boolean().optional(),
   description: z.boolean().optional(),
   albumName: z.boolean().optional(),
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
@@ -276,14 +281,14 @@ export const AlbumWhereInputSchema: z.ZodType<Prisma.AlbumWhereInput> = z.object
   NOT: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  media: z.lazy(() => MediaListRelationFilterSchema).optional(),
+  media: z.lazy(() => FileListRelationFilterSchema).optional(),
   channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
 }).strict();
 
 export const AlbumOrderByWithRelationInputSchema: z.ZodType<Prisma.AlbumOrderByWithRelationInput> = z.object({
   name: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
-  media: z.lazy(() => MediaOrderByRelationAggregateInputSchema).optional(),
+  media: z.lazy(() => FileOrderByRelationAggregateInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
@@ -296,7 +301,7 @@ export const AlbumWhereUniqueInputSchema: z.ZodType<Prisma.AlbumWhereUniqueInput
   OR: z.lazy(() => AlbumWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
   description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  media: z.lazy(() => MediaListRelationFilterSchema).optional(),
+  media: z.lazy(() => FileListRelationFilterSchema).optional(),
   channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
 }).strict());
 
@@ -323,8 +328,8 @@ export const SubscribedChannelWhereInputSchema: z.ZodType<Prisma.SubscribedChann
   channelId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   guildId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  guild: z.union([ z.lazy(() => GuildRelationFilterSchema),z.lazy(() => GuildWhereInputSchema) ]).optional(),
-  album: z.union([ z.lazy(() => AlbumRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
+  guild: z.union([ z.lazy(() => GuildScalarRelationFilterSchema),z.lazy(() => GuildWhereInputSchema) ]).optional(),
+  album: z.union([ z.lazy(() => AlbumScalarRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
 }).strict();
 
 export const SubscribedChannelOrderByWithRelationInputSchema: z.ZodType<Prisma.SubscribedChannelOrderByWithRelationInput> = z.object({
@@ -345,8 +350,8 @@ export const SubscribedChannelWhereUniqueInputSchema: z.ZodType<Prisma.Subscribe
   NOT: z.union([ z.lazy(() => SubscribedChannelWhereInputSchema),z.lazy(() => SubscribedChannelWhereInputSchema).array() ]).optional(),
   guildId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  guild: z.union([ z.lazy(() => GuildRelationFilterSchema),z.lazy(() => GuildWhereInputSchema) ]).optional(),
-  album: z.union([ z.lazy(() => AlbumRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
+  guild: z.union([ z.lazy(() => GuildScalarRelationFilterSchema),z.lazy(() => GuildWhereInputSchema) ]).optional(),
+  album: z.union([ z.lazy(() => AlbumScalarRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
 }).strict());
 
 export const SubscribedChannelOrderByWithAggregationInputSchema: z.ZodType<Prisma.SubscribedChannelOrderByWithAggregationInput> = z.object({
@@ -367,50 +372,55 @@ export const SubscribedChannelScalarWhereWithAggregatesInputSchema: z.ZodType<Pr
   albumName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
-export const MediaWhereInputSchema: z.ZodType<Prisma.MediaWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => MediaWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
-  mediaId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+export const FileWhereInputSchema: z.ZodType<Prisma.FileWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FileWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
+  fileId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  fileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  album: z.union([ z.lazy(() => AlbumRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
+  album: z.union([ z.lazy(() => AlbumScalarRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
 }).strict();
 
-export const MediaOrderByWithRelationInputSchema: z.ZodType<Prisma.MediaOrderByWithRelationInput> = z.object({
-  mediaId: z.lazy(() => SortOrderSchema).optional(),
+export const FileOrderByWithRelationInputSchema: z.ZodType<Prisma.FileOrderByWithRelationInput> = z.object({
+  fileId: z.lazy(() => SortOrderSchema).optional(),
+  fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional(),
   album: z.lazy(() => AlbumOrderByWithRelationInputSchema).optional()
 }).strict();
 
-export const MediaWhereUniqueInputSchema: z.ZodType<Prisma.MediaWhereUniqueInput> = z.object({
-  mediaId: z.string()
+export const FileWhereUniqueInputSchema: z.ZodType<Prisma.FileWhereUniqueInput> = z.object({
+  fileId: z.string()
 })
 .and(z.object({
-  mediaId: z.string().optional(),
-  AND: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => MediaWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => MediaWhereInputSchema),z.lazy(() => MediaWhereInputSchema).array() ]).optional(),
+  fileId: z.string().optional(),
+  AND: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FileWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
+  fileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  album: z.union([ z.lazy(() => AlbumRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
+  album: z.union([ z.lazy(() => AlbumScalarRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
 }).strict());
 
-export const MediaOrderByWithAggregationInputSchema: z.ZodType<Prisma.MediaOrderByWithAggregationInput> = z.object({
-  mediaId: z.lazy(() => SortOrderSchema).optional(),
+export const FileOrderByWithAggregationInputSchema: z.ZodType<Prisma.FileOrderByWithAggregationInput> = z.object({
+  fileId: z.lazy(() => SortOrderSchema).optional(),
+  fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional(),
-  _count: z.lazy(() => MediaCountOrderByAggregateInputSchema).optional(),
-  _max: z.lazy(() => MediaMaxOrderByAggregateInputSchema).optional(),
-  _min: z.lazy(() => MediaMinOrderByAggregateInputSchema).optional()
+  _count: z.lazy(() => FileCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => FileMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => FileMinOrderByAggregateInputSchema).optional()
 }).strict();
 
-export const MediaScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.MediaScalarWhereWithAggregatesInput> = z.object({
-  AND: z.union([ z.lazy(() => MediaScalarWhereWithAggregatesInputSchema),z.lazy(() => MediaScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  OR: z.lazy(() => MediaScalarWhereWithAggregatesInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => MediaScalarWhereWithAggregatesInputSchema),z.lazy(() => MediaScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  mediaId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+export const FileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FileScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => FileScalarWhereWithAggregatesInputSchema),z.lazy(() => FileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FileScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FileScalarWhereWithAggregatesInputSchema),z.lazy(() => FileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  fileId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  fileName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
@@ -457,28 +467,28 @@ export const GuildUncheckedUpdateManyInputSchema: z.ZodType<Prisma.GuildUnchecke
 export const AlbumCreateInputSchema: z.ZodType<Prisma.AlbumCreateInput> = z.object({
   name: z.string(),
   description: z.string(),
-  media: z.lazy(() => MediaCreateNestedManyWithoutAlbumInputSchema).optional(),
+  media: z.lazy(() => FileCreateNestedManyWithoutAlbumInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateInput> = z.object({
   name: z.string(),
   description: z.string(),
-  media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
+  media: z.lazy(() => FileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUpdateInputSchema: z.ZodType<Prisma.AlbumUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  media: z.lazy(() => MediaUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  media: z.lazy(() => FileUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  media: z.lazy(() => MediaUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  media: z.lazy(() => FileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
@@ -537,43 +547,50 @@ export const SubscribedChannelUncheckedUpdateManyInputSchema: z.ZodType<Prisma.S
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const MediaCreateInputSchema: z.ZodType<Prisma.MediaCreateInput> = z.object({
-  mediaId: z.string(),
+export const FileCreateInputSchema: z.ZodType<Prisma.FileCreateInput> = z.object({
+  fileId: z.string(),
+  fileName: z.string(),
   description: z.string().optional().nullable(),
   album: z.lazy(() => AlbumCreateNestedOneWithoutMediaInputSchema)
 }).strict();
 
-export const MediaUncheckedCreateInputSchema: z.ZodType<Prisma.MediaUncheckedCreateInput> = z.object({
-  mediaId: z.string(),
+export const FileUncheckedCreateInputSchema: z.ZodType<Prisma.FileUncheckedCreateInput> = z.object({
+  fileId: z.string(),
+  fileName: z.string(),
   description: z.string().optional().nullable(),
   albumName: z.string()
 }).strict();
 
-export const MediaUpdateInputSchema: z.ZodType<Prisma.MediaUpdateInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUpdateInputSchema: z.ZodType<Prisma.FileUpdateInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   album: z.lazy(() => AlbumUpdateOneRequiredWithoutMediaNestedInputSchema).optional()
 }).strict();
 
-export const MediaUncheckedUpdateInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUncheckedUpdateInputSchema: z.ZodType<Prisma.FileUncheckedUpdateInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const MediaCreateManyInputSchema: z.ZodType<Prisma.MediaCreateManyInput> = z.object({
-  mediaId: z.string(),
+export const FileCreateManyInputSchema: z.ZodType<Prisma.FileCreateManyInput> = z.object({
+  fileId: z.string(),
+  fileName: z.string(),
   description: z.string().optional().nullable(),
   albumName: z.string()
 }).strict();
 
-export const MediaUpdateManyMutationInputSchema: z.ZodType<Prisma.MediaUpdateManyMutationInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUpdateManyMutationInputSchema: z.ZodType<Prisma.FileUpdateManyMutationInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export const MediaUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FileUncheckedUpdateManyInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
@@ -661,13 +678,13 @@ export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAg
   _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
 
-export const MediaListRelationFilterSchema: z.ZodType<Prisma.MediaListRelationFilter> = z.object({
-  every: z.lazy(() => MediaWhereInputSchema).optional(),
-  some: z.lazy(() => MediaWhereInputSchema).optional(),
-  none: z.lazy(() => MediaWhereInputSchema).optional()
+export const FileListRelationFilterSchema: z.ZodType<Prisma.FileListRelationFilter> = z.object({
+  every: z.lazy(() => FileWhereInputSchema).optional(),
+  some: z.lazy(() => FileWhereInputSchema).optional(),
+  none: z.lazy(() => FileWhereInputSchema).optional()
 }).strict();
 
-export const MediaOrderByRelationAggregateInputSchema: z.ZodType<Prisma.MediaOrderByRelationAggregateInput> = z.object({
+export const FileOrderByRelationAggregateInputSchema: z.ZodType<Prisma.FileOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -686,12 +703,12 @@ export const AlbumMinOrderByAggregateInputSchema: z.ZodType<Prisma.AlbumMinOrder
   description: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const GuildRelationFilterSchema: z.ZodType<Prisma.GuildRelationFilter> = z.object({
+export const GuildScalarRelationFilterSchema: z.ZodType<Prisma.GuildScalarRelationFilter> = z.object({
   is: z.lazy(() => GuildWhereInputSchema).optional(),
   isNot: z.lazy(() => GuildWhereInputSchema).optional()
 }).strict();
 
-export const AlbumRelationFilterSchema: z.ZodType<Prisma.AlbumRelationFilter> = z.object({
+export const AlbumScalarRelationFilterSchema: z.ZodType<Prisma.AlbumScalarRelationFilter> = z.object({
   is: z.lazy(() => AlbumWhereInputSchema).optional(),
   isNot: z.lazy(() => AlbumWhereInputSchema).optional()
 }).strict();
@@ -734,20 +751,23 @@ export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
   nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 
-export const MediaCountOrderByAggregateInputSchema: z.ZodType<Prisma.MediaCountOrderByAggregateInput> = z.object({
-  mediaId: z.lazy(() => SortOrderSchema).optional(),
+export const FileCountOrderByAggregateInputSchema: z.ZodType<Prisma.FileCountOrderByAggregateInput> = z.object({
+  fileId: z.lazy(() => SortOrderSchema).optional(),
+  fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const MediaMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMaxOrderByAggregateInput> = z.object({
-  mediaId: z.lazy(() => SortOrderSchema).optional(),
+export const FileMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FileMaxOrderByAggregateInput> = z.object({
+  fileId: z.lazy(() => SortOrderSchema).optional(),
+  fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const MediaMinOrderByAggregateInputSchema: z.ZodType<Prisma.MediaMinOrderByAggregateInput> = z.object({
-  mediaId: z.lazy(() => SortOrderSchema).optional(),
+export const FileMinOrderByAggregateInputSchema: z.ZodType<Prisma.FileMinOrderByAggregateInput> = z.object({
+  fileId: z.lazy(() => SortOrderSchema).optional(),
+  fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -820,11 +840,11 @@ export const SubscribedChannelUncheckedUpdateManyWithoutGuildNestedInputSchema: 
   deleteMany: z.union([ z.lazy(() => SubscribedChannelScalarWhereInputSchema),z.lazy(() => SubscribedChannelScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const MediaCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaCreateNestedManyWithoutAlbumInput> = z.object({
-  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+export const FileCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.FileCreateNestedManyWithoutAlbumInput> = z.object({
+  create: z.union([ z.lazy(() => FileCreateWithoutAlbumInputSchema),z.lazy(() => FileCreateWithoutAlbumInputSchema).array(),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FileCreateManyAlbumInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.SubscribedChannelCreateNestedManyWithoutAlbumInput> = z.object({
@@ -834,11 +854,11 @@ export const SubscribedChannelCreateNestedManyWithoutAlbumInputSchema: z.ZodType
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const MediaUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
-  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
-  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
+export const FileUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
+  create: z.union([ z.lazy(() => FileCreateWithoutAlbumInputSchema),z.lazy(() => FileCreateWithoutAlbumInputSchema).array(),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FileCreateManyAlbumInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
@@ -848,18 +868,18 @@ export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema: 
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
-export const MediaUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.MediaUpdateManyWithoutAlbumNestedInput> = z.object({
-  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
+export const FileUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.FileUpdateManyWithoutAlbumNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FileCreateWithoutAlbumInputSchema),z.lazy(() => FileCreateWithoutAlbumInputSchema).array(),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FileUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FileUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FileCreateManyAlbumInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FileUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FileUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FileUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => FileUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FileScalarWhereInputSchema),z.lazy(() => FileScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.SubscribedChannelUpdateManyWithoutAlbumNestedInput> = z.object({
@@ -876,18 +896,18 @@ export const SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema: z.ZodType
   deleteMany: z.union([ z.lazy(() => SubscribedChannelScalarWhereInputSchema),z.lazy(() => SubscribedChannelScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
-export const MediaUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
-  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
-  connectOrCreate: z.union([ z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
-  upsert: z.union([ z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  createMany: z.lazy(() => MediaCreateManyAlbumInputEnvelopeSchema).optional(),
-  set: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  disconnect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  delete: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  connect: z.union([ z.lazy(() => MediaWhereUniqueInputSchema),z.lazy(() => MediaWhereUniqueInputSchema).array() ]).optional(),
-  update: z.union([ z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => MediaUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
-  updateMany: z.union([ z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => MediaUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
-  deleteMany: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
+export const FileUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.FileUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FileCreateWithoutAlbumInputSchema),z.lazy(() => FileCreateWithoutAlbumInputSchema).array(),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FileCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FileUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FileUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FileCreateManyAlbumInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FileWhereUniqueInputSchema),z.lazy(() => FileWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FileUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FileUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FileUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => FileUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FileScalarWhereInputSchema),z.lazy(() => FileScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
@@ -1104,23 +1124,25 @@ export const SubscribedChannelScalarWhereInputSchema: z.ZodType<Prisma.Subscribe
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
-export const MediaCreateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaCreateWithoutAlbumInput> = z.object({
-  mediaId: z.string(),
+export const FileCreateWithoutAlbumInputSchema: z.ZodType<Prisma.FileCreateWithoutAlbumInput> = z.object({
+  fileId: z.string(),
+  fileName: z.string(),
   description: z.string().optional().nullable()
 }).strict();
 
-export const MediaUncheckedCreateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedCreateWithoutAlbumInput> = z.object({
-  mediaId: z.string(),
+export const FileUncheckedCreateWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedCreateWithoutAlbumInput> = z.object({
+  fileId: z.string(),
+  fileName: z.string(),
   description: z.string().optional().nullable()
 }).strict();
 
-export const MediaCreateOrConnectWithoutAlbumInputSchema: z.ZodType<Prisma.MediaCreateOrConnectWithoutAlbumInput> = z.object({
-  where: z.lazy(() => MediaWhereUniqueInputSchema),
-  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema) ]),
+export const FileCreateOrConnectWithoutAlbumInputSchema: z.ZodType<Prisma.FileCreateOrConnectWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FileWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => FileCreateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const MediaCreateManyAlbumInputEnvelopeSchema: z.ZodType<Prisma.MediaCreateManyAlbumInputEnvelope> = z.object({
-  data: z.union([ z.lazy(() => MediaCreateManyAlbumInputSchema),z.lazy(() => MediaCreateManyAlbumInputSchema).array() ]),
+export const FileCreateManyAlbumInputEnvelopeSchema: z.ZodType<Prisma.FileCreateManyAlbumInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => FileCreateManyAlbumInputSchema),z.lazy(() => FileCreateManyAlbumInputSchema).array() ]),
   skipDuplicates: z.boolean().optional()
 }).strict();
 
@@ -1144,27 +1166,28 @@ export const SubscribedChannelCreateManyAlbumInputEnvelopeSchema: z.ZodType<Pris
   skipDuplicates: z.boolean().optional()
 }).strict();
 
-export const MediaUpsertWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpsertWithWhereUniqueWithoutAlbumInput> = z.object({
-  where: z.lazy(() => MediaWhereUniqueInputSchema),
-  update: z.union([ z.lazy(() => MediaUpdateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutAlbumInputSchema) ]),
-  create: z.union([ z.lazy(() => MediaCreateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedCreateWithoutAlbumInputSchema) ]),
+export const FileUpsertWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.FileUpsertWithWhereUniqueWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FileWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => FileUpdateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedUpdateWithoutAlbumInputSchema) ]),
+  create: z.union([ z.lazy(() => FileCreateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const MediaUpdateWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpdateWithWhereUniqueWithoutAlbumInput> = z.object({
-  where: z.lazy(() => MediaWhereUniqueInputSchema),
-  data: z.union([ z.lazy(() => MediaUpdateWithoutAlbumInputSchema),z.lazy(() => MediaUncheckedUpdateWithoutAlbumInputSchema) ]),
+export const FileUpdateWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.FileUpdateWithWhereUniqueWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FileWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => FileUpdateWithoutAlbumInputSchema),z.lazy(() => FileUncheckedUpdateWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const MediaUpdateManyWithWhereWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpdateManyWithWhereWithoutAlbumInput> = z.object({
-  where: z.lazy(() => MediaScalarWhereInputSchema),
-  data: z.union([ z.lazy(() => MediaUpdateManyMutationInputSchema),z.lazy(() => MediaUncheckedUpdateManyWithoutAlbumInputSchema) ]),
+export const FileUpdateManyWithWhereWithoutAlbumInputSchema: z.ZodType<Prisma.FileUpdateManyWithWhereWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FileScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => FileUpdateManyMutationInputSchema),z.lazy(() => FileUncheckedUpdateManyWithoutAlbumInputSchema) ]),
 }).strict();
 
-export const MediaScalarWhereInputSchema: z.ZodType<Prisma.MediaScalarWhereInput> = z.object({
-  AND: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
-  OR: z.lazy(() => MediaScalarWhereInputSchema).array().optional(),
-  NOT: z.union([ z.lazy(() => MediaScalarWhereInputSchema),z.lazy(() => MediaScalarWhereInputSchema).array() ]).optional(),
-  mediaId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+export const FileScalarWhereInputSchema: z.ZodType<Prisma.FileScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => FileScalarWhereInputSchema),z.lazy(() => FileScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FileScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FileScalarWhereInputSchema),z.lazy(() => FileScalarWhereInputSchema).array() ]).optional(),
+  fileId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  fileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   albumName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
@@ -1203,13 +1226,13 @@ export const GuildCreateOrConnectWithoutSubscribedChannelsInputSchema: z.ZodType
 export const AlbumCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreateWithoutChannelsInput> = z.object({
   name: z.string(),
   description: z.string(),
-  media: z.lazy(() => MediaCreateNestedManyWithoutAlbumInputSchema).optional()
+  media: z.lazy(() => FileCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutChannelsInput> = z.object({
   name: z.string(),
   description: z.string(),
-  media: z.lazy(() => MediaUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
+  media: z.lazy(() => FileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumCreateOrConnectWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutChannelsInput> = z.object({
@@ -1252,13 +1275,13 @@ export const AlbumUpdateToOneWithWhereWithoutChannelsInputSchema: z.ZodType<Pris
 export const AlbumUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutChannelsInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  media: z.lazy(() => MediaUpdateManyWithoutAlbumNestedInputSchema).optional()
+  media: z.lazy(() => FileUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutChannelsInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  media: z.lazy(() => MediaUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
+  media: z.lazy(() => FileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumCreateWithoutMediaInputSchema: z.ZodType<Prisma.AlbumCreateWithoutMediaInput> = z.object({
@@ -1321,8 +1344,9 @@ export const SubscribedChannelUncheckedUpdateManyWithoutGuildInputSchema: z.ZodT
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
-export const MediaCreateManyAlbumInputSchema: z.ZodType<Prisma.MediaCreateManyAlbumInput> = z.object({
-  mediaId: z.string(),
+export const FileCreateManyAlbumInputSchema: z.ZodType<Prisma.FileCreateManyAlbumInput> = z.object({
+  fileId: z.string(),
+  fileName: z.string(),
   description: z.string().optional().nullable()
 }).strict();
 
@@ -1331,18 +1355,21 @@ export const SubscribedChannelCreateManyAlbumInputSchema: z.ZodType<Prisma.Subsc
   guildId: z.string()
 }).strict();
 
-export const MediaUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUpdateWithoutAlbumInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.FileUpdateWithoutAlbumInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export const MediaUncheckedUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateWithoutAlbumInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUncheckedUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedUpdateWithoutAlbumInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
-export const MediaUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaUncheckedUpdateManyWithoutAlbumInput> = z.object({
-  mediaId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+export const FileUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedUpdateManyWithoutAlbumInput> = z.object({
+  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
@@ -1566,70 +1593,70 @@ export const SubscribedChannelFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.Subs
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaFindFirstArgsSchema: z.ZodType<Prisma.MediaFindFirstArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereInputSchema.optional(),
-  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
-  cursor: MediaWhereUniqueInputSchema.optional(),
+export const FileFindFirstArgsSchema: z.ZodType<Prisma.FileFindFirstArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereInputSchema.optional(),
+  orderBy: z.union([ FileOrderByWithRelationInputSchema.array(),FileOrderByWithRelationInputSchema ]).optional(),
+  cursor: FileWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ MediaScalarFieldEnumSchema,MediaScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ FileScalarFieldEnumSchema,FileScalarFieldEnumSchema.array() ]).optional(),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaFindFirstOrThrowArgsSchema: z.ZodType<Prisma.MediaFindFirstOrThrowArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereInputSchema.optional(),
-  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
-  cursor: MediaWhereUniqueInputSchema.optional(),
+export const FileFindFirstOrThrowArgsSchema: z.ZodType<Prisma.FileFindFirstOrThrowArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereInputSchema.optional(),
+  orderBy: z.union([ FileOrderByWithRelationInputSchema.array(),FileOrderByWithRelationInputSchema ]).optional(),
+  cursor: FileWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ MediaScalarFieldEnumSchema,MediaScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ FileScalarFieldEnumSchema,FileScalarFieldEnumSchema.array() ]).optional(),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaFindManyArgsSchema: z.ZodType<Prisma.MediaFindManyArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereInputSchema.optional(),
-  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
-  cursor: MediaWhereUniqueInputSchema.optional(),
+export const FileFindManyArgsSchema: z.ZodType<Prisma.FileFindManyArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereInputSchema.optional(),
+  orderBy: z.union([ FileOrderByWithRelationInputSchema.array(),FileOrderByWithRelationInputSchema ]).optional(),
+  cursor: FileWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
-  distinct: z.union([ MediaScalarFieldEnumSchema,MediaScalarFieldEnumSchema.array() ]).optional(),
+  distinct: z.union([ FileScalarFieldEnumSchema,FileScalarFieldEnumSchema.array() ]).optional(),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaAggregateArgsSchema: z.ZodType<Prisma.MediaAggregateArgs> = z.object({
-  where: MediaWhereInputSchema.optional(),
-  orderBy: z.union([ MediaOrderByWithRelationInputSchema.array(),MediaOrderByWithRelationInputSchema ]).optional(),
-  cursor: MediaWhereUniqueInputSchema.optional(),
+export const FileAggregateArgsSchema: z.ZodType<Prisma.FileAggregateArgs> = z.object({
+  where: FileWhereInputSchema.optional(),
+  orderBy: z.union([ FileOrderByWithRelationInputSchema.array(),FileOrderByWithRelationInputSchema ]).optional(),
+  cursor: FileWhereUniqueInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
 }).strict() ;
 
-export const MediaGroupByArgsSchema: z.ZodType<Prisma.MediaGroupByArgs> = z.object({
-  where: MediaWhereInputSchema.optional(),
-  orderBy: z.union([ MediaOrderByWithAggregationInputSchema.array(),MediaOrderByWithAggregationInputSchema ]).optional(),
-  by: MediaScalarFieldEnumSchema.array(),
-  having: MediaScalarWhereWithAggregatesInputSchema.optional(),
+export const FileGroupByArgsSchema: z.ZodType<Prisma.FileGroupByArgs> = z.object({
+  where: FileWhereInputSchema.optional(),
+  orderBy: z.union([ FileOrderByWithAggregationInputSchema.array(),FileOrderByWithAggregationInputSchema ]).optional(),
+  by: FileScalarFieldEnumSchema.array(),
+  having: FileScalarWhereWithAggregatesInputSchema.optional(),
   take: z.number().optional(),
   skip: z.number().optional(),
 }).strict() ;
 
-export const MediaFindUniqueArgsSchema: z.ZodType<Prisma.MediaFindUniqueArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereUniqueInputSchema,
+export const FileFindUniqueArgsSchema: z.ZodType<Prisma.FileFindUniqueArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.MediaFindUniqueOrThrowArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereUniqueInputSchema,
+export const FileFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FileFindUniqueOrThrowArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
@@ -1783,52 +1810,52 @@ export const SubscribedChannelDeleteManyArgsSchema: z.ZodType<Prisma.SubscribedC
   where: SubscribedChannelWhereInputSchema.optional(),
 }).strict() ;
 
-export const MediaCreateArgsSchema: z.ZodType<Prisma.MediaCreateArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  data: z.union([ MediaCreateInputSchema,MediaUncheckedCreateInputSchema ]),
+export const FileCreateArgsSchema: z.ZodType<Prisma.FileCreateArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  data: z.union([ FileCreateInputSchema,FileUncheckedCreateInputSchema ]),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaUpsertArgsSchema: z.ZodType<Prisma.MediaUpsertArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereUniqueInputSchema,
-  create: z.union([ MediaCreateInputSchema,MediaUncheckedCreateInputSchema ]),
-  update: z.union([ MediaUpdateInputSchema,MediaUncheckedUpdateInputSchema ]),
+export const FileUpsertArgsSchema: z.ZodType<Prisma.FileUpsertArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereUniqueInputSchema,
+  create: z.union([ FileCreateInputSchema,FileUncheckedCreateInputSchema ]),
+  update: z.union([ FileUpdateInputSchema,FileUncheckedUpdateInputSchema ]),
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaCreateManyArgsSchema: z.ZodType<Prisma.MediaCreateManyArgs> = z.object({
-  data: z.union([ MediaCreateManyInputSchema,MediaCreateManyInputSchema.array() ]),
+export const FileCreateManyArgsSchema: z.ZodType<Prisma.FileCreateManyArgs> = z.object({
+  data: z.union([ FileCreateManyInputSchema,FileCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
-export const MediaCreateManyAndReturnArgsSchema: z.ZodType<Prisma.MediaCreateManyAndReturnArgs> = z.object({
-  data: z.union([ MediaCreateManyInputSchema,MediaCreateManyInputSchema.array() ]),
+export const FileCreateManyAndReturnArgsSchema: z.ZodType<Prisma.FileCreateManyAndReturnArgs> = z.object({
+  data: z.union([ FileCreateManyInputSchema,FileCreateManyInputSchema.array() ]),
   skipDuplicates: z.boolean().optional(),
 }).strict() ;
 
-export const MediaDeleteArgsSchema: z.ZodType<Prisma.MediaDeleteArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  where: MediaWhereUniqueInputSchema,
+export const FileDeleteArgsSchema: z.ZodType<Prisma.FileDeleteArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  where: FileWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaUpdateArgsSchema: z.ZodType<Prisma.MediaUpdateArgs> = z.object({
-  select: MediaSelectSchema.optional(),
-  include: MediaIncludeSchema.optional(),
-  data: z.union([ MediaUpdateInputSchema,MediaUncheckedUpdateInputSchema ]),
-  where: MediaWhereUniqueInputSchema,
+export const FileUpdateArgsSchema: z.ZodType<Prisma.FileUpdateArgs> = z.object({
+  select: FileSelectSchema.optional(),
+  include: FileIncludeSchema.optional(),
+  data: z.union([ FileUpdateInputSchema,FileUncheckedUpdateInputSchema ]),
+  where: FileWhereUniqueInputSchema,
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
-export const MediaUpdateManyArgsSchema: z.ZodType<Prisma.MediaUpdateManyArgs> = z.object({
-  data: z.union([ MediaUpdateManyMutationInputSchema,MediaUncheckedUpdateManyInputSchema ]),
-  where: MediaWhereInputSchema.optional(),
+export const FileUpdateManyArgsSchema: z.ZodType<Prisma.FileUpdateManyArgs> = z.object({
+  data: z.union([ FileUpdateManyMutationInputSchema,FileUncheckedUpdateManyInputSchema ]),
+  where: FileWhereInputSchema.optional(),
 }).strict() ;
 
-export const MediaDeleteManyArgsSchema: z.ZodType<Prisma.MediaDeleteManyArgs> = z.object({
-  where: MediaWhereInputSchema.optional(),
+export const FileDeleteManyArgsSchema: z.ZodType<Prisma.FileDeleteManyArgs> = z.object({
+  where: FileWhereInputSchema.optional(),
 }).strict() ;

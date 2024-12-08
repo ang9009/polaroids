@@ -1,8 +1,9 @@
 import { UploadMediaRequestSchema } from "shared/src/media-requests/UploadMediaRequest";
 /* eslint-disable jsdoc/require-param */
-import { Media } from "@prisma/client";
+import { File } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
+import { v4 as uuidv4 } from "uuid";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
@@ -17,17 +18,19 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
 );
 
 /**
- * Uploads the given media to FileStation, and tracks each photo/video in the database.
+ * Uploads the given files to FileStation, and tracks each photo/video in the database.
  *
- * Route: POST /api/media
+ * Route: POST /api/files
  *
  * Request Body:
  * {
  *    albumName: string, // The name of the album the files should be uploaded to
  *    files: File[] // The files of the photos and/or videos to be uploaded
+ *    ids?: string[] // An optional list of unique ids, which will be assigned to the files
+ *                      in the given order
  * }
  */
-export const uploadMedia = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadFiles = async (req: Request, res: Response, next: NextFunction) => {
   upload(req, res, async (err) => {
     const parseRes = UploadMediaRequestSchema.safeParse(req.body);
     if (!parseRes.success) {
@@ -43,7 +46,8 @@ export const uploadMedia = async (req: Request, res: Response, next: NextFunctio
       const error = new UnknownException("No files were provided");
       return next(error);
     }
-    // Try to upload the files to FileStation first
+    // Try to upload the files to FileStation before saving the image data to
+    // the database
     const files = req.files as Express.Multer.File[];
     try {
       await uploadFilesToFS(files);
@@ -54,12 +58,21 @@ export const uploadMedia = async (req: Request, res: Response, next: NextFunctio
       }
     }
 
-    const { albumName } = parseRes.data!;
-    const mediaArr: Media[] = files.map((file) => {
-      return { mediaId: file.originalname, albumName: albumName, description: null };
+    const { albumName, ids } = parseRes.data!;
+    if (ids && ids.length !== files.length) {
+      const error = new UnknownException("Number of ids must match number of files uploaded");
+      return next(error);
+    }
+    const fileObjects: File[] = files.map((file, i) => {
+      return {
+        fileId: ids ? ids[i] : uuidv4(),
+        fileName: file.originalname,
+        albumName: albumName,
+        description: null,
+      };
     });
     try {
-      await prisma.media.createMany({ data: mediaArr, skipDuplicates: true });
+      await prisma.file.createMany({ data: fileObjects, skipDuplicates: true });
     } catch (err) {
       const error = getDbExFromPrismaErr(err);
       return next(error);

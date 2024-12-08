@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { z } from "zod";
-import { FileStationResponseSchema } from "../types/response-schemas/FileStationResponse";
+import { FSResponseSchema } from "../types/response-schemas/FSResponse";
 
 /**
  * Validates a response from FileStation, and returns the data from the request
@@ -14,7 +14,7 @@ export const validateFSResponse = <T extends z.ZodTypeAny>(
   response: AxiosResponse,
   schema: T
 ): z.infer<T> => {
-  const fsParsedResponse = FileStationResponseSchema.safeParse(response.data);
+  const fsParsedResponse = FSResponseSchema.safeParse(response.data);
   if (!fsParsedResponse.success) {
     throw Error("Got unexpected response from FileStation: " + JSON.stringify(response.data));
   }

@@ -1,4 +1,4 @@
-export const allowedMimeTypes = [
+export const allowedMimeTypes = new Set<string>([
   "image/jpeg",
   "image/png",
   "image/gif",
@@ -8,4 +8,4 @@ export const allowedMimeTypes = [
   "video/ogg",
   "video/webm",
   "video/quicktime",
-];
+]);

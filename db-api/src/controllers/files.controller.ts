@@ -1,6 +1,5 @@
-import { UploadFilesReqBodySchema } from "shared/src/file-requests/UploadFilesReqBody";
 /* eslint-disable jsdoc/require-param */
-import { File } from "@prisma/client";
+import { UploadFilesReqBodySchema } from "shared/src/file-requests/UploadFilesReqBody";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
@@ -63,16 +62,21 @@ export const uploadFiles = async (req: Request, res: Response, next: NextFunctio
       const error = new UnknownException("Number of ids must match number of files uploaded");
       return next(error);
     }
-    const fileObjects: File[] = files.map((file, i) => {
+
+    // ! Also try and upload a non-image/video and see the err message
+    const fileData = files.map((file, i) => {
       return {
         fileId: ids ? ids[i] : uuidv4(),
         fileName: file.originalname,
         albumName: albumName,
-        description: null,
       };
     });
+
     try {
-      await prisma.file.createMany({ data: fileObjects, skipDuplicates: true });
+      await prisma.file.createMany({
+        data: fileData,
+        skipDuplicates: true,
+      });
     } catch (err) {
       const error = getDbExFromPrismaErr(err);
       return next(error);

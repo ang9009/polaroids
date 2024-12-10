@@ -1,12 +1,14 @@
 import { z } from "zod";
 
-const IsSubscribedResponseSchema = z.object({
-  isSubscribed: z.boolean({
-    invalid_type_error: "isSubscribed must be a boolean",
-    required_error: "isSubscribed is required",
+const IsSubscribedResponseSchema = z.discriminatedUnion("isSubscribed", [
+  z.object({
+    isSubscribed: z.literal(true),
+    linkedAlbum: z.string(),
   }),
-  linkedAlbum: z.string().optional(),
-});
+  z.object({
+    isSubscribed: z.literal(false),
+  }),
+]);
 
 type IsSubscribedResponse = z.infer<typeof IsSubscribedResponseSchema>;
 

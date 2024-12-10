@@ -38,28 +38,13 @@ export const showAlbumDropdown = async (
 ) => {
   const albums: Album[] = await getAlbums();
 
-  const menuAlbumOptions: StringSelectMenuOptionBuilder[] = [];
-
   // At the top of the menu, add an option for creating a new menu
   const createNewOptionValue = Math.random().toString(); // Create a random value to avoid album name conflicts
-  const createNewOption = new StringSelectMenuOptionBuilder()
-    .setLabel("Add album")
-    .setDescription("Set up a new album")
-    .setValue(createNewOptionValue)
-    .setEmoji("🆕");
-  menuAlbumOptions.push(createNewOption);
-
-  // Add the rest of the albums as options
-  for (const album of albums) {
-    if (album.name === linkedAlbum) {
-      continue;
-    }
-    const option = new StringSelectMenuOptionBuilder()
-      .setLabel(album.name)
-      .setDescription(album.description)
-      .setValue(album.name);
-    menuAlbumOptions.push(option);
-  }
+  const menuAlbumOptions: StringSelectMenuOptionBuilder[] = getAlbumDropdownOptions(
+    createNewOptionValue,
+    albums,
+    linkedAlbum,
+  );
 
   const dropdown = new StringSelectMenuBuilder()
     .setCustomId("starter")
@@ -77,16 +62,17 @@ export const showAlbumDropdown = async (
     componentType: ComponentType.StringSelect,
     time: 3600000,
   });
+
   collector.on("collect", async (selectInteraction) => {
     const selection = selectInteraction.values[0];
     if (selection === createNewOptionValue) {
-      onAlbumSelect(
+      await onAlbumSelect(
         { type: AlbumSelectionType.CREATE_NEW },
         selectInteraction,
         onSelectionComplete,
       );
     } else {
-      onAlbumSelect(
+      await onAlbumSelect(
         { albumName: selection, type: AlbumSelectionType.EXISTING },
         selectInteraction,
         onSelectionComplete,
@@ -97,11 +83,13 @@ export const showAlbumDropdown = async (
 };
 
 /**
- * A helper function that is run once an album option has been selected.
+ * A helper function that is run once an album option has been selected. The
+ * user can either choose to select an existing album, or create a new one.
  * @param selection the selection that was made
  * @param interaction the ongoing interaction
  * @param onSelectionComplete a callback function that is called when the
  *        function finishes processing the user's selection
+ * @returns the name of the album that was selected/created
  */
 const onAlbumSelect = async (
   selection: AlbumDropdownSelection,
@@ -110,7 +98,7 @@ const onAlbumSelect = async (
     albumData: AlbumSelectionData,
     interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
   ) => void,
-) => {
+): Promise<string> => {
   // If the user wants to create a new album
   if (selection.type === AlbumSelectionType.CREATE_NEW) {
     // Show a modal for the user to enter the details of the album
@@ -122,22 +110,58 @@ const onAlbumSelect = async (
     const filter = (interaction: ModalSubmitInteraction) =>
       interaction.customId === "createAlbumModal";
 
-    interaction.awaitModalSubmit({ filter, time: 60_000 }).then((interaction) => {
-      const albumName: string = interaction.fields.getTextInputValue("albumNameField");
-      const albumDesc: string = interaction.fields.getTextInputValue("albumDescField");
-      const albumData: AlbumSelectionData = {
-        type: AlbumSelectionType.CREATE_NEW,
-        albumName,
-        albumDesc,
-      };
-      onSelectionComplete(albumData, interaction);
-    });
+    const modalInteraction = await interaction.awaitModalSubmit({ filter, time: 60_000 });
+    const albumName: string = modalInteraction.fields.getTextInputValue("albumNameField");
+    const albumDesc: string = modalInteraction.fields.getTextInputValue("albumDescField");
+    const albumData: AlbumSelectionData = {
+      type: AlbumSelectionType.CREATE_NEW,
+      albumName,
+      albumDesc,
+    };
+    onSelectionComplete(albumData, modalInteraction);
+    return albumName;
   } else {
     // If the user wants to use an existing album
+    const albumName = selection.albumName;
     const albumData: AlbumSelectionData = {
       type: AlbumSelectionType.EXISTING,
-      albumName: selection.albumName,
+      albumName: albumName,
     };
     onSelectionComplete(albumData, interaction);
+    return albumName;
   }
 };
+
+/**
+ * Constructs a list of options for the album dropdown.
+ * @param createNewOptionId the id for the "create new" option
+ * @param albums the list of albums
+ * @param linkedAlbum the linked album
+ * @returns the list of options
+ */
+function getAlbumDropdownOptions(
+  createNewOptionId: string,
+  albums: Album[],
+  linkedAlbum: string | undefined,
+): StringSelectMenuOptionBuilder[] {
+  const menuAlbumOptions: StringSelectMenuOptionBuilder[] = [];
+  const createNewOption = new StringSelectMenuOptionBuilder()
+    .setLabel("Add album")
+    .setDescription("Set up a new album")
+    .setValue(createNewOptionId)
+    .setEmoji("🆕");
+  menuAlbumOptions.push(createNewOption);
+
+  // Add the rest of the albums as options
+  for (const album of albums) {
+    if (album.name === linkedAlbum) {
+      continue;
+    }
+    const option = new StringSelectMenuOptionBuilder()
+      .setLabel(album.name)
+      .setDescription(album.description)
+      .setValue(album.name);
+    menuAlbumOptions.push(option);
+  }
+  return menuAlbumOptions;
+}

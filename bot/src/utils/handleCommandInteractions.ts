@@ -1,11 +1,11 @@
-import { Interaction } from "discord.js";
+import { EmbedBuilder, Interaction } from "discord.js";
 import { getErrorEmbed } from "./getErrorEmbed";
 
 /**
  * Handles interactions/commands executed by users.
  * @param interaction the interaction in question
  */
-export const handleInteractions = async (interaction: Interaction) => {
+export const handleCommandInteractions = async (interaction: Interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   // Try to get the command from the commands collection
@@ -20,7 +20,13 @@ export const handleInteractions = async (interaction: Interaction) => {
     await command.execute(interaction);
   } catch (error) {
     console.error(error);
-    const errEmbed = getErrorEmbed("There was an error while executing this command!");
+
+    let errEmbed: EmbedBuilder;
+    if (error instanceof Error) {
+      errEmbed = getErrorEmbed(`There was an error while executing this command: ${error.message}`);
+    } else {
+      errEmbed = getErrorEmbed("There was an error while executing this command!");
+    }
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         embeds: [errEmbed],

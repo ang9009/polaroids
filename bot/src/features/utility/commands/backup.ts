@@ -25,10 +25,7 @@ const data = new SlashCommandBuilder()
  * @param interaction the interaction triggered by invoking the command
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  const initialReply = await interaction.reply({
-    content: "Processing channel attachments...",
-    ephemeral: true,
-  });
+  const thinkingReply = await interaction.deferReply();
   const channel = interaction.channel;
   if (!channel) {
     replyWithErrorEmbed(
@@ -38,24 +35,19 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return;
   }
 
-  let backupAlbum: string;
-  // const { isSubscribed, linkedAlbum } = getChannelSubData(channel.id);
-  // if (isSubscribed) {
-  //   backupAlbum = linkedAlbum;
-  // } else {
-  // }
-  let latestMsg: Message;
-  try {
-    latestMsg = await getLatestMsg(channel);
-  } catch (err) {
-    if (err instanceof Error) {
-      replyWithErrorEmbed(interaction, err.message);
-    }
-    return;
+  const subData = await getChannelSubData(channel.id);
+  if (subData.isSubscribed) {
+    const processingReply = await thinkingReply.edit({
+      content: "Processing channel attachments...",
+    });
+    const latestMsg = await getLatestMsg(channel);
+    const files: Attachment[] = await getChannelAttachments(latestMsg, channel);
+    await processingReply.edit({ content: `${files.length} file(s) uploaded.` });
+  } else {
+    await thinkingReply.edit(
+      "This channel has no linked album. Please use `/subscribe` to link it to an album.",
+    );
   }
-
-  const files: Attachment[] = await getChannelAttachments(latestMsg, channel);
-  initialReply.edit({ content: `${files.length} file(s) uploaded.` });
 };
 
 /**

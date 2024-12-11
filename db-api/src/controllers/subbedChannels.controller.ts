@@ -74,10 +74,17 @@ export const channelIsSubscribed = async (
       channelId: channelId,
     },
   });
-  const response: IsSubscribedResponse = {
-    isSubscribed: !!channelData,
-    linkedAlbum: channelData?.albumName,
-  };
+  let response: IsSubscribedResponse;
+  if (channelData) {
+    response = {
+      isSubscribed: true,
+      linkedAlbum: channelData.albumName,
+    };
+  } else {
+    response = {
+      isSubscribed: false,
+    };
+  }
 
   res.status(HttpStatusCode.OK).json(response);
 };

@@ -1,9 +1,22 @@
 import { CommandData } from "../../../types/commandData";
 
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  CacheType,
+  ChatInputCommandInteraction,
+  ModalSubmitInteraction,
+  SlashCommandBuilder,
+  StringSelectMenuInteraction,
+} from "discord.js";
 import { IsSubscribedResponse } from "shared/src/subbed-channels-responses/isSubscribedResponse";
 import { getChannelSubData } from "../../../api/getChannelSubData";
-import { onAlbumSelectionComplete } from "../helpers/onAlbumSelectionComplete";
+import { checkAlbumExists } from "../api/checkAlbumExists";
+import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
+import { setChannelAlbum } from "../api/setChannelAlbum";
+import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum";
+import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
+import { AlbumSelectionType } from "../data/albumSelectionType";
+import { AlbumSelectionData } from "../data/finalAlbumSelection";
+
 import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 
 /**
@@ -13,10 +26,62 @@ import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
  */
 const data = new SlashCommandBuilder()
   .setName("subscribe")
-  .setDescription(
-    "Ask polaroids to watch this channel for media" +
-      " and automatically upload it to a specified album",
-  );
+  .setDescription("Ask polaroids to archive any attachments sent in this channel");
+
+/**
+ * A helper function that is run once the user has selected/created an album.
+ * @param albumData data regarding the album selected/created
+ * @param interaction the ongoing interaction
+ * @param alreadySubscribed whether the current channel has already been
+ *         subscribed to
+ * @returns the name of the album, or undefined if the selection is invalid
+ */
+export const onAlbumSelectionComplete = async (
+  albumData: AlbumSelectionData,
+  interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
+  alreadySubscribed: boolean,
+) => {
+  const { channelId, guildId } = interaction;
+  if (!guildId || !channelId) {
+    throw Error("guildId or channelId is undefined for some reason");
+  }
+
+  // If user wants to create new album
+  if (albumData.type === AlbumSelectionType.CREATE_NEW) {
+    const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
+    const albumExists = await checkAlbumExists(newAlbumName);
+    if (albumExists) {
+      interaction.reply("An album with this name already exists! Please try again.");
+      return;
+    }
+
+    // If channel is already subscribed to, create album and link the existing
+    // channel to it
+    if (alreadySubscribed) {
+      await createAlbumAndLinkChannel(newAlbumName, newAlbumDesc, channelId, guildId);
+    } else {
+      // Otherwise, create a new album and save the channel
+      await subscribeChannelWithNewAlbum(newAlbumName, newAlbumDesc, channelId, guildId);
+    }
+  } else {
+    // If user wants to use existing album
+    const { albumName: newAlbumName } = albumData;
+
+    // If channel is already subscribed to, change its linked album
+    if (alreadySubscribed) {
+      await setChannelAlbum(newAlbumName, channelId, guildId);
+    } else {
+      // Otherwise, save the channel and set its linked album
+      await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
+    }
+  }
+  await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
+
+  const backupPrompt =
+    "It looks like there are unarchived attachments previously sent in this channel. " +
+    "Would you like to back them up?";
+  await interaction.followUp(backupPrompt);
+};
 
 /**
  * The execute function for the "subscribe" command.

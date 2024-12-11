@@ -30,12 +30,10 @@ export const handleCommandInteractions = async (interaction: Interaction) => {
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         embeds: [errEmbed],
-        ephemeral: true,
       });
     } else {
       await interaction.reply({
         embeds: [errEmbed],
-        ephemeral: true,
       });
     }
   }

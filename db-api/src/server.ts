@@ -1,10 +1,11 @@
 import dotenv from "dotenv";
 import "dotenv/config";
-import express from "express";
+import express, { Router } from "express";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
 import albums from "./routes/albums.routes";
+import channelBackups from "./routes/channelBackups.routes";
 import files from "./routes/files.routes";
 import guilds from "./routes/guilds.routes";
 import subscribedChannels from "./routes/subbedChannels.routes";
@@ -22,10 +23,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 
 // Routes
-app.use("/api/albums", albums);
-app.use("/api/guilds", guilds);
-app.use("/api/subscribed-channels", subscribedChannels);
-app.use("/api/files", files);
+const apiRouter = Router();
+apiRouter.use("/albums", albums);
+apiRouter.use("/guilds", guilds);
+apiRouter.use("/subscribed-channels", subscribedChannels);
+apiRouter.use("/files", files);
+apiRouter.use("/channelBackups", channelBackups);
+
+app.use("/api", apiRouter);
 
 // Error handlers
 app.use(notFound);

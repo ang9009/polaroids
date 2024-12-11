@@ -1,4 +1,5 @@
 import axios from "axios";
+import { FilesUploadData } from "shared/src/file-requests/UploadFilesReqBody";
 import { FileData } from "../types/fileData";
 
 /**
@@ -10,15 +11,18 @@ export const uploadFiles = async (files: FileData[], albumName: string) => {
   const { DB_API_URL } = process.env;
   const url = `${DB_API_URL}/files`;
   const formData = new FormData();
-  const discordIds = files.map((file) => file.discordId);
 
   formData.append("albumName", albumName);
+  const filesData: FilesUploadData = {};
   for (const file of files) {
-    formData.append("files", file.blob, file.name);
+    const fileData = {
+      fileName: file.name,
+      createdAt: file.createdAt,
+    };
+    filesData[file.discordId] = fileData;
+    formData.append("files", file.blob, file.discordId);
   }
-  for (const id of discordIds) {
-    formData.append("ids[]", id);
-  }
+  formData.append("filesData", JSON.stringify(filesData));
 
   await axios.post(url, formData);
 };

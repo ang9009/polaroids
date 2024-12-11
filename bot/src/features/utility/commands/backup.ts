@@ -1,24 +1,15 @@
-import {
-  Attachment,
-  ChatInputCommandInteraction,
-  Collection,
-  Message,
-  SlashCommandBuilder,
-  TextBasedChannel,
-} from "discord.js";
+import { Attachment, ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
+import { getChannelAttachments } from "../helpers/getChannelAttachments";
+import { getLatestMsg } from "../helpers/getLatestMsg";
 
 /**
  * A command that backs up all the images/videos in the current channel that have not
  * already been archived.
  */
-const data = new SlashCommandBuilder()
-  .setName("backup")
-  .setDescription(
-    "Backs up all the attachments in this channel that have not already been archived by polaroids",
-  );
+const data = new SlashCommandBuilder().setName("backup").setDescription("Archives  polaroids");
 
 /**
  * The execute function for the backup command.
@@ -35,61 +26,20 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return;
   }
 
-  const subData = await getChannelSubData(channel.id);
-  if (subData.isSubscribed) {
+  // ! Add message if channel is already up to date (check backu p pointer)
+
+  const { isSubscribed } = await getChannelSubData(channel.id);
+  if (isSubscribed) {
+    await thinkingReply.edit("polaroids is already subscribed to this channel.");
+  } else {
     const processingReply = await thinkingReply.edit({
       content: "Processing channel attachments...",
     });
     const latestMsg = await getLatestMsg(channel);
     const files: Attachment[] = await getChannelAttachments(latestMsg, channel);
     await processingReply.edit({ content: `${files.length} file(s) uploaded.` });
-  } else {
-    await thinkingReply.edit(
-      "This channel has no linked album. Please use `/subscribe` to link it to an album.",
-    );
   }
 };
-
-/**
- * Returns the latest message in the channel the interaction occurred in.
- * @param channel the channel
- * @returns the message id
- */
-const getLatestMsg = async (channel: TextBasedChannel): Promise<Message> => {
-  const latestMsgData = await channel.messages.fetch({ limit: 1 });
-  const { value: latestMsg } = latestMsgData.values().next();
-  if (!latestMsg) {
-    throw Error("Failed to get latest message.");
-  }
-  return latestMsg;
-};
-
-/**
- * Retrieves all the attachments sent in a channel.
- * @param latestMsg the latest message sent in the channel
- * @param channel the channel in question
- * @returns all the attachments sent in the channel
- */
-async function getChannelAttachments(latestMsg: Message<boolean>, channel: TextBasedChannel) {
-  const attachments: Attachment[] = [];
-  let currMsgPointer: Message | undefined = latestMsg;
-
-  while (currMsgPointer) {
-    const msgPage: Collection<string, Message<boolean>> = await channel.messages.fetch({
-      limit: 100,
-      before: currMsgPointer.id,
-    });
-    for (const msg of msgPage.values()) {
-      const msgAttachments = msg.attachments.values();
-      for (const file of msgAttachments) {
-        attachments.push(file);
-      }
-    }
-    currMsgPointer = msgPage.size !== 0 ? msgPage.at(msgPage.size - 1) : undefined;
-  }
-
-  return attachments;
-}
 
 const commandData: CommandData = {
   data,

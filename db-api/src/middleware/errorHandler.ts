@@ -1,4 +1,3 @@
-import colors from "colors";
 import { NextFunction, Request, Response } from "express";
 import { HttpException } from "../types/error/httpException";
 
@@ -15,6 +14,6 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.error(colors.red(JSON.stringify(err.getResponse())));
+  console.log(err.getResponse());
   res.status(err.status).json(err.getResponse());
 };

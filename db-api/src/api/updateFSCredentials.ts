@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { getValue, setValue } from "node-global-storage";
+import { setValue } from "node-global-storage";
 import puppeteer, { Browser, Page } from "puppeteer";
 import { sessionIdKey, synoTokenKey } from "../data/constants";
 
@@ -21,9 +21,7 @@ export const updateFSCredentials = async () => {
   await updateSynoToken(page);
   await updateSessionId(browser);
 
-  const sessionId = getValue(sessionIdKey);
-  const synoToken = getValue(synoTokenKey);
-  console.log(`Successfully updated session id ${sessionId} and syno token ${synoToken}`);
+  console.log(`Successfully updated FileStation credentials.`);
   await browser.close();
 };
 

@@ -1,16 +1,18 @@
-import { Attachment, Collection, Message, TextBasedChannel } from "discord.js";
+import { Collection, Message, TextBasedChannel } from "discord.js";
+import { getFileDataFromAttachment } from "../../event-triggers/api/getFileDataFromAttachment";
+import { FileData } from "../../event-triggers/types/fileData";
 
 /**
- * Retrieves all the attachments sent in a channel.
+ * Retrieves data about all of the attachments sent in a channel.
  * @param latestMsg the latest message sent in the channel
  * @param channel the channel in question
- * @returns all the attachments sent in the channel
+ * @returns all the attachments sent in the channel as FileData objects
  */
-export async function getChannelAttachments(
+export async function getChannelFilesData(
   latestMsg: Message<boolean>,
   channel: TextBasedChannel,
-) {
-  const attachments: Attachment[] = [];
+): Promise<FileData[]> {
+  const files: FileData[] = [];
   let currMsgPointer: Message | undefined = latestMsg;
 
   while (currMsgPointer) {
@@ -21,12 +23,13 @@ export async function getChannelAttachments(
     });
     for (const msg of msgPage.values()) {
       const msgAttachments = msg.attachments.values();
-      for (const file of msgAttachments) {
-        attachments.push(file);
+      for (const attachment of msgAttachments) {
+        const fileData = await getFileDataFromAttachment(attachment, msg.createdAt);
+        files.push(fileData);
       }
     }
     currMsgPointer = msgPage.size !== 0 ? msgPage.at(msgPage.size - 1) : undefined;
   }
 
-  return attachments;
+  return files;
 }

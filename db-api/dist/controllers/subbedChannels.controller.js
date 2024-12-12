@@ -1,6 +1,9 @@
-import { GetAllSubbedChannelsReqSchema } from "./../../../bot/node_modules/shared/src/subbed-channel-requests/getAllSubbedChannelsReq";
-import { AlbumRequestType } from "shared/src/subbed-channel-requests/albumRequestType";
-import { UpdateChannelAlbumReqSchema } from "shared/src/subbed-channel-requests/updateChannelAlbumReq";
+import { GetAllSubbedChannelsReqSchema } from "./../../../bot/node_modules/shared/src/requests/subbed-channel-requests/getAllSubbedChannelsReq
+";
+import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType
+";
+import { UpdateChannelAlbumReqSchema } from "shared/src/requests/subbed-channel-requests/updateChannelAlbumReq
+";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
@@ -8,7 +11,8 @@ import ValidationException from "../types/error/validationException";
 import { AddSubChannelReqBodySchema } from "../types/request-schemas/addSubChannelReqBody";
 import { IsSubscribedQueryParamsSchema } from "../types/request-schemas/isSubscribedQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
-import { CreateAndLinkAlbumSchema } from "./../../node_modules/shared/src/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
+import { CreateAndLinkAlbumSchema } from "./../../node_modules/shared/src/requests/subbed-channel-requests/createAlbumAndLinkChannelReqBody
+";
 /**
  * Used to get the ids of all the subscribed channels for a given guild.
  * Route: GET /api/subscribed-channels/:guildId

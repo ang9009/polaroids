@@ -1,5 +1,5 @@
-import { AlbumRequestType } from "shared/src/subbed-channel-requests/albumRequestType";
 import { z } from "zod";
+import { AlbumRequestType } from "./types/albumRequestType";
 
 export const AddSubChannelReqBodySchema = z
   .object({

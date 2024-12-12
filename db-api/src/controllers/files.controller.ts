@@ -1,20 +1,16 @@
 /* eslint-disable jsdoc/require-param */
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import { UploadFilesReqBodySchema } from "shared/src/file-requests/UploadFilesReqBody";
-import { v4 as uuidv4 } from "uuid";
+import { UploadFilesReqBodySchema } from "shared/src/requests/file-requests/UploadFilesReqBody";
+import { GetFilesResponse } from "shared/src/responses/file-responses/getFilesResponse";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
-import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import UnknownException from "../types/error/genericException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
-const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array(
-  "files",
-  15
-);
+const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 
 /**
  * Uploads the given files to FileStation, and tracks each photo/video in the database.
@@ -23,11 +19,13 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  *
  * Request Body:
  * {
+ *    throwUniqueConstraintError: boolean, // Whether the request should return an
+ *                                             error if there is a unique constraint issue
  *    albumName: string, // The name of the album the files should be uploaded to
  *    files: File[], // The files of the photos and/or videos to be uploaded.
- *                      The filename should be unique, as it will be used as the file's id.
+ *                      The filename (originalname) should be the Discord attachment id.
  *    filesData: { // Objects containing data relating to each file
- *      fileId: {
+ *      discordId: { // The file's Discord attachment id
  *        fileName: string, // The name of the file
  *        createdAt: DateTime? // When the file was uploaded. If undefined, this
  *                                 will default to now
@@ -35,11 +33,19 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  *      ...
  *    }
  * }
+ *
+ * Response:
+ * {
+ *     filesUploaded: number // The number of files that were successfully uploaded
+ * }
  */
-export const uploadFiles = async (req: Request, res: Response, next: NextFunction) => {
+export const uploadFiles = async (
+  req: Request,
+  res: Response<GetFilesResponse>,
+  next: NextFunction
+) => {
   upload(req, res, async (err) => {
     const parseRes = UploadFilesReqBodySchema.safeParse(req.body);
-    console.log(parseRes.error);
     if (!parseRes.success) {
       const error = new ValidationException(parseRes.error);
       return next(error);
@@ -55,6 +61,14 @@ export const uploadFiles = async (req: Request, res: Response, next: NextFunctio
     }
     // Make sure that nothing goes wrong with FS upload before updating database
     const files = req.files as Express.Multer.File[];
+    const { albumName, filesData, throwUniqueConstraintError } = parseRes.data!;
+    for (const file of files) {
+      if (!(file.originalname in filesData)) {
+        const error = new UnknownException("One or many files have unmatched filesData properties");
+        return next(error);
+      }
+    }
+
     try {
       await uploadFilesToFS(files);
     } catch (err) {
@@ -64,30 +78,40 @@ export const uploadFiles = async (req: Request, res: Response, next: NextFunctio
       }
     }
 
-    const { albumName, filesData } = parseRes.data!;
     const fileObjects = files.map((file) => {
-      const fileData = filesData[file.filename];
-      const fileId = fileData ? fileData.fileName : uuidv4();
-      const createdAt = fileData ? fileData.createdAt : undefined;
+      const fileData = filesData[file.originalname];
+      const { createdAt, fileName } = fileData;
 
       return {
-        fileId: fileId,
-        fileName: file.originalname,
+        discordId: file.originalname,
+        fileName: fileName,
         albumName: albumName,
         createdAt: createdAt,
       };
     });
 
-    try {
-      await prisma.file.createMany({
-        data: fileObjects,
-        skipDuplicates: true,
-      });
-    } catch (err) {
-      const error = getDbExFromPrismaErr(err);
-      return next(error);
+    let filesUploaded: number = 0;
+    if (throwUniqueConstraintError) {
+      try {
+        const uploadRes = await prisma.file.createMany({
+          data: fileObjects,
+          skipDuplicates: true,
+        });
+        filesUploaded = uploadRes.count;
+      } catch (err) {
+        const error = getDbExFromPrismaErr(err);
+        return next(error);
+      }
+    } else {
+      for (const file of fileObjects) {
+        try {
+          await prisma.file.create({ data: file });
+          filesUploaded++;
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
+        } catch (ignored) {}
+      }
     }
 
-    res.status(200).send(successJson);
+    res.status(200).send({ filesUploaded });
   });
 };

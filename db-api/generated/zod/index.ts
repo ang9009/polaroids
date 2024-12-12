@@ -20,7 +20,7 @@ export const AlbumScalarFieldEnumSchema = z.enum(['name','description','createdA
 
 export const SubscribedChannelScalarFieldEnumSchema = z.enum(['channelId','createdAt','guildId','albumName']);
 
-export const FileScalarFieldEnumSchema = z.enum(['fileId','fileName','description','createdAt','albumName']);
+export const FileScalarFieldEnumSchema = z.enum(['discordId','fileName','description','createdAt','albumName']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
 
@@ -112,9 +112,9 @@ export type SubscribedChannel = z.infer<typeof SubscribedChannelSchema>
  */
 export const FileSchema = z.object({
   /**
-   * The file's id
+   * The file's Discord attachment id
    */
-  fileId: z.string(),
+  discordId: z.string(),
   /**
    * The file's name
    */
@@ -234,7 +234,7 @@ export const FileArgsSchema: z.ZodType<Prisma.FileDefaultArgs> = z.object({
 }).strict();
 
 export const FileSelectSchema: z.ZodType<Prisma.FileSelect> = z.object({
-  fileId: z.boolean().optional(),
+  discordId: z.boolean().optional(),
   fileName: z.boolean().optional(),
   description: z.boolean().optional(),
   createdAt: z.boolean().optional(),
@@ -401,7 +401,7 @@ export const FileWhereInputSchema: z.ZodType<Prisma.FileWhereInput> = z.object({
   AND: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => FileWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
-  fileId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  discordId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   fileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -410,7 +410,7 @@ export const FileWhereInputSchema: z.ZodType<Prisma.FileWhereInput> = z.object({
 }).strict();
 
 export const FileOrderByWithRelationInputSchema: z.ZodType<Prisma.FileOrderByWithRelationInput> = z.object({
-  fileId: z.lazy(() => SortOrderSchema).optional(),
+  discordId: z.lazy(() => SortOrderSchema).optional(),
   fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -419,10 +419,10 @@ export const FileOrderByWithRelationInputSchema: z.ZodType<Prisma.FileOrderByWit
 }).strict();
 
 export const FileWhereUniqueInputSchema: z.ZodType<Prisma.FileWhereUniqueInput> = z.object({
-  fileId: z.string()
+  discordId: z.string()
 })
 .and(z.object({
-  fileId: z.string().optional(),
+  discordId: z.string().optional(),
   AND: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => FileWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FileWhereInputSchema),z.lazy(() => FileWhereInputSchema).array() ]).optional(),
@@ -434,7 +434,7 @@ export const FileWhereUniqueInputSchema: z.ZodType<Prisma.FileWhereUniqueInput> 
 }).strict());
 
 export const FileOrderByWithAggregationInputSchema: z.ZodType<Prisma.FileOrderByWithAggregationInput> = z.object({
-  fileId: z.lazy(() => SortOrderSchema).optional(),
+  discordId: z.lazy(() => SortOrderSchema).optional(),
   fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -448,7 +448,7 @@ export const FileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FileScal
   AND: z.union([ z.lazy(() => FileScalarWhereWithAggregatesInputSchema),z.lazy(() => FileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   OR: z.lazy(() => FileScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FileScalarWhereWithAggregatesInputSchema),z.lazy(() => FileScalarWhereWithAggregatesInputSchema).array() ]).optional(),
-  fileId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  discordId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   fileName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
@@ -592,7 +592,7 @@ export const SubscribedChannelUncheckedUpdateManyInputSchema: z.ZodType<Prisma.S
 }).strict();
 
 export const FileCreateInputSchema: z.ZodType<Prisma.FileCreateInput> = z.object({
-  fileId: z.string(),
+  discordId: z.string(),
   fileName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -600,7 +600,7 @@ export const FileCreateInputSchema: z.ZodType<Prisma.FileCreateInput> = z.object
 }).strict();
 
 export const FileUncheckedCreateInputSchema: z.ZodType<Prisma.FileUncheckedCreateInput> = z.object({
-  fileId: z.string(),
+  discordId: z.string(),
   fileName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -608,7 +608,7 @@ export const FileUncheckedCreateInputSchema: z.ZodType<Prisma.FileUncheckedCreat
 }).strict();
 
 export const FileUpdateInputSchema: z.ZodType<Prisma.FileUpdateInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -616,7 +616,7 @@ export const FileUpdateInputSchema: z.ZodType<Prisma.FileUpdateInput> = z.object
 }).strict();
 
 export const FileUncheckedUpdateInputSchema: z.ZodType<Prisma.FileUncheckedUpdateInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -624,7 +624,7 @@ export const FileUncheckedUpdateInputSchema: z.ZodType<Prisma.FileUncheckedUpdat
 }).strict();
 
 export const FileCreateManyInputSchema: z.ZodType<Prisma.FileCreateManyInput> = z.object({
-  fileId: z.string(),
+  discordId: z.string(),
   fileName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
@@ -632,14 +632,14 @@ export const FileCreateManyInputSchema: z.ZodType<Prisma.FileCreateManyInput> = 
 }).strict();
 
 export const FileUpdateManyMutationInputSchema: z.ZodType<Prisma.FileUpdateManyMutationInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FileUncheckedUpdateManyInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
@@ -809,7 +809,7 @@ export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
 }).strict();
 
 export const FileCountOrderByAggregateInputSchema: z.ZodType<Prisma.FileCountOrderByAggregateInput> = z.object({
-  fileId: z.lazy(() => SortOrderSchema).optional(),
+  discordId: z.lazy(() => SortOrderSchema).optional(),
   fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -817,7 +817,7 @@ export const FileCountOrderByAggregateInputSchema: z.ZodType<Prisma.FileCountOrd
 }).strict();
 
 export const FileMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FileMaxOrderByAggregateInput> = z.object({
-  fileId: z.lazy(() => SortOrderSchema).optional(),
+  discordId: z.lazy(() => SortOrderSchema).optional(),
   fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -825,7 +825,7 @@ export const FileMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FileMaxOrderBy
 }).strict();
 
 export const FileMinOrderByAggregateInputSchema: z.ZodType<Prisma.FileMinOrderByAggregateInput> = z.object({
-  fileId: z.lazy(() => SortOrderSchema).optional(),
+  discordId: z.lazy(() => SortOrderSchema).optional(),
   fileName: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
@@ -1188,14 +1188,14 @@ export const SubscribedChannelScalarWhereInputSchema: z.ZodType<Prisma.Subscribe
 }).strict();
 
 export const FileCreateWithoutAlbumInputSchema: z.ZodType<Prisma.FileCreateWithoutAlbumInput> = z.object({
-  fileId: z.string(),
+  discordId: z.string(),
   fileName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
 export const FileUncheckedCreateWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedCreateWithoutAlbumInput> = z.object({
-  fileId: z.string(),
+  discordId: z.string(),
   fileName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
@@ -1253,7 +1253,7 @@ export const FileScalarWhereInputSchema: z.ZodType<Prisma.FileScalarWhereInput> 
   AND: z.union([ z.lazy(() => FileScalarWhereInputSchema),z.lazy(() => FileScalarWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => FileScalarWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => FileScalarWhereInputSchema),z.lazy(() => FileScalarWhereInputSchema).array() ]).optional(),
-  fileId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  discordId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   fileName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
@@ -1425,7 +1425,7 @@ export const SubscribedChannelUncheckedUpdateManyWithoutGuildInputSchema: z.ZodT
 }).strict();
 
 export const FileCreateManyAlbumInputSchema: z.ZodType<Prisma.FileCreateManyAlbumInput> = z.object({
-  fileId: z.string(),
+  discordId: z.string(),
   fileName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
@@ -1438,21 +1438,21 @@ export const SubscribedChannelCreateManyAlbumInputSchema: z.ZodType<Prisma.Subsc
 }).strict();
 
 export const FileUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.FileUpdateWithoutAlbumInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FileUncheckedUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedUpdateWithoutAlbumInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const FileUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodType<Prisma.FileUncheckedUpdateManyWithoutAlbumInput> = z.object({
-  fileId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  discordId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   fileName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),

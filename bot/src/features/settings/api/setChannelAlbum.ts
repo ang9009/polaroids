@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UpdateChannelAlbumReq } from "shared/src/subbed-channel-requests/updateChannelAlbumReq";
+import { UpdateChannelAlbumReq } from "shared/src/requests/subbed-channel-requests/updateChannelAlbumReq";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 /**

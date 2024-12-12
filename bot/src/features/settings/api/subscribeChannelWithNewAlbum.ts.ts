@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AlbumRequestType } from "shared/src/subbed-channel-requests/albumRequestType";
+import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType";
 import { AddSubChannelReqBody } from "../../../../../db-api/src/types/request-schemas/addSubChannelReqBody";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";

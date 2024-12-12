@@ -2,11 +2,11 @@
 /* eslint-disable jsdoc/require-param */
 import { NextFunction, Request, Response } from "express";
 
+import { GuildQueryParamsSchema } from "shared/src/requests/guildQueryParams";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { GuildQueryParamsSchema } from "../types/request-schemas/guildQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 /**

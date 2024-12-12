@@ -1,4 +1,4 @@
-import { FSWebUploadResponse } from "../types/response-schemas/FSWebUploadResponse";
+import { FSWebUploadResponse } from "../types/filestation/FSWebUploadResponse";
 import { updateFSCredentials } from "./updateFSCredentials";
 
 /**

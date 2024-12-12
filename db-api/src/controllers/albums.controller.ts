@@ -1,12 +1,12 @@
-import { GetAlbumsResponse } from "shared/src/album-responses/getAlbumsResponse";
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
 import { Album } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
+import { AlbumNameQueryParamSchema } from "shared/src/requests/albumNameQueryParam";
+import { GetAlbumsResponse } from "shared/src/responses/album-responses/getAlbumsResponse";
 import HttpStatusCode from "../data/statusCodes";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { AlbumNameQueryParamSchema } from "../types/request-schemas/albumNameQueryParam";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 /**

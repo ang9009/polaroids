@@ -2,7 +2,7 @@ import { Attachment, ChatInputCommandInteraction, SlashCommandBuilder } from "di
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
-import { getChannelAttachments } from "../helpers/getChannelAttachments";
+import { getChannelFilesData } from "../helpers/getChannelAttachments";
 import { getLatestMsg } from "../helpers/getLatestMsg";
 
 /**
@@ -36,7 +36,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
       content: "Processing channel attachments...",
     });
     const latestMsg = await getLatestMsg(channel);
-    const files: Attachment[] = await getChannelAttachments(latestMsg, channel);
+    const files: Attachment[] = await getChannelFilesData(latestMsg, channel);
     await processingReply.edit({ content: `${files.length} file(s) uploaded.` });
   }
 };

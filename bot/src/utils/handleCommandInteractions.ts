@@ -19,8 +19,6 @@ export const handleCommandInteractions = async (interaction: Interaction) => {
   try {
     await command.execute(interaction);
   } catch (error) {
-    console.error(error);
-
     let errEmbed: EmbedBuilder;
     if (error instanceof Error) {
       errEmbed = getErrorEmbed(`There was an error while executing this command: ${error.message}`);

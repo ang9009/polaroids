@@ -1,4 +1,3 @@
-// Taken from https://github.com/JacobWeisenburger/zod_utilz/tree/4093595e5a6d95770872598ba3bc405d4e9c963b
 import { z } from "zod";
 import zu from "zod_utilz";
 
@@ -16,10 +15,13 @@ export const FilesDataSchema = z.record(
 const stringToJSONSchema = zu.stringToJSON();
 
 export const UploadFilesReqBodySchema = z.object({
+  throwUniqueConstraintError: z.preprocess((val) => val === "true", z.boolean()).default(false),
   albumName: z.string(),
   filesData: z
     .string()
-    .transform((json) => stringToJSONSchema.parse(json))
+    .transform((json) => {
+      return stringToJSONSchema.parse(json);
+    })
     .pipe(FilesDataSchema),
 });
 

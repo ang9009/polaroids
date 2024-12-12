@@ -1,0 +1,18 @@
+import { Attachment } from "discord.js";
+import { FileData } from "../types/fileData";
+
+/**
+ * Returns the blob and its name fetched from the given url.
+ * @param attachment the attachment in question
+ * @param createdAt when the file was uploaded
+ * @returns the attachment as a FileData object
+ */
+export const getFileDataFromAttachment = async (
+  attachment: Attachment,
+  createdAt: Date,
+): Promise<FileData> => {
+  const { name, id, url } = attachment;
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return { blob: blob, name: name, attachmentId: id, createdAt };
+};

@@ -1,6 +1,6 @@
 export type FileData = {
   name: string;
   blob: Blob;
-  discordId: string;
+  attachmentId: string;
   createdAt: Date;
 };

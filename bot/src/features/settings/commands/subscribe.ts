@@ -1,5 +1,3 @@
-import { CommandData } from "../../../types/commandData";
-
 import {
   CacheType,
   ChatInputCommandInteraction,
@@ -7,8 +5,14 @@ import {
   SlashCommandBuilder,
   StringSelectMenuInteraction,
 } from "discord.js";
-import { IsSubscribedResponse } from "shared/src/subbed-channels-responses/isSubscribedResponse";
+import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-responses/isSubscribedResponse";
 import { getChannelSubData } from "../../../api/getChannelSubData";
+import { CommandData } from "../../../types/commandData";
+import { getErrorEmbed } from "../../../utils/getErrorEmbed";
+import { uploadFiles } from "../../event-triggers/api/uploadFiles";
+import { FileData } from "../../event-triggers/types/fileData";
+import { getChannelFilesData } from "../../utility/helpers/getChannelAttachments";
+import { getLatestMsg } from "../../utility/helpers/getLatestMsg";
 import { checkAlbumExists } from "../api/checkAlbumExists";
 import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
 import { setChannelAlbum } from "../api/setChannelAlbum";
@@ -16,7 +20,6 @@ import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum"
 import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
-
 import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 
 /**
@@ -29,24 +32,25 @@ const data = new SlashCommandBuilder()
   .setDescription("Ask polaroids to archive any attachments sent in this channel");
 
 /**
- * A helper function that is run once the user has selected/created an album.
- * @param albumData data regarding the album selected/created
+ * A helper function that handles  the user's album selection: if the user wants
+ * to create a new album,  then this should do so using the given name and
+ * description. If the user wants to select an existing album, this should link
+ * the current channel with the specified album. If the channel has already been
+ * subscribed to, this should send a PATCH request instead of a POST request.
+ * @param albumData data regarding the specified album
  * @param interaction the ongoing interaction
- * @param alreadySubscribed whether the current channel has already been
- *         subscribed to
- * @returns the name of the album, or undefined if the selection is invalid
+ * @param alreadySubscribed whether the channel has already been subscribed to
  */
-export const onAlbumSelectionComplete = async (
+const handleAlbumSelection = async (
   albumData: AlbumSelectionData,
   interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
   alreadySubscribed: boolean,
 ) => {
   const { channelId, guildId } = interaction;
   if (!guildId || !channelId) {
-    throw Error("guildId or channelId is undefined for some reason");
+    throw Error("guildId or channelId is undefined");
   }
 
-  // If user wants to create new album
   if (albumData.type === AlbumSelectionType.CREATE_NEW) {
     const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
     const albumExists = await checkAlbumExists(newAlbumName);
@@ -75,12 +79,63 @@ export const onAlbumSelectionComplete = async (
       await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
     }
   }
+};
+
+/**
+ * A helper function that is run once the user has selected/created an album.
+ * @param albumData data regarding the album selected/created
+ * @param interaction the ongoing interaction
+ * @param alreadySubscribed whether the current channel has already been
+ *         subscribed to
+ * @returns the name of the album, or undefined if the selection is invalid
+ */
+export const onAlbumSelectionComplete = async (
+  albumData: AlbumSelectionData,
+  interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
+  alreadySubscribed: boolean,
+) => {
+  // Link the channel to the album according to the user's instructions
+  await handleAlbumSelection(albumData, interaction, alreadySubscribed);
   await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
 
-  const backupPrompt =
-    "It looks like there are unarchived attachments previously sent in this channel. " +
-    "Would you like to back them up?";
-  await interaction.followUp(backupPrompt);
+  // Look through channel history and upload previously uploaded messages
+  // ! Refactor into new function and add option (prompt user if they want ot backup)
+  await interaction.followUp("Processing channel history...");
+  const channel = interaction.channel;
+  if (!channel) {
+    const errEmbed = getErrorEmbed("Could not find this channel. Backup failed.");
+    interaction.followUp({ content: "", embeds: [errEmbed] });
+    return;
+  }
+  const latestMsg = await getLatestMsg(channel);
+  const filesData: FileData[] = await getChannelFilesData(latestMsg, channel);
+  if (filesData.length === 0) {
+    await interaction.followUp("No previously uploaded attachments were found.");
+    return;
+  }
+  const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
+
+  let uploadedFileCount: number;
+  try {
+    uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (err) {
+    const errEmbed = getErrorEmbed("Backup failed. Please try again.");
+    updateReply.edit({ content: "", embeds: [errEmbed] });
+    return;
+  }
+
+  let uploadConfirmMsg: string;
+  if (uploadedFileCount === 0) {
+    uploadConfirmMsg = "All of the attachments sent in this channel have already been archived!";
+  } else if (uploadedFileCount < filesData.length) {
+    uploadConfirmMsg =
+      "It looks like some attachments sent in this channel have already been archived." +
+      ` ${uploadedFileCount} attachment(s) were successfully uploaded.`;
+  } else {
+    uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
+  }
+  await updateReply.edit({ content: uploadConfirmMsg });
 };
 
 /**
@@ -98,6 +153,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   const notSubscribedMsg = "Select an album to link this channel to.";
   const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
 
+  // Rest of logic is in onAlbumSelectionComplete
   showAlbumDropdown(
     msg,
     interaction,

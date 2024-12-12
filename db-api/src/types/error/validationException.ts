@@ -1,6 +1,6 @@
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
-import { ValidationExceptionResponse } from "shared/src/error-responses/validationExceptionResponse";
-import { ZodError, ZodIssue } from "zod";
+import { ValidationExceptionResponse } from "shared/src/responses/error-responses/validationExceptionResponse";
+import { ZodError } from "zod";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";
 
@@ -27,15 +27,10 @@ class ValidationException implements HttpException {
 
   // eslint-disable-next-line jsdoc/require-jsdoc
   getResponse(): ValidationExceptionResponse {
-    const flattened = this.zodError.flatten((issue: ZodIssue) => ({
-      message: issue.message,
-      errorCode: issue.code,
-    }));
-
     return {
       error: DbApiErrorType.REQUEST_EXCEPTION,
       message: this.message,
-      errors: { formErrors: flattened.formErrors, fieldErrors: flattened.fieldErrors },
+      errors: this.zodError.errors,
     };
   }
 }

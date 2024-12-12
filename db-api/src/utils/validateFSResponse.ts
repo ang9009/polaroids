@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { z } from "zod";
-import { FSResponseSchema } from "../types/response-schemas/FSResponse";
+import { FSResponseSchema } from "../types/filestation/FSResponse";
 
 /**
  * Validates a response from FileStation, and returns the data from the request

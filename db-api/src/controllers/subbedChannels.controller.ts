@@ -1,22 +1,21 @@
-import { GetSubbedChannelsResponse } from "shared/src/subbed-channels-responses/getSubbedChannelsResponse";
-import { GetAllSubbedChannelsReqSchema } from "./../../../bot/node_modules/shared/src/subbed-channel-requests/getAllSubbedChannelsReq";
-import { UnsubChannelReqSchema } from "./../../node_modules/shared/src/subbed-channel-requests/unsubChannelReq";
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
-
 import { SubscribedChannel } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { AlbumRequestType } from "shared/src/subbed-channel-requests/albumRequestType";
-import { UpdateChannelAlbumReqSchema } from "shared/src/subbed-channel-requests/updateChannelAlbumReq";
-import { IsSubscribedResponse } from "shared/src/subbed-channels-responses/isSubscribedResponse";
+import { AddSubChannelReqBodySchema } from "shared/src/requests/subbed-channel-requests/addSubChannelReqBody";
+import { CreateAndLinkAlbumReqSchema } from "shared/src/requests/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
+import { GetAllSubbedChannelsReqSchema } from "shared/src/requests/subbed-channel-requests/getAllSubbedChannelsReq";
+import { IsSubscribedQueryParamsSchema } from "shared/src/requests/subbed-channel-requests/isSubscribedQueryParams";
+import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType";
+import { UnsubChannelReqSchema } from "shared/src/requests/subbed-channel-requests/unsubChannelReq";
+import { UpdateChannelAlbumReqSchema } from "shared/src/requests/subbed-channel-requests/updateChannelAlbumReq";
+import { GetSubbedChannelsResponse } from "shared/src/responses/subbed-channels-responses/getSubbedChannelsResponse";
+import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-responses/isSubscribedResponse";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { AddSubChannelReqBodySchema } from "../types/request-schemas/addSubChannelReqBody";
-import { IsSubscribedQueryParamsSchema } from "../types/request-schemas/isSubscribedQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
-import { CreateAndLinkAlbumReqSchema } from "./../../node_modules/shared/src/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
 
 /**
  * Used to get the ids of all the subscribed channels for a given guild.
@@ -74,10 +73,18 @@ export const channelIsSubscribed = async (
       channelId: channelId,
     },
   });
-  const response: IsSubscribedResponse = {
-    isSubscribed: !!channelData,
-    linkedAlbum: channelData?.albumName,
-  };
+  let response: IsSubscribedResponse;
+
+  if (channelData) {
+    response = {
+      isSubscribed: true,
+      linkedAlbum: channelData.albumName,
+    };
+  } else {
+    response = {
+      isSubscribed: false,
+    };
+  }
 
   res.status(HttpStatusCode.OK).json(response);
 };

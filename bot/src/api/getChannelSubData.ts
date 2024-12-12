@@ -2,7 +2,7 @@ import axios from "axios";
 import {
   IsSubscribedResponse,
   IsSubscribedResponseSchema,
-} from "shared/src/subbed-channels-responses/isSubscribedResponse";
+} from "shared/src/responses/subbed-channels-responses/isSubscribedResponse";
 import { DbApiRoutes } from "../data/dbApiRoutes";
 import { getDbApiUrl } from "../utils/getDbApiUrl";
 

@@ -5,7 +5,7 @@ import { sessionIdKey, synoTokenKey } from "../data/constants";
 import {
   FSWebUploadResponse,
   FSWebUploadResponseSchema,
-} from "../types/response-schemas/FSWebUploadResponse";
+} from "../types/filestation/FSWebUploadResponse";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 
 /**

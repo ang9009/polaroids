@@ -1,11 +1,10 @@
-import { isAxiosError } from "axios";
 import { Attachment, Events, Message } from "discord.js";
 import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { EventData } from "../../../types/eventData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
-import { getFileDataFromUrl } from "../api/getFileDataFromUrl";
+import { getFileDataFromAttachment } from "../api/getFileDataFromAttachment";
 import { uploadFiles } from "../api/uploadFiles";
 
 /**
@@ -46,17 +45,14 @@ const execute = async (message: Message) => {
 
   const messageCreatedAt = new Date(message.createdTimestamp * 1000);
   const attachmentFilePromises = attachments.map((attachment) => {
-    const { name, url, id } = attachment;
-    return getFileDataFromUrl(url, name, id, messageCreatedAt);
+    return getFileDataFromAttachment(attachment, messageCreatedAt);
   });
   const attachmentFiles = await Promise.all(attachmentFilePromises);
 
   try {
-    await uploadFiles(attachmentFiles, linkedAlbum!);
+    await uploadFiles(attachmentFiles, linkedAlbum!, true);
   } catch (err) {
-    if (isAxiosError(err)) {
-      console.error(`Something went wrong while attempting to upload images: ${err.message}`);
-    }
+    console.error(err);
     const errEmbed = getErrorEmbed(
       "Something went wrong while uploading your media. Please try again.",
     );

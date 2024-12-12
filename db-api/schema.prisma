@@ -43,10 +43,11 @@ model SubscribedChannel {
 
 /// Corresponds to images/videos saved to FileStation
 model File {
-  fileId      String   @id @db.VarChar(255) /// The file's id
+  discordId   String  @id @db.VarChar(255) /// The file's Discord attachment id
   fileName    String   @db.VarChar(255) /// The file's name
   description String?  @db.VarChar(255) /// A description of the photo/video
   createdAt   DateTime @default(now()) @db.Timestamp() /// When the file was uploaded
+
 
   albumName String /// The name of the album the photo/video is in
   album     Album  @relation(fields: [albumName], references: [name], onDelete: Cascade)

@@ -27,6 +27,7 @@ model Album {
 
   files          File[] /// The files in this album
   channels       SubscribedChannel[] /// The channels this album is associated with
+  ChannelBackups ChannelBackups[] /// Backups that this album is associated with
 }
 
 /// Channels within Discord servers that polaroids watches for updates
@@ -51,4 +52,14 @@ model File {
 
   albumName String /// The name of the album the photo/video is in
   album     Album  @relation(fields: [albumName], references: [name], onDelete: Cascade)
+}
+
+/// Tracks channel backups
+model ChannelBackups {
+  lastBackedUpMessageId String   @id @db.VarChar(255) /// The id of the last message that was backed up
+  channelId             String   @db.VarChar(255) /// The id of the channel the message was sent in
+  createdAt             DateTime @default(now()) @db.Timestamp() /// When the channel was backed up
+
+  albumName String /// The name of the album the channel's contents were backed up to
+  album     Album  @relation(fields: [albumName], references: [name])
 }

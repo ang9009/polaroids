@@ -1,4 +1,3 @@
-import { isAxiosError } from "axios";
 import {
   CacheType,
   ChatInputCommandInteraction,
@@ -10,10 +9,8 @@ import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-respo
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
-import { filterForNotUploadedFiles } from "../../event-triggers/api/filterForNotUploadedFiles";
+import { uploadFiles } from "../../event-triggers/api/uploadFiles";
 import { FileData } from "../../event-triggers/types/fileData";
-import { getChannelFilesData } from "../../utility/helpers/getChannelAttachments";
-import { getLatestMsg } from "../../utility/helpers/getLatestMsg";
 import { checkAlbumExists } from "../api/checkAlbumExists";
 import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
 import { setChannelAlbum } from "../api/setChannelAlbum";
@@ -21,6 +18,7 @@ import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum"
 import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
+import { getChannelNonUploadedFiles } from "../helpers/getChannelNonUploadedFiles";
 import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 
 /**
@@ -109,60 +107,47 @@ export const onAlbumSelectionComplete = async (
   await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
 
   // Look through channel history and upload previously uploaded messages
-  // ! Refactor into new function and add option (prompt user if they want ot backup)
-  await interaction.followUp("Processing channel history...");
-  // ! The code below shoule be xtracted into a helpe rmethjod, since backup
-  // ! also uses this logic
+  const processingMsg = await interaction.followUp("Processing channel history...");
   const channel = interaction.channel;
   if (!channel) {
     const errEmbed = getErrorEmbed("Could not find this channel. Backup failed.");
     interaction.followUp({ content: "", embeds: [errEmbed] });
     return;
   }
-  const latestMsg = await getLatestMsg(channel);
-  const filesData: FileData[] = await getChannelFilesData(latestMsg, channel);
-  if (filesData.length === 0) {
-    await interaction.followUp("No previously uploaded attachments were found.");
-    return;
-  }
 
-  let notUploadedFilesData: FileData[];
+  let filesData: FileData[];
   try {
-    notUploadedFilesData = await filterForNotUploadedFiles(filesData);
+    filesData = await getChannelNonUploadedFiles(channel);
   } catch (err) {
-    if (isAxiosError(err)) {
-      console.error(`Failed to check for not uploaded files in subscribe function: ${err.message}`);
+    if (err instanceof Error) {
+      const errEmbed = getErrorEmbed(err.message);
+      processingMsg.edit({ content: "", embeds: [errEmbed] });
     }
-    const errEmbed = getErrorEmbed("Something went wrong. Please try again.");
-    interaction.followUp({ content: "", embeds: [errEmbed] });
     return;
   }
-  if (notUploadedFilesData.length === 0) {
-    // ! Do something
+  const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
+
+  let uploadedFileCount: number;
+  try {
+    uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (err) {
+    const errEmbed = getErrorEmbed("Backup failed. Please try again.");
+    updateReply.edit({ content: "", embeds: [errEmbed] });
+    return;
   }
-  // const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
 
-  // let uploadedFileCount: number;
-  // try {
-  //   uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // } catch (err) {
-  //   const errEmbed = getErrorEmbed("Backup failed. Please try again.");
-  //   updateReply.edit({ content: "", embeds: [errEmbed] });
-  //   return;
-  // }
-
-  // let uploadConfirmMsg: string;
-  // if (uploadedFileCount === 0) {
-  //   uploadConfirmMsg = "All of the attachments sent in this channel have already been archived!";
-  // } else if (uploadedFileCount < filesData.length) {
-  //   uploadConfirmMsg =
-  //     "It looks like some attachments sent in this channel have already been archived." +
-  //     ` ${uploadedFileCount} attachment(s) were successfully uploaded.`;
-  // } else {
-  //   uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
-  // }
-  // await updateReply.edit({ content: uploadConfirmMsg });
+  let uploadConfirmMsg: string;
+  if (uploadedFileCount === 0) {
+    uploadConfirmMsg = "All of the attachments sent in this channel have already been archived!";
+  } else if (uploadedFileCount < filesData.length) {
+    uploadConfirmMsg =
+      "It looks like some attachments sent in this channel have already been archived." +
+      ` ${uploadedFileCount} attachment(s) were successfully uploaded.`;
+  } else {
+    uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
+  }
+  await updateReply.edit({ content: uploadConfirmMsg });
 };
 
 /**

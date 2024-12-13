@@ -43,9 +43,8 @@ const execute = async (message: Message) => {
 
   const initialMessage = await message.reply("Uploading images...");
 
-  const messageCreatedAt = new Date(message.createdTimestamp * 1000);
   const attachmentFilePromises = attachments.map((attachment) => {
-    return getFileDataFromAttachment(attachment, messageCreatedAt);
+    return getFileDataFromAttachment(attachment, message.createdAt);
   });
   const attachmentFiles = await Promise.all(attachmentFilePromises);
 

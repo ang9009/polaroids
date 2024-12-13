@@ -1,7 +1,8 @@
-import { Attachment, ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
+import { FileData } from "../../event-triggers/types/fileData";
 import { getChannelFilesData } from "../helpers/getChannelAttachments";
 import { getLatestMsg } from "../helpers/getLatestMsg";
 
@@ -38,7 +39,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
       content: "Processing channel attachments...",
     });
     const latestMsg = await getLatestMsg(channel);
-    const files: Attachment[] = await getChannelFilesData(latestMsg, channel);
+    const files: FileData[] = await getChannelFilesData(latestMsg, channel);
     await processingReply.edit({ content: `${files.length} file(s) uploaded.` });
   }
 };

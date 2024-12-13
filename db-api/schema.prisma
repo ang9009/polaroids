@@ -15,7 +15,7 @@ generator zod {
 /// Servers that polaroids has been added to
 model Guild {
   guildId            String              @id @db.VarChar(255) /// The server ID, supplied by Discord API
-  createdAt          DateTime            @default(now()) @db.Timestamp() /// When polaroids was added to the server
+  createdAt          DateTime            @default(now()) /// When polaroids was added to the server
   subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
 }
 
@@ -23,7 +23,7 @@ model Guild {
 model Album {
   name        String   @unique @db.VarChar(255) /// The name of the folder on FileStation
   description String   @db.VarChar(255) /// The album's description
-  createdAt   DateTime @default(now()) @db.Timestamp() /// When the file was uploaded
+  createdAt   DateTime @default(now())  /// When the file was uploaded
 
   files          File[] /// The files in this album
   channels       SubscribedChannel[] /// The channels this album is associated with
@@ -32,7 +32,7 @@ model Album {
 /// Channels within Discord servers that polaroids watches for updates
 model SubscribedChannel {
   channelId String   @id @db.VarChar(255) /// The channel ID, supplied by the Discord API
-  createdAt DateTime @default(now()) @db.Timestamp() /// When the file was uploaded
+  createdAt DateTime @default(now()) /// When the file was uploaded
 
   guildId String /// The id of the guild this channel is associated with
   guild   Guild  @relation(fields: [guildId], references: [guildId], onDelete: Cascade)
@@ -46,7 +46,7 @@ model File {
   discordId   String  @id @db.VarChar(255) /// The file's Discord attachment id
   fileName    String   @db.VarChar(255) /// The file's name
   description String?  @db.VarChar(255) /// A description of the photo/video
-  createdAt   DateTime @default(now()) @db.Timestamp() /// When the file was uploaded
+  createdAt   DateTime @default(now()) /// When the file was uploaded
 
   albumName String /// The name of the album the photo/video is in
   album     Album  @relation(fields: [albumName], references: [name], onDelete: Cascade)

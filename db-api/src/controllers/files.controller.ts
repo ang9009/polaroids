@@ -1,7 +1,10 @@
+/* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
+import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import { UploadFilesReqBodySchema } from "shared/src/requests/file-requests/UploadFilesReqBody";
+import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/file-requests/filterExistingFileIdsRequest";
+import { UploadFilesReqBodySchema } from "shared/src/requests/file-requests/uploadFilesRequest";
 import { GetFilesResponse } from "shared/src/responses/file-responses/getFilesResponse";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
@@ -9,6 +12,7 @@ import UnknownException from "../types/error/genericException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
+import { FilterExistingFileIdsResponse } from "./../../../bot/node_modules/shared/src/responses/file-responses/filterExistingFileIdsResponse";
 
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 
@@ -114,4 +118,51 @@ export const uploadFiles = async (
 
     res.status(200).send({ filesUploaded });
   });
+};
+
+/**
+ * Filters a given list of ids for ids that have not already been uploaded.
+ *
+ * Route: GET /api/files/filter-existing-ids
+ *
+ * Request body:
+ * {
+ *    fileIds: string[], // The list of ids to be filtered
+ * }
+ *
+ * Response body:
+ * {
+ *    filteredIds: string[], // The list of filtered ids
+ * }
+ */
+export const filterExistingFileIds = async (
+  req: Request,
+  res: Response<FilterExistingFileIdsResponse>,
+  next: NextFunction
+) => {
+  const parseRes = FilterExistingFileIdsRequestSchema.safeParse(req.query);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+
+  const { fileIds } = parseRes.data;
+  const filteredIds: string[] = [];
+  for (const fileId of fileIds) {
+    try {
+      const count = await prisma.file.count({
+        where: {
+          discordId: fileId,
+        },
+      });
+      if (count !== 0) {
+        filteredIds.push(fileId);
+      }
+    } catch (err) {
+      const error = getDbExFromPrismaErr(err);
+      return next(error);
+    }
+  }
+
+  res.status(HttpStatusCode.Ok).send({ filteredIds });
 };

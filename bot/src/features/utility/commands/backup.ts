@@ -9,7 +9,9 @@ import { getLatestMsg } from "../helpers/getLatestMsg";
  * A command that backs up all the images/videos in the current channel that have not
  * already been archived.
  */
-const data = new SlashCommandBuilder().setName("backup").setDescription("Archives  polaroids");
+const data = new SlashCommandBuilder()
+  .setName("backup")
+  .setDescription("Find and upload images in this channel that have not already been archived");
 
 /**
  * The execute function for the backup command.

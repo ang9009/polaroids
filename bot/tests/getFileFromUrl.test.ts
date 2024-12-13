@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { getFileFromUrl } from "./../src/features/event-triggers/api/getFileFromUrl";
+import { getFileFromUrl } from "./../src/features/event-triggers/api/";
 
 test("validateFSResponse returns expected object", async () => {
   const fileName = "fileName";

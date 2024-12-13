@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import {
   CacheType,
   ChatInputCommandInteraction,
@@ -9,7 +10,7 @@ import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-respo
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
-import { uploadFiles } from "../../event-triggers/api/uploadFiles";
+import { filterForNotUploadedFiles } from "../../event-triggers/api/filterForNotUploadedFiles";
 import { FileData } from "../../event-triggers/types/fileData";
 import { getChannelFilesData } from "../../utility/helpers/getChannelAttachments";
 import { getLatestMsg } from "../../utility/helpers/getLatestMsg";
@@ -38,15 +39,16 @@ const data = new SlashCommandBuilder()
  * the current channel with the specified album. If the channel has already been
  * subscribed to, this should send a PATCH request instead of a POST request.
  * @param albumData data regarding the specified album
- * @param interaction the ongoing interaction
+ * @param channelId the channel id the interaction is occurring in
+ * @param guildId the guild id of the current guild
  * @param alreadySubscribed whether the channel has already been subscribed to
  */
 const handleAlbumSelection = async (
   albumData: AlbumSelectionData,
-  interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
+  channelId: string | null,
+  guildId: string | null,
   alreadySubscribed: boolean,
 ) => {
-  const { channelId, guildId } = interaction;
   if (!guildId || !channelId) {
     throw Error("guildId or channelId is undefined");
   }
@@ -55,8 +57,7 @@ const handleAlbumSelection = async (
     const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
     const albumExists = await checkAlbumExists(newAlbumName);
     if (albumExists) {
-      interaction.reply("An album with this name already exists! Please try again.");
-      return;
+      throw Error("An album with this name already exists! Please try again.");
     }
 
     // If channel is already subscribed to, create album and link the existing
@@ -94,13 +95,24 @@ export const onAlbumSelectionComplete = async (
   interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
   alreadySubscribed: boolean,
 ) => {
+  const { guildId, channelId } = interaction;
   // Link the channel to the album according to the user's instructions
-  await handleAlbumSelection(albumData, interaction, alreadySubscribed);
+  try {
+    await handleAlbumSelection(albumData, channelId, guildId, alreadySubscribed);
+  } catch (err) {
+    if (err instanceof Error) {
+      const errEmbed = getErrorEmbed(err.message);
+      interaction.reply({ content: "", embeds: [errEmbed] });
+      return;
+    }
+  }
   await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
 
   // Look through channel history and upload previously uploaded messages
   // ! Refactor into new function and add option (prompt user if they want ot backup)
   await interaction.followUp("Processing channel history...");
+  // ! The code below shoule be xtracted into a helpe rmethjod, since backup
+  // ! also uses this logic
   const channel = interaction.channel;
   if (!channel) {
     const errEmbed = getErrorEmbed("Could not find this channel. Backup failed.");
@@ -113,29 +125,44 @@ export const onAlbumSelectionComplete = async (
     await interaction.followUp("No previously uploaded attachments were found.");
     return;
   }
-  const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
 
-  let uploadedFileCount: number;
+  let notUploadedFilesData: FileData[];
   try {
-    uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    notUploadedFilesData = await filterForNotUploadedFiles(filesData);
   } catch (err) {
-    const errEmbed = getErrorEmbed("Backup failed. Please try again.");
-    updateReply.edit({ content: "", embeds: [errEmbed] });
+    if (isAxiosError(err)) {
+      console.error(`Failed to check for not uploaded files in subscribe function: ${err.message}`);
+    }
+    const errEmbed = getErrorEmbed("Something went wrong. Please try again.");
+    interaction.followUp({ content: "", embeds: [errEmbed] });
     return;
   }
-
-  let uploadConfirmMsg: string;
-  if (uploadedFileCount === 0) {
-    uploadConfirmMsg = "All of the attachments sent in this channel have already been archived!";
-  } else if (uploadedFileCount < filesData.length) {
-    uploadConfirmMsg =
-      "It looks like some attachments sent in this channel have already been archived." +
-      ` ${uploadedFileCount} attachment(s) were successfully uploaded.`;
-  } else {
-    uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
+  if (notUploadedFilesData.length === 0) {
+    // ! Do something
   }
-  await updateReply.edit({ content: uploadConfirmMsg });
+  // const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
+
+  // let uploadedFileCount: number;
+  // try {
+  //   uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // } catch (err) {
+  //   const errEmbed = getErrorEmbed("Backup failed. Please try again.");
+  //   updateReply.edit({ content: "", embeds: [errEmbed] });
+  //   return;
+  // }
+
+  // let uploadConfirmMsg: string;
+  // if (uploadedFileCount === 0) {
+  //   uploadConfirmMsg = "All of the attachments sent in this channel have already been archived!";
+  // } else if (uploadedFileCount < filesData.length) {
+  //   uploadConfirmMsg =
+  //     "It looks like some attachments sent in this channel have already been archived." +
+  //     ` ${uploadedFileCount} attachment(s) were successfully uploaded.`;
+  // } else {
+  //   uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
+  // }
+  // await updateReply.edit({ content: uploadConfirmMsg });
 };
 
 /**

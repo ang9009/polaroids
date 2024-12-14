@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FilesUploadData } from "shared/src/requests/file-requests/UploadFilesReqBody";
+import { FilesUploadData } from "shared/src/requests/file-requests/UploadFilesRequest";
 import { GetFilesResponseSchema } from "shared/src/responses/file-responses/getFilesResponse";
 import { FileData } from "../types/fileData";
 
@@ -24,11 +24,12 @@ export const uploadFiles = async (
   const filesData: FilesUploadData = {};
   for (const file of files) {
     const fileData = {
-      fileName: file.name,
+      fileName: file.fileName,
+      uploaderId: file.uploaderId,
       createdAt: file.createdAt,
     };
-    filesData[file.attachmentId] = fileData;
-    formData.append("files", file.blob, file.attachmentId);
+    filesData[file.discordId] = fileData;
+    formData.append("files", file.blob, file.discordId);
   }
   formData.append("filesData", JSON.stringify(filesData));
   formData.append("throwUniqueConstraintError", throwUniqueConstraintError);

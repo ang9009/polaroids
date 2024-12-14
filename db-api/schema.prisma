@@ -44,6 +44,7 @@ model SubscribedChannel {
 /// Corresponds to images/videos saved to FileStation
 model File {
   discordId   String  @id @db.VarChar(255) /// The file's Discord attachment id
+  uploaderId  String @db.VarChar(255) /// The Discord user id of the person who sent this file
   fileName    String   @db.VarChar(255) /// The file's name
   description String?  @db.VarChar(255) /// A description of the photo/video
   createdAt   DateTime @default(now()) /// When the file was uploaded

@@ -16,6 +16,7 @@ const execute = async (message: Message) => {
     return;
   }
 
+  // Check if there the channel is already subscribed to
   let linkedAlbum: string;
   try {
     const subData = await getChannelSubData(message.channelId);
@@ -44,10 +45,9 @@ const execute = async (message: Message) => {
   const initialMessage = await message.reply("Uploading images...");
 
   const attachmentFilePromises = attachments.map((attachment) => {
-    return getFileDataFromAttachment(attachment, message.createdAt);
+    return getFileDataFromAttachment(attachment, message.createdAt, message.author.id);
   });
   const attachmentFiles = await Promise.all(attachmentFilePromises);
-
   try {
     await uploadFiles(attachmentFiles, linkedAlbum!, true);
   } catch (err) {

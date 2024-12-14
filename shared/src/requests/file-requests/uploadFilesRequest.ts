@@ -5,6 +5,7 @@ export const FilesDataSchema = z.record(
   z.string(),
   z.object({
     fileName: z.string(),
+    uploaderId: z.string(),
     createdAt: z
       .string()
       .transform((dateString) => new Date(dateString))

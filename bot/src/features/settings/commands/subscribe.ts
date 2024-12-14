@@ -1,4 +1,7 @@
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   CacheType,
   ChatInputCommandInteraction,
   ModalSubmitInteraction,
@@ -9,8 +12,6 @@ import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-respo
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
-import { uploadFiles } from "../../event-triggers/api/uploadFiles";
-import { FileData } from "../../event-triggers/types/fileData";
 import { checkAlbumExists } from "../api/checkAlbumExists";
 import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
 import { setChannelAlbum } from "../api/setChannelAlbum";
@@ -18,7 +19,7 @@ import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum"
 import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
-import { getChannelNonUploadedFiles } from "../helpers/getChannelNonUploadedFiles";
+import { performBackupWithProgress } from "../helpers/performBackupWithProgress";
 import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 
 /**
@@ -106,48 +107,49 @@ export const onAlbumSelectionComplete = async (
   }
   await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
 
-  // Look through channel history and upload previously uploaded messages
-  const processingMsg = await interaction.followUp("Processing channel history...");
-  const channel = interaction.channel;
-  if (!channel) {
-    const errEmbed = getErrorEmbed("Could not find this channel. Backup failed.");
-    interaction.followUp({ content: "", embeds: [errEmbed] });
-    return;
-  }
+  // Ask user if they would like to back up previously uploaded attachments
+  const confirmBtnId = "confirm";
+  const cancelBtnId = "cancel";
+  const confirm = new ButtonBuilder()
+    .setCustomId(confirmBtnId)
+    .setLabel("Confirm")
+    .setStyle(ButtonStyle.Primary);
+  const cancel = new ButtonBuilder()
+    .setCustomId(cancelBtnId)
+    .setLabel("Cancel")
+    .setStyle(ButtonStyle.Secondary);
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(cancel, confirm);
+  const backupOptionsFollowUp = await interaction.followUp({
+    content:
+      "Would you like me to look through this channel's history and backup any unarchived files?",
+    components: [row],
+  });
 
-  let filesData: FileData[];
   try {
-    filesData = await getChannelNonUploadedFiles(channel);
-  } catch (err) {
-    if (err instanceof Error) {
-      const errEmbed = getErrorEmbed(err.message);
-      processingMsg.edit({ content: "", embeds: [errEmbed] });
+    const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
+      // eslint-disable-next-line jsdoc/require-jsdoc
+      filter: (i) => i.user.id === interaction.user.id,
+      time: 60_000,
+    });
+
+    if (confirmation.customId === confirmBtnId) {
+      await backupOptionsFollowUp.delete();
+      await performBackupWithProgress(interaction, albumData);
+    } else if (confirmation.customId === cancelBtnId) {
+      await backupOptionsFollowUp.edit({
+        content: "Backup operation cancelled.",
+        components: [],
+      });
     }
-    return;
-  }
-  const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
-
-  let uploadedFileCount: number;
-  try {
-    uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (err) {
-    const errEmbed = getErrorEmbed("Backup failed. Please try again.");
-    updateReply.edit({ content: "", embeds: [errEmbed] });
-    return;
+  } catch (e) {
+    await backupOptionsFollowUp.edit({
+      content:
+        "No confirmation received, cancelling." +
+        "You can find and upload unarchived files using `/backup` anytime.",
+      components: [],
+    });
   }
-
-  let uploadConfirmMsg: string;
-  if (uploadedFileCount === 0) {
-    uploadConfirmMsg = "All of the attachments sent in this channel have already been archived!";
-  } else if (uploadedFileCount < filesData.length) {
-    uploadConfirmMsg =
-      "It looks like some attachments sent in this channel have already been archived." +
-      ` ${uploadedFileCount} attachment(s) were successfully uploaded.`;
-  } else {
-    uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
-  }
-  await updateReply.edit({ content: uploadConfirmMsg });
 };
 
 /**

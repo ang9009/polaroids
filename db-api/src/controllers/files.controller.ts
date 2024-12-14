@@ -49,6 +49,7 @@ export const uploadFiles = async (
   next: NextFunction
 ) => {
   upload(req, res, async (err) => {
+    console.log(req.body);
     const parseRes = UploadFilesReqBodySchema.safeParse(req.body);
     if (!parseRes.success) {
       const error = new ValidationException(parseRes.error);
@@ -84,13 +85,14 @@ export const uploadFiles = async (
 
     const fileObjects = files.map((file) => {
       const fileData = filesData[file.originalname];
-      const { createdAt, fileName } = fileData;
+      const { createdAt, fileName, uploaderId } = fileData;
 
       return {
         discordId: file.originalname,
         fileName: fileName,
         albumName: albumName,
         createdAt: createdAt,
+        uploaderId: uploaderId,
       };
     });
 
@@ -121,7 +123,8 @@ export const uploadFiles = async (
 };
 
 /**
- * Filters a given list of ids for ids that have not already been uploaded.
+ * Filters a given list of file ids for ids corresponding to files that have not
+ * already been uploaded.
  *
  * Route: GET /api/files/filter-existing-ids
  *
@@ -155,7 +158,7 @@ export const filterExistingFileIds = async (
           discordId: fileId,
         },
       });
-      if (count !== 0) {
+      if (count === 0) {
         filteredIds.push(fileId);
       }
     } catch (err) {

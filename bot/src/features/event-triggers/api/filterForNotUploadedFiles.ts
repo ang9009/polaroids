@@ -10,7 +10,7 @@ import { FileData } from "../types/fileData";
 export const filterForNotUploadedFiles = async (files: FileData[]): Promise<FileData[]> => {
   const { DB_API_URL } = process.env;
   const url = `${DB_API_URL}/files/filter-existing-ids`;
-  const ids = files.map((file) => file.attachmentId).join(",");
+  const ids = files.map((file) => file.discordId).join(",");
   const params = {
     fileIds: ids,
   };
@@ -18,6 +18,6 @@ export const filterForNotUploadedFiles = async (files: FileData[]): Promise<File
   const parseRes = FilterExistingFileIdsResponseSchema.parse(res.data);
   const filteredIds = new Set(parseRes.filteredIds);
 
-  const filteredFiles = files.filter((file) => filteredIds.has(file.attachmentId));
+  const filteredFiles = files.filter((file) => filteredIds.has(file.discordId));
   return filteredFiles;
 };

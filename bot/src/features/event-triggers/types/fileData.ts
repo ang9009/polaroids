@@ -1,6 +1,6 @@
-export type FileData = {
-  name: string;
+import { File } from "./../../../../../db-api/generated/zod/index";
+type FileWithBlob = File & {
   blob: Blob;
-  attachmentId: string;
-  createdAt: Date;
 };
+
+export type FileData = Omit<FileWithBlob, "albumName">;

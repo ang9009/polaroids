@@ -24,7 +24,7 @@ export async function getChannelFilesData(
     for (const msg of msgPage.values()) {
       const msgAttachments = msg.attachments.values();
       for (const attachment of msgAttachments) {
-        const fileData = await getFileDataFromAttachment(attachment, msg.createdAt);
+        const fileData = await getFileDataFromAttachment(attachment, msg.createdAt, msg.author.id);
         files.push(fileData);
       }
     }

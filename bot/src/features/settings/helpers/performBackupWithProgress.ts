@@ -1,48 +1,62 @@
-import { CacheType, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
-import { getErrorEmbed } from "../../../utils/getErrorEmbed";
+import { EmbedBuilder, TextChannel, User } from "discord.js";
+import { PrimaryColors } from "../../../data/primaryColors";
 import { uploadFiles } from "../../event-triggers/api/uploadFiles";
 import { FileData } from "../../event-triggers/types/fileData";
 import { AlbumSelectionData } from "../data/finalAlbumSelection";
 import { getChannelNonUploadedFiles } from "./getChannelNonUploadedFiles";
 
 /**
- * Backs up the contents of the channel where the given interaction is taking
- * place in while keeping the user notified of the progress of the backup via embeds.
- * @param interaction the ongoing interaction
+ * Backs up the contents of the given channel while keeping the user notified of
+ * the progress of the backup via embeds.
+ * @param channel the channel
  * @param albumData data regarding the album the files in the channel should be
  *        uploaded to
+ * @param requester the name of the user who requested the upload
  */
 export const performBackupWithProgress = async (
-  interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
+  channel: TextChannel,
   albumData: AlbumSelectionData,
+  requester: User,
 ) => {
-  const processingMsg = await interaction.followUp("Processing channel history...");
-  const channel = interaction.channel;
-  if (!channel) {
-    const errEmbed = getErrorEmbed("Could not find this channel. Backup failed.");
-    interaction.followUp({ content: "", embeds: [errEmbed] });
-    return;
-  }
+  const statusEmbed = new EmbedBuilder()
+    .setTitle("Channel backup request")
+    .setColor(PrimaryColors.PRIMARY_BLUE)
+    .addFields([
+      { name: "Status", value: "Processing channel history... (this may take a while)" },
+      { name: "Album", value: albumData.albumName },
+      { name: "Requested by", value: requester.username },
+    ]);
+  const processingMsg = await channel.send({ embeds: [statusEmbed] });
 
   let filesData: FileData[];
   try {
     filesData = await getChannelNonUploadedFiles(channel);
   } catch (err) {
     if (err instanceof Error) {
-      const errEmbed = getErrorEmbed(err.message);
-      processingMsg.edit({ content: "", embeds: [errEmbed] });
+      statusEmbed
+        .spliceFields(0, 1, { name: "Status", value: err.message })
+        .setColor(PrimaryColors.FAILURE_RED);
+      // Ping the user, and update the status embed
+      processingMsg.edit({ content: requester.toString(), embeds: [statusEmbed] });
     }
     return;
   }
-  const updateReply = await interaction.followUp(`${filesData.length} file(s) found. Uploading...`);
+
+  statusEmbed.spliceFields(0, 1, {
+    name: "Status",
+    value: `${filesData.length} file(s) found. Uploading...`,
+  });
+  const uploadingMsg = await processingMsg.edit({ embeds: [statusEmbed] });
 
   let uploadedFileCount: number;
   try {
     uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
-    const errEmbed = getErrorEmbed("Backup failed. Please try again.");
-    updateReply.edit({ content: "", embeds: [errEmbed] });
+    statusEmbed
+      .spliceFields(0, 1, { name: "Status", value: "Upload failed. Please try again." })
+      .setColor(PrimaryColors.FAILURE_RED);
+    uploadingMsg.edit({ content: requester.toString(), embeds: [statusEmbed] });
     return;
   }
 
@@ -56,5 +70,11 @@ export const performBackupWithProgress = async (
   } else {
     uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
   }
-  await updateReply.edit({ content: uploadConfirmMsg });
+  statusEmbed
+    .spliceFields(0, 1, {
+      name: "Status",
+      value: uploadConfirmMsg,
+    })
+    .setColor(PrimaryColors.SUCCESS_GREEN);
+  await uploadingMsg.edit({ embeds: [statusEmbed] });
 };

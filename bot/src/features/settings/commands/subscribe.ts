@@ -7,6 +7,7 @@ import {
   ModalSubmitInteraction,
   SlashCommandBuilder,
   StringSelectMenuInteraction,
+  TextChannel,
 } from "discord.js";
 import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-responses/isSubscribedResponse";
 import { getChannelSubData } from "../../../api/getChannelSubData";
@@ -95,6 +96,10 @@ export const onAlbumSelectionComplete = async (
   alreadySubscribed: boolean,
 ) => {
   const { guildId, channelId } = interaction;
+  if (!channelId) {
+    throw Error("Could not find channel id");
+  }
+  const channel = interaction.guild?.channels.cache.get(channelId) as TextChannel;
   // Link the channel to the album according to the user's instructions
   try {
     await handleAlbumSelection(albumData, channelId, guildId, alreadySubscribed);
@@ -105,7 +110,7 @@ export const onAlbumSelectionComplete = async (
       return;
     }
   }
-  await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
+  await channel.send(`Successfully linked channel to album **${albumData.albumName}**.`);
 
   // Ask user if they would like to back up previously uploaded attachments
   const confirmBtnId = "confirm";
@@ -118,10 +123,11 @@ export const onAlbumSelectionComplete = async (
     .setCustomId(cancelBtnId)
     .setLabel("Cancel")
     .setStyle(ButtonStyle.Secondary);
-  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(cancel, confirm);
-  const backupOptionsFollowUp = await interaction.followUp({
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(confirm, cancel);
+  const backupOptionsFollowUp = await channel.send({
     content:
-      "Would you like me to look through this channel's history and backup any unarchived files?",
+      "Would you like me to look through this channel's history " +
+      "and backup any unarchived files to its linked album?",
     components: [row],
   });
 
@@ -134,10 +140,12 @@ export const onAlbumSelectionComplete = async (
 
     if (confirmation.customId === confirmBtnId) {
       await backupOptionsFollowUp.delete();
-      await performBackupWithProgress(interaction, albumData);
+      await performBackupWithProgress(channel, albumData, interaction.user);
     } else if (confirmation.customId === cancelBtnId) {
       await backupOptionsFollowUp.edit({
-        content: "Backup operation cancelled.",
+        content:
+          "Backup operation cancelled. " +
+          "You can find and upload unarchived files using `/backup` anytime.",
         components: [],
       });
     }
@@ -145,7 +153,7 @@ export const onAlbumSelectionComplete = async (
   } catch (e) {
     await backupOptionsFollowUp.edit({
       content:
-        "No confirmation received, cancelling." +
+        "No response was received." +
         "You can find and upload unarchived files using `/backup` anytime.",
       components: [],
     });

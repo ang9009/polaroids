@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
-import { GetFilesResponse } from "shared/src/responses/files/getFiles";
+import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
 /**
  * Uploads the given files to FileStation, and tracks each photo/video in the database.
  *
@@ -28,7 +28,7 @@ import { GetFilesResponse } from "shared/src/responses/files/getFiles";
  *     filesUploaded: number // The number of files that were successfully uploaded
  * }
  */
-export declare const uploadFiles: (req: Request, res: Response<GetFilesResponse>, next: NextFunction) => Promise<void>;
+export declare const uploadFiles: (req: Request, res: Response<UploadFilesResponse>, next: NextFunction) => Promise<void>;
 /**
  * Filters a given list of file ids for ids corresponding to files that have not
  * already been uploaded.

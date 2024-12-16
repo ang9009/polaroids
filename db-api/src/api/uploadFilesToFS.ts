@@ -1,11 +1,10 @@
 import axios, { isAxiosError } from "axios";
 import "dotenv/config";
-import { getValue } from "node-global-storage";
-import { sessionIdKey, synoTokenKey } from "../data/constants";
 import {
   FSWebUploadResponse,
   FSWebUploadResponseSchema,
 } from "../types/filestation/FSWebUploadResponse";
+import { FileStationCredentials } from "./fileStationCredentials";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 
 /**
@@ -34,8 +33,7 @@ export const uploadFilesToFS = async (files: Express.Multer.File[]) => {
  */
 async function uploadFile(file: Express.Multer.File): Promise<FSWebUploadResponse> {
   const { FS_API_URL, FS_FOLDER_PATH } = process.env;
-  const sessionId: string = getValue(sessionIdKey);
-  const synoToken: string = getValue(synoTokenKey);
+  const { sessionId, synoToken } = await FileStationCredentials.getInstance();
 
   // Set up url and headers
   const url = `${FS_API_URL}/webman/modules/FileBrowser/webfm/webUI/html5_upload.cgi`;

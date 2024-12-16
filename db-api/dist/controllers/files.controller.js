@@ -40,7 +40,6 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  */
 export const uploadFiles = async (req, res, next) => {
     upload(req, res, async (err) => {
-        console.log(req.body);
         const parseRes = UploadFilesRequestBodySchema.safeParse(req.body);
         if (!parseRes.success) {
             const error = new ValidationException(parseRes.error);

@@ -1,5 +1,5 @@
 import { FSWebUploadResponse } from "../types/filestation/FSWebUploadResponse";
-import { updateFSCredentials } from "./updateFSCredentials";
+import { FileStationCredentials } from "./fileStationCredentials";
 
 /**
  * Runs a given FileStation-related request again if the session id/syno token is invalid.
@@ -15,7 +15,7 @@ export const refetchIfInvalidFSCredentials = async (
     if (res.success) {
       return res;
     } else if (res.errno.key === "error_noprivilege") {
-      await updateFSCredentials();
+      await FileStationCredentials.getInstance();
     } else {
       throw new Error("An unknown FileStation error occurred: " + res.errno.key);
     }

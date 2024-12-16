@@ -10,3 +10,18 @@ export declare const getAlbums: (req: Request, res: Response<GetAlbumsResponse>,
  * Route: HEAD /api/albums/album-exists/:albumName
  */
 export declare const albumExists: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+/**
+ * Creates a new album.
+ * Route: POST /api/albums
+ *
+ * Request body:
+ * {
+ *      albumName: string, // the name of the album
+ *      albumDesc: string // the album's description
+ * }
+ */
+export declare const createAlbum: (req: Request, res: Response<GetAlbumsResponse>, next: NextFunction) => Promise<void | Response<{
+    createdAt: Date;
+    name: string;
+    description: string;
+}[], Record<string, any>>>;

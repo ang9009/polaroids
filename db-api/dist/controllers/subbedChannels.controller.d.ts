@@ -1,6 +1,6 @@
-import { GetSubbedChannelsResponse } from "shared/src/subbed-channels-responses/getSubbedChannelsResponse";
 import { NextFunction, Request, Response } from "express";
-import { IsSubscribedResponse } from "shared/src/subbed-channels-responses/isSubscribedResponse";
+import { GetSubbedChannelsResponse } from "shared/src/responses/subscribed-channels/getSubbedChannels";
+import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/isSubscribed";
 /**
  * Used to get the ids of all the subscribed channels for a given guild.
  * Route: GET /api/subscribed-channels/:guildId
@@ -55,3 +55,10 @@ export declare const updateChannelAlbum: (req: Request, res: Response, next: Nex
  * }
  */
 export declare const createAlbumAndLinkChannel: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+/**
+ * Unsubscribes a given channel from polaroids by removing it its channel id
+ * from the database.
+ *
+ * Route: DELETE /api/subscribed-channels/:channelId
+ */
+export declare const removeSubscribedChannel: (req: Request, res: Response, next: NextFunction) => Promise<void>;

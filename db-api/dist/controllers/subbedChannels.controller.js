@@ -1,24 +1,21 @@
-import { GetAllSubbedChannelsReqSchema } from "./../../../bot/node_modules/shared/src/requests/subbed-channel-requests/getAllSubbedChannelsReq
-";
-import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType
-";
-import { UpdateChannelAlbumReqSchema } from "shared/src/requests/subbed-channel-requests/updateChannelAlbumReq
-";
+import { AddSubbedChannelRequestSchema } from "shared/src/requests/subscribed-channels/addSubbedChannel";
+import { CreateAndLinkAlbumRequestSchema } from "shared/src/requests/subscribed-channels/createAlbumAndLinkChannel";
+import { GetAllSubbedChannelsRequestSchema } from "shared/src/requests/subscribed-channels/getAllSubbedChannels";
+import { IsSubscribedQueryParamsSchema } from "shared/src/requests/subscribed-channels/isSubscribed";
+import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
+import { UnsubChannelRequestSchema } from "shared/src/requests/subscribed-channels/unsubChannel";
+import { UpdateChannelAlbumRequestSchema } from "shared/src/requests/subscribed-channels/updateChannelAlbum";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { AddSubChannelReqBodySchema } from "../types/request-schemas/addSubChannelReqBody";
-import { IsSubscribedQueryParamsSchema } from "../types/request-schemas/isSubscribedQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
-import { CreateAndLinkAlbumSchema } from "./../../node_modules/shared/src/requests/subbed-channel-requests/createAlbumAndLinkChannelReqBody
-";
 /**
  * Used to get the ids of all the subscribed channels for a given guild.
  * Route: GET /api/subscribed-channels/:guildId
  */
 export const getAllSubbedChannels = async (req, res, next) => {
-    const parseRes = GetAllSubbedChannelsReqSchema.safeParse(req.params);
+    const parseRes = GetAllSubbedChannelsRequestSchema.safeParse(req.params);
     if (!parseRes.success) {
         const error = new ValidationException(parseRes.error);
         return next(error);
@@ -59,10 +56,18 @@ export const channelIsSubscribed = async (req, res, next) => {
             channelId: channelId,
         },
     });
-    const response = {
-        isSubscribed: !!channelData,
-        linkedAlbum: channelData === null || channelData === void 0 ? void 0 : channelData.albumName,
-    };
+    let response;
+    if (channelData) {
+        response = {
+            isSubscribed: true,
+            linkedAlbum: channelData.albumName,
+        };
+    }
+    else {
+        response = {
+            isSubscribed: false,
+        };
+    }
     res.status(HttpStatusCode.OK).json(response);
 };
 /**
@@ -82,7 +87,7 @@ export const channelIsSubscribed = async (req, res, next) => {
  * }
  */
 export const addSubscribedChannel = async (req, res, next) => {
-    const parseRes = AddSubChannelReqBodySchema.safeParse(req.body);
+    const parseRes = AddSubbedChannelRequestSchema.safeParse(req.body);
     if (!parseRes.success) {
         const error = new ValidationException(parseRes.error);
         return next(error);
@@ -136,7 +141,7 @@ export const addSubscribedChannel = async (req, res, next) => {
  * }
  */
 export const updateChannelAlbum = async (req, res, next) => {
-    const parsedRequest = UpdateChannelAlbumReqSchema.safeParse(req.body);
+    const parsedRequest = UpdateChannelAlbumRequestSchema.safeParse(req.body);
     if (!parsedRequest.success) {
         const error = new ValidationException(parsedRequest.error);
         return next(error);
@@ -175,7 +180,7 @@ export const updateChannelAlbum = async (req, res, next) => {
  * }
  */
 export const createAlbumAndLinkChannel = async (req, res, next) => {
-    const parseRes = CreateAndLinkAlbumSchema.safeParse(req.body);
+    const parseRes = CreateAndLinkAlbumRequestSchema.safeParse(req.body);
     if (!parseRes.success) {
         const error = new ValidationException(parseRes.error);
         return next(error);
@@ -198,6 +203,32 @@ export const createAlbumAndLinkChannel = async (req, res, next) => {
                     albumName: albumName,
                 },
             });
+        });
+    }
+    catch (err) {
+        const error = getDbExFromPrismaErr(err);
+        return next(error);
+    }
+    res.status(HttpStatusCode.OK).json(successJson);
+};
+/**
+ * Unsubscribes a given channel from polaroids by removing it its channel id
+ * from the database.
+ *
+ * Route: DELETE /api/subscribed-channels/:channelId
+ */
+export const removeSubscribedChannel = async (req, res, next) => {
+    const parsedRequest = UnsubChannelRequestSchema.safeParse(req.params);
+    if (!parsedRequest.success) {
+        const error = new ValidationException(parsedRequest.error);
+        return next(error);
+    }
+    const { channelId } = parsedRequest.data;
+    try {
+        await prisma.subscribedChannel.delete({
+            where: {
+                channelId: channelId,
+            },
         });
     }
     catch (err) {

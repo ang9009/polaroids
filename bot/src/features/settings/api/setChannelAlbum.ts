@@ -1,5 +1,5 @@
 import axios from "axios";
-import { UpdateChannelAlbumReq } from "shared/src/requests/subbed-channel-requests/updateChannelAlbumReq";
+import { UpdateChannelAlbumRequest } from "shared/src/requests/subscribed-channels/updateChannelAlbum";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 /**
@@ -11,7 +11,7 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 export const setChannelAlbum = async (albumName: string, channelId: string, guildId: string) => {
   // If already subscribed, then no need to add channel id
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "link-existing-album");
-  const data: UpdateChannelAlbumReq = { guildId, channelId, albumName };
+  const data: UpdateChannelAlbumRequest = { guildId, channelId, albumName };
 
   await axios.patch(url, data);
 };

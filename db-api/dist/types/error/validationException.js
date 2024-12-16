@@ -17,14 +17,10 @@ class ValidationException {
     }
     // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
-        const flattened = this.zodError.flatten((issue) => ({
-            message: issue.message,
-            errorCode: issue.code,
-        }));
         return {
             error: DbApiErrorType.REQUEST_EXCEPTION,
             message: this.message,
-            errors: { formErrors: flattened.formErrors, fieldErrors: flattened.fieldErrors },
+            errors: this.zodError.errors,
         };
     }
 }

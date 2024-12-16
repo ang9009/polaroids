@@ -1,5 +1,5 @@
-import { GetAlbumsResponse } from "shared/src/album-responses/getAlbumsResponse";
 import { NextFunction, Request, Response } from "express";
+import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
 /**
  * Gets the name of all the albums in the database.
  * Route: GET /api/albums

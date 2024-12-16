@@ -4,7 +4,7 @@ import puppeteer, { Browser, Page } from "puppeteer";
 import { sessionIdKey, synoTokenKey } from "../data/constants";
 
 /**
- * Updates the FileStation session id and SYNO-TOKEN stored in localstorage.
+ * Updates the FileStation session id and SYNO-TOKEN stored in local storage.
  */
 export const updateFSCredentials = async () => {
   console.log("Updating FileStation credentials...");

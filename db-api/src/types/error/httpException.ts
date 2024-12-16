@@ -1,4 +1,4 @@
-import { ErrorResponse } from "shared/src/error-responses/errorResponse";
+import { ErrorResponse } from "shared/src/responses/error/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
 
 /**

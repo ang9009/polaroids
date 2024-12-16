@@ -1,7 +1,7 @@
+import { AlbumNameQueryParamSchema } from "shared/src/requests/albums/albumExists";
 import HttpStatusCode from "../data/statusCodes";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { AlbumNameQueryParamSchema } from "../types/request-schemas/albumNameQueryParam";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 /**
  * Gets the name of all the albums in the database.

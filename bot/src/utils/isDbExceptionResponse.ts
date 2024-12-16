@@ -1,4 +1,4 @@
-import { DbExceptionResponse } from "shared/error-responses/dbExceptionResponse";
+import { DbExceptionResponse } from "shared/src/responses/error//dbExceptionResponse";
 
 /**
  * Type predicate for DbExceptionResponse.

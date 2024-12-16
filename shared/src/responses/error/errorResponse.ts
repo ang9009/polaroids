@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DbApiErrorType } from "../error-codes/dbApiErrorType";
+import { DbApiErrorType } from "../../error-codes/dbApiErrorType";
 export const ErrorResponseSchema = z.object({
   message: z.string(),
   error: z.nativeEnum(DbApiErrorType),

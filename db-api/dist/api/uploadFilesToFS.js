@@ -2,6 +2,8 @@ import axios, { isAxiosError } from "axios";
 import "dotenv/config";
 import { getValue } from "node-global-storage";
 import { sessionIdKey, synoTokenKey } from "../data/constants";
+import { FSWebUploadResponseSchema, } from "../types/filestation/FSWebUploadResponse";
+import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 /**
  * Uploads the given files to FileStation.
  * @param files the files to be uploaded
@@ -9,19 +11,20 @@ import { sessionIdKey, synoTokenKey } from "../data/constants";
 export const uploadFilesToFS = async (files) => {
     try {
         for (const file of files) {
-            await uploadFile(file);
+            await refetchIfInvalidFSCredentials(() => uploadFile(file));
         }
     }
     catch (err) {
         if (isAxiosError(err)) {
-            console.log(err.response);
-            throw Error("An error occurred while trying to upload files to FileStation: " + err.code);
+            throw Error("An Axios error occurred while trying to upload files to FileStation: " + err.code);
         }
+        throw Error("A FileStation error occurred: " + err);
     }
 };
 /**
- * Uploads a singular file to FileStation.
+ * Uploads a singular file to FileStation via its webman route.
  * @param file the file to be uploaded
+ * @returns the parsed response from FileStation
  */
 async function uploadFile(file) {
     const { FS_API_URL, FS_FOLDER_PATH } = process.env;
@@ -39,7 +42,10 @@ async function uploadFile(file) {
     form.append("overwrite", "false");
     form.append("path", FS_FOLDER_PATH);
     form.append("file", blob, file.originalname);
-    console.log(url, headers, form);
     const res = await axios.post(url, form, { headers: headers });
-    console.log(res.data);
+    const parsedRes = FSWebUploadResponseSchema.safeParse(res.data);
+    if (!parsedRes.success) {
+        throw Error("Got unexpected response from file upload: " + JSON.stringify(res.data));
+    }
+    return parsedRes.data;
 }

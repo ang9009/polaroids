@@ -1,4 +1,4 @@
-import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType
+import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType
 ";
 import { z } from "zod";
 export declare const AddSubChannelReqBodySchema: z.ZodEffects<z.ZodEffects<z.ZodObject<{

@@ -5,6 +5,7 @@ import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
+import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
 import { GetFilesResponse } from "shared/src/responses/files/getFiles";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
@@ -12,7 +13,6 @@ import UnknownException from "../types/error/genericException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
-import { FilterExistingFileIdsResponse } from "./../../../bot/node_modules/shared/src/responses/file-responses/filterExistingFileIdsResponse";
 
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 

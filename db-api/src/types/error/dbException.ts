@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
-import { DbExceptionResponse } from "shared/src/error-responses/dbExceptionResponse";
+import { DbExceptionResponse } from "shared/src/responses/error//dbExceptionResponse";
 import HttpStatusCode from "../../data/statusCodes";
 import getDbErrorType from "../../utils/getDbErrorType";
 import { HttpException } from "./httpException";

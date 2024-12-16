@@ -9,7 +9,7 @@ import {
   StringSelectMenuInteraction,
   TextChannel,
 } from "discord.js";
-import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-responses/isSubscribedResponse";
+import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/isSubscribed";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";

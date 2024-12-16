@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CreateAndLinkAlbumReq } from "shared/src/requests/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
+import { CreateAndLinkAlbumRequest } from "shared/src/requests/subscribed-channels/createAlbumAndLinkChannel";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
@@ -18,7 +18,7 @@ export const createAlbumAndLinkChannel = async (
   guildId: string,
 ) => {
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "link-new-album");
-  const data: CreateAndLinkAlbumReq = { guildId, channelId, albumName, albumDesc };
+  const data: CreateAndLinkAlbumRequest = { guildId, channelId, albumName, albumDesc };
 
   await axios.patch(url, data);
 };

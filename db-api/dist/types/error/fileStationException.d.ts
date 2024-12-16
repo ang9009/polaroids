@@ -1,5 +1,5 @@
 import { FileStationError } from "shared/src/error-codes/fileStationError";
-import { FSExceptionResponse } from "shared/src/error-responses/fsExceptionResponse";
+import { FSExceptionResponse } from "shared/src/responses/error//fsExceptionResponse";
 import HttpStatusCode from "../../data/httpStatusCode";
 import { HttpException } from "./httpException";
 /**

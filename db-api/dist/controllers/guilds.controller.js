@@ -1,8 +1,8 @@
+import { GuildQueryParamsSchema } from "shared/src/requests/guilds/guildQueryParams";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
-import { GuildQueryParamsSchema } from "../types/request-schemas/guildQueryParams";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 /**
  * Adds a guild to the Postgres database.

@@ -1,12 +1,12 @@
 import "dotenv/config";
-import { getValue, setValue } from "node-global-storage";
+import { setValue } from "node-global-storage";
 import puppeteer from "puppeteer";
 import { sessionIdKey, synoTokenKey } from "../data/constants";
 /**
- * Updates the FileStation session id and SYNO-TOKEN stored in localstorage.
+ * Updates the FileStation session id and SYNO-TOKEN stored in local storage.
  */
 export const updateFSCredentials = async () => {
-    console.log("Updating session id...");
+    console.log("Updating FileStation credentials...");
     const { FS_API_URL } = process.env;
     const url = `${FS_API_URL}/webman/index.cgi`;
     // Create headless browser and login
@@ -17,9 +17,7 @@ export const updateFSCredentials = async () => {
     await submitLoginForm(page);
     await updateSynoToken(page);
     await updateSessionId(browser);
-    const sessionId = getValue(sessionIdKey);
-    const synoToken = getValue(synoTokenKey);
-    console.log(`Successfully updated session id ${sessionId} and syno token ${synoToken}`);
+    console.log(`Successfully updated FileStation credentials.`);
     await browser.close();
 };
 /**

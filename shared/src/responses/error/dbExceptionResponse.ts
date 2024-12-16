@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DbErrorCode } from "../error-codes/dbErrorCode";
+import { DbErrorCode } from "../../error-codes/dbErrorCode";
 import { ErrorResponseSchema } from "./errorResponse";
 
 export const DbExceptionResponseSchema = ErrorResponseSchema.extend({

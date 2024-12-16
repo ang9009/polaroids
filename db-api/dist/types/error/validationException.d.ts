@@ -1,4 +1,4 @@
-import { ValidationExceptionResponse } from "shared/src/error-responses/validationExceptionResponse";
+import { ValidationExceptionResponse } from "shared/src/responses/error//validationExceptionResponse";
 import { ZodError } from "zod";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";

@@ -6,7 +6,6 @@ import { FileData } from "../types/fileData";
  * @param attachment the attachment in question
  * @param createdAt when the file was uploaded
  * @param uploaderId the id of the user who uploaded this file
- * @param albumName the name of the album that the file should be uploaded to
  * @returns the attachment as a FileData object
  */
 export const getFileDataFromAttachment = async (

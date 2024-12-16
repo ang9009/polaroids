@@ -2,7 +2,7 @@
 /* eslint-disable jsdoc/require-param */
 import { NextFunction, Request, Response } from "express";
 
-import { GuildQueryParamsSchema } from "shared/src/requests/guildQueryParams";
+import { GuildQueryParamsSchema } from "shared/src/requests/guilds/guildQueryParams";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";

@@ -29,8 +29,6 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return;
   }
 
-  // ! Add message if channel is already up to date (check backu p pointer)
-
   const { isSubscribed } = await getChannelSubData(channel.id);
   if (isSubscribed) {
     await thinkingReply.edit("polaroids is already subscribed to this channel.");

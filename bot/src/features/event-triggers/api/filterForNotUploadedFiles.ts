@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FilterExistingFileIdsResponseSchema } from "shared/src/responses/file-responses/filterExistingFileIdsResponse";
+import { FilterExistingFileIdsResponseSchema } from "shared/src/responses/files/filterExistingFileIds";
 import { FileData } from "../types/fileData";
 
 /**

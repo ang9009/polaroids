@@ -1,5 +1,5 @@
 import { z } from "zod";
 
-export const UnsubChannelReqSchema = z.object({
+export const UnsubChannelRequestSchema = z.object({
   channelId: z.string(),
 });

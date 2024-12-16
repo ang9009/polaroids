@@ -3,9 +3,9 @@
 import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/file-requests/filterExistingFileIdsRequest";
-import { UploadFilesReqBodySchema } from "shared/src/requests/file-requests/uploadFilesRequest";
-import { GetFilesResponse } from "shared/src/responses/file-responses/getFilesResponse";
+import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
+import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
+import { GetFilesResponse } from "shared/src/responses/files/getFiles";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
 import UnknownException from "../types/error/genericException";
@@ -50,7 +50,7 @@ export const uploadFiles = async (
 ) => {
   upload(req, res, async (err) => {
     console.log(req.body);
-    const parseRes = UploadFilesReqBodySchema.safeParse(req.body);
+    const parseRes = UploadFilesRequestBodySchema.safeParse(req.body);
     if (!parseRes.success) {
       const error = new ValidationException(parseRes.error);
       return next(error);

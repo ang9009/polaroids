@@ -18,16 +18,18 @@ export const performBackupWithProgress = async (
   albumData: AlbumSelectionData,
   requester: User,
 ) => {
+  const { albumName } = albumData;
   const statusEmbed = new EmbedBuilder()
     .setTitle("Channel backup request")
     .setColor(PrimaryColors.PRIMARY_BLUE)
     .addFields([
       { name: "Status", value: "Processing channel history... (this may take a while)" },
-      { name: "Album", value: albumData.albumName },
+      { name: "Album", value: albumName },
       { name: "Requested by", value: requester.username },
     ]);
   const processingMsg = await channel.send({ embeds: [statusEmbed] });
 
+  // Get all the files in the channel that have not been uploaded
   let filesData: FileData[];
   try {
     filesData = await getChannelNonUploadedFiles(channel);
@@ -48,9 +50,10 @@ export const performBackupWithProgress = async (
   });
   const uploadingMsg = await processingMsg.edit({ embeds: [statusEmbed] });
 
+  // Upload the files
   let uploadedFileCount: number;
   try {
-    uploadedFileCount = await uploadFiles(filesData, albumData.albumName, false);
+    uploadedFileCount = await uploadFiles(filesData, albumName, false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     statusEmbed
@@ -76,5 +79,6 @@ export const performBackupWithProgress = async (
       value: uploadConfirmMsg,
     })
     .setColor(PrimaryColors.SUCCESS_GREEN);
-  await uploadingMsg.edit({ embeds: [statusEmbed] });
+  // Ping the user
+  await uploadingMsg.edit({ content: requester.toString(), embeds: [statusEmbed] });
 };

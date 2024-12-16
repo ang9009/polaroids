@@ -2,8 +2,8 @@
 /* eslint-disable jsdoc/require-param */
 import { Album } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { AlbumNameQueryParamSchema } from "shared/src/requests/albumNameQueryParam";
-import { GetAlbumsResponse } from "shared/src/responses/album-responses/getAlbumsResponse";
+import { AlbumNameQueryParamSchema } from "shared/src/requests/albums/albumExists";
+import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
 import HttpStatusCode from "../data/statusCodes";
 import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";

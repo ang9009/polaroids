@@ -1,6 +1,6 @@
 import axios from "axios";
-import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType";
-import { AddSubChannelReqBody } from "../../../../../db-api/src/types/request-schemas/addSubChannelReqBody";
+import { AddSubbedChannelRequest } from "shared/src/requests/subscribed-channels/addSubbedChannel";
+import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
@@ -19,7 +19,7 @@ export const subscribeChannelWithNewAlbum = async (
   guildId: string,
 ) => {
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS);
-  const data: AddSubChannelReqBody = {
+  const data: AddSubbedChannelRequest = {
     channelId,
     albumRequestType: AlbumRequestType.CREATE_NEW,
     albumName,

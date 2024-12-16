@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AlbumRequestType } from "./types/albumRequestType";
 
-export const AddSubChannelReqBodySchema = z
+export const AddSubbedChannelRequestSchema = z
   .object({
     channelId: z
       .string({
@@ -55,4 +55,4 @@ export const AddSubChannelReqBodySchema = z
     }
   );
 
-export type AddSubChannelReqBody = z.infer<typeof AddSubChannelReqBodySchema>;
+export type AddSubbedChannelRequest = z.infer<typeof AddSubbedChannelRequestSchema>;

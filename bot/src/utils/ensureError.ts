@@ -14,7 +14,9 @@ function ensureError(value: unknown): Error {
   let stringified = "[Unable to stringify the thrown value]";
   try {
     stringified = JSON.stringify(value);
-  } catch {}
+  } catch {
+    /* Ignored */
+  }
 
   const error = new Error(`An unknown error occurred: ${stringified}`);
   return error;

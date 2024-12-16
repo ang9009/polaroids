@@ -2,15 +2,15 @@
 /* eslint-disable jsdoc/require-param */
 import { SubscribedChannel } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { AddSubChannelReqBodySchema } from "shared/src/requests/subbed-channel-requests/addSubChannelReqBody";
-import { CreateAndLinkAlbumReqSchema } from "shared/src/requests/subbed-channel-requests/createAlbumAndLinkChannelReqBody";
-import { GetAllSubbedChannelsReqSchema } from "shared/src/requests/subbed-channel-requests/getAllSubbedChannelsReq";
-import { IsSubscribedQueryParamsSchema } from "shared/src/requests/subbed-channel-requests/isSubscribedQueryParams";
-import { AlbumRequestType } from "shared/src/requests/subbed-channel-requests/types/albumRequestType";
-import { UnsubChannelReqSchema } from "shared/src/requests/subbed-channel-requests/unsubChannelReq";
-import { UpdateChannelAlbumReqSchema } from "shared/src/requests/subbed-channel-requests/updateChannelAlbumReq";
-import { GetSubbedChannelsResponse } from "shared/src/responses/subbed-channels-responses/getSubbedChannelsResponse";
-import { IsSubscribedResponse } from "shared/src/responses/subbed-channels-responses/isSubscribedResponse";
+import { AddSubbedChannelRequestSchema } from "shared/src/requests/subscribed-channels/addSubbedChannel";
+import { CreateAndLinkAlbumRequestSchema } from "shared/src/requests/subscribed-channels/createAlbumAndLinkChannel";
+import { GetAllSubbedChannelsRequestSchema } from "shared/src/requests/subscribed-channels/getAllSubbedChannels";
+import { IsSubscribedQueryParamsSchema } from "shared/src/requests/subscribed-channels/isSubscribed";
+import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
+import { UnsubChannelRequestSchema } from "shared/src/requests/subscribed-channels/unsubChannel";
+import { UpdateChannelAlbumRequestSchema } from "shared/src/requests/subscribed-channels/updateChannelAlbum";
+import { GetSubbedChannelsResponse } from "shared/src/responses/subscribed-channels/getSubbedChannels";
+import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/isSubscribed";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
@@ -26,7 +26,7 @@ export const getAllSubbedChannels = async (
   res: Response<GetSubbedChannelsResponse>,
   next: NextFunction
 ) => {
-  const parseRes = GetAllSubbedChannelsReqSchema.safeParse(req.params);
+  const parseRes = GetAllSubbedChannelsRequestSchema.safeParse(req.params);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -106,7 +106,7 @@ export const channelIsSubscribed = async (
  * }
  */
 export const addSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {
-  const parseRes = AddSubChannelReqBodySchema.safeParse(req.body);
+  const parseRes = AddSubbedChannelRequestSchema.safeParse(req.body);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -162,7 +162,7 @@ export const addSubscribedChannel = async (req: Request, res: Response, next: Ne
  * }
  */
 export const updateChannelAlbum = async (req: Request, res: Response, next: NextFunction) => {
-  const parsedRequest = UpdateChannelAlbumReqSchema.safeParse(req.body);
+  const parsedRequest = UpdateChannelAlbumRequestSchema.safeParse(req.body);
   if (!parsedRequest.success) {
     const error = new ValidationException(parsedRequest.error);
     return next(error);
@@ -207,7 +207,7 @@ export const createAlbumAndLinkChannel = async (
   res: Response,
   next: NextFunction
 ) => {
-  const parseRes = CreateAndLinkAlbumReqSchema.safeParse(req.body);
+  const parseRes = CreateAndLinkAlbumRequestSchema.safeParse(req.body);
   if (!parseRes.success) {
     const error = new ValidationException(parseRes.error);
     return next(error);
@@ -248,7 +248,7 @@ export const createAlbumAndLinkChannel = async (
  * Route: DELETE /api/subscribed-channels/:channelId
  */
 export const removeSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {
-  const parsedRequest = UnsubChannelReqSchema.safeParse(req.params);
+  const parsedRequest = UnsubChannelRequestSchema.safeParse(req.params);
   if (!parsedRequest.success) {
     const error = new ValidationException(parsedRequest.error);
     return next(error);

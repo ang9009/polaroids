@@ -15,7 +15,7 @@ export const FilesDataSchema = z.record(
 
 const stringToJSONSchema = zu.stringToJSON();
 
-export const UploadFilesReqBodySchema = z.object({
+export const UploadFilesRequestBodySchema = z.object({
   throwUniqueConstraintError: z.preprocess((val) => val === "true", z.boolean()).default(false),
   albumName: z.string(),
   filesData: z

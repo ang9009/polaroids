@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const UpdateChannelAlbumReqSchema = z.object({
+export const UpdateChannelAlbumRequestSchema = z.object({
   guildId: z.string({
     invalid_type_error: "guildId must be a string",
     required_error: "guildId is required",
@@ -15,4 +15,4 @@ export const UpdateChannelAlbumReqSchema = z.object({
   }),
 });
 
-export type UpdateChannelAlbumReq = z.infer<typeof UpdateChannelAlbumReqSchema>;
+export type UpdateChannelAlbumRequest = z.infer<typeof UpdateChannelAlbumRequestSchema>;

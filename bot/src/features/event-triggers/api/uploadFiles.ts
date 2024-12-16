@@ -1,6 +1,6 @@
 import axios from "axios";
-import { FilesUploadData } from "shared/src/requests/file-requests/UploadFilesRequest";
-import { GetFilesResponseSchema } from "shared/src/responses/file-responses/getFilesResponse";
+import { FilesUploadData } from "shared/src/requests/files/uploadFiles";
+import { GetFilesResponseSchema } from "shared/src/responses/files/getFiles";
 import { FileData } from "../types/fileData";
 
 /**

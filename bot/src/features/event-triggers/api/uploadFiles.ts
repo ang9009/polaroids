@@ -1,6 +1,6 @@
 import axios from "axios";
 import { FilesUploadData } from "shared/src/requests/files/uploadFiles";
-import { GetFilesResponseSchema } from "shared/src/responses/files/getFiles";
+import { UploadFilesResponseSchema } from "shared/src/responses/files/getFiles";
 import { FileData } from "../types/fileData";
 
 /**
@@ -35,6 +35,6 @@ export const uploadFiles = async (
   formData.append("throwUniqueConstraintError", throwUniqueConstraintError);
 
   const res = await axios.post(url, formData);
-  const parsedRes = GetFilesResponseSchema.parse(res.data);
+  const parsedRes = UploadFilesResponseSchema.parse(res.data);
   return parsedRes.filesUploaded;
 };

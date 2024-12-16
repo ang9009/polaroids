@@ -13,13 +13,8 @@ import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/i
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
-import { checkAlbumExists } from "../api/checkAlbumExists";
-import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
-import { setChannelAlbum } from "../api/setChannelAlbum";
-import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum";
-import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
-import { AlbumSelectionType } from "../data/albumSelectionType";
-import { AlbumSelectionData } from "../data/finalAlbumSelection";
+import { AlbumSelectionData } from "../data/albumSelectionData";
+import { handleAlbumSelection } from "../helpers/handleAlbumSelection";
 import { performBackupWithProgress } from "../helpers/performBackupWithProgress";
 import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 
@@ -31,56 +26,6 @@ import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 const data = new SlashCommandBuilder()
   .setName("subscribe")
   .setDescription("Ask polaroids to archive any attachments sent in this channel");
-
-/**
- * A helper function that handles  the user's album selection: if the user wants
- * to create a new album,  then this should do so using the given name and
- * description. If the user wants to select an existing album, this should link
- * the current channel with the specified album. If the channel has already been
- * subscribed to, this should send a PATCH request instead of a POST request.
- * @param albumData data regarding the specified album
- * @param channelId the channel id the interaction is occurring in
- * @param guildId the guild id of the current guild
- * @param alreadySubscribed whether the channel has already been subscribed to
- */
-const handleAlbumSelection = async (
-  albumData: AlbumSelectionData,
-  channelId: string | null,
-  guildId: string | null,
-  alreadySubscribed: boolean,
-) => {
-  if (!guildId || !channelId) {
-    throw Error("guildId or channelId is undefined");
-  }
-
-  if (albumData.type === AlbumSelectionType.CREATE_NEW) {
-    const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
-    const albumExists = await checkAlbumExists(newAlbumName);
-    if (albumExists) {
-      throw Error("An album with this name already exists! Please try again.");
-    }
-
-    // If channel is already subscribed to, create album and link the existing
-    // channel to it
-    if (alreadySubscribed) {
-      await createAlbumAndLinkChannel(newAlbumName, newAlbumDesc, channelId, guildId);
-    } else {
-      // Otherwise, create a new album and save the channel
-      await subscribeChannelWithNewAlbum(newAlbumName, newAlbumDesc, channelId, guildId);
-    }
-  } else {
-    // If user wants to use existing album
-    const { albumName: newAlbumName } = albumData;
-
-    // If channel is already subscribed to, change its linked album
-    if (alreadySubscribed) {
-      await setChannelAlbum(newAlbumName, channelId, guildId);
-    } else {
-      // Otherwise, save the channel and set its linked album
-      await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
-    }
-  }
-};
 
 /**
  * A helper function that is run once the user has selected/created an album.
@@ -110,7 +55,7 @@ export const onAlbumSelectionComplete = async (
       return;
     }
   }
-  await channel.send(`Successfully linked channel to album **${albumData.albumName}**.`);
+  await interaction.reply(`Successfully linked channel to album **${albumData.albumName}**.`);
 
   // Ask user if they would like to back up previously uploaded attachments
   const confirmBtnId = "confirm";
@@ -140,7 +85,7 @@ export const onAlbumSelectionComplete = async (
 
     if (confirmation.customId === confirmBtnId) {
       await backupOptionsFollowUp.delete();
-      await performBackupWithProgress(channel, albumData, interaction.user);
+      await performBackupWithProgress(channel, albumData.albumName, interaction.user);
     } else if (confirmation.customId === cancelBtnId) {
       await backupOptionsFollowUp.edit({
         content:

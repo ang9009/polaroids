@@ -6,7 +6,7 @@ import multer from "multer";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
-import { GetFilesResponse } from "shared/src/responses/files/getFiles";
+import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
 import UnknownException from "../types/error/genericException";
@@ -45,11 +45,10 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  */
 export const uploadFiles = async (
   req: Request,
-  res: Response<GetFilesResponse>,
+  res: Response<UploadFilesResponse>,
   next: NextFunction
 ) => {
   upload(req, res, async (err) => {
-    console.log(req.body);
     const parseRes = UploadFilesRequestBodySchema.safeParse(req.body);
     if (!parseRes.success) {
       const error = new ValidationException(parseRes.error);

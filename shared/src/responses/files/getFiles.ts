@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const GetFilesResponseSchema = z.object({
+export const UploadFilesResponseSchema = z.object({
   filesUploaded: z.number(),
 });
 
-export type GetFilesResponse = z.infer<typeof GetFilesResponseSchema>;
+export type UploadFilesResponse = z.infer<typeof UploadFilesResponseSchema>;

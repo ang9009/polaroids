@@ -12,8 +12,8 @@ import {
 import { Album } from "../../../../../db-api/node_modules/.prisma/client";
 import { getAlbums } from "../api/getAlbumNames";
 import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
+import { AlbumSelectionData } from "../data/albumSelectionData";
 import { AlbumSelectionType } from "../data/albumSelectionType";
-import { AlbumSelectionData } from "../data/finalAlbumSelection";
 import { getCreateAlbumModal } from "./getCreateAlbumModal";
 
 /**
@@ -23,7 +23,8 @@ import { getCreateAlbumModal } from "./getCreateAlbumModal";
  * @param msg the message shown above the dropdown
  * @param interaction the interaction with the user
  * @param onSelectionComplete a callback function that is called once the user
- *        has selected an existing album/finished entering details for a new one
+ *        has selected an existing album/finished entering details for a new
+ *        one. This callback function must update the interaction somehow.
  * @param linkedAlbum the album that this channel is already linked to. If this
  *        is not undefined, the given album will be omitted from the dropdown.
  */

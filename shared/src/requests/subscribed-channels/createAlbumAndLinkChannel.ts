@@ -1,11 +1,9 @@
 import { z } from "zod";
-import { UpdateChannelAlbumRequestSchema } from "./updateChannelAlbum";
+import { CreateAlbumRequestSchema } from "../albums/createAlbum";
 
-export const CreateAndLinkAlbumRequestSchema = UpdateChannelAlbumRequestSchema.extend({
-  albumDesc: z.string({
-    invalid_type_error: "albumDesc must be a string",
-    required_error: "albumDesc is required",
-  }),
+export const CreateAndLinkAlbumRequestSchema = CreateAlbumRequestSchema.extend({
+  guildId: z.string(),
+  channelId: z.string(),
 });
 
 export type CreateAndLinkAlbumRequest = z.infer<typeof CreateAndLinkAlbumRequestSchema>;

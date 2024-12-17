@@ -22,7 +22,7 @@ model Guild {
 /// Albums that correspond to existing folders in FileStation.
 model Album {
   name        String   @unique @db.VarChar(255) /// The name of the folder on FileStation
-  description String   @db.VarChar(255) /// The album's description
+  description String?  @db.VarChar(255) /// The album's description
   createdAt   DateTime @default(now())  /// When the file was uploaded
 
   files          File[] /// The files in this album

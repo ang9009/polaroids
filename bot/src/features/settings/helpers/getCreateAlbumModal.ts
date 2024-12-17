@@ -25,7 +25,7 @@ export const getCreateAlbumModal = (title: string): ModalBuilder => {
     .setMinLength(1)
     .setMaxLength(40)
     .setStyle(TextInputStyle.Paragraph)
-    .setRequired();
+    .setRequired(false);
   const albumNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(albumNameField);
   const albumDescRow = new ActionRowBuilder<TextInputBuilder>().addComponents(albumDescField);
 

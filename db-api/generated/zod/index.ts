@@ -66,7 +66,7 @@ export const AlbumSchema = z.object({
   /**
    * The album's description
    */
-  description: z.string(),
+  description: z.string().nullable(),
   /**
    * When the file was uploaded
    */
@@ -300,7 +300,7 @@ export const AlbumWhereInputSchema: z.ZodType<Prisma.AlbumWhereInput> = z.object
   OR: z.lazy(() => AlbumWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
-  description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   files: z.lazy(() => FileListRelationFilterSchema).optional(),
   channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
@@ -308,7 +308,7 @@ export const AlbumWhereInputSchema: z.ZodType<Prisma.AlbumWhereInput> = z.object
 
 export const AlbumOrderByWithRelationInputSchema: z.ZodType<Prisma.AlbumOrderByWithRelationInput> = z.object({
   name: z.lazy(() => SortOrderSchema).optional(),
-  description: z.lazy(() => SortOrderSchema).optional(),
+  description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   files: z.lazy(() => FileOrderByRelationAggregateInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelOrderByRelationAggregateInputSchema).optional()
@@ -322,7 +322,7 @@ export const AlbumWhereUniqueInputSchema: z.ZodType<Prisma.AlbumWhereUniqueInput
   AND: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => AlbumWhereInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => AlbumWhereInputSchema),z.lazy(() => AlbumWhereInputSchema).array() ]).optional(),
-  description: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   files: z.lazy(() => FileListRelationFilterSchema).optional(),
   channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
@@ -330,7 +330,7 @@ export const AlbumWhereUniqueInputSchema: z.ZodType<Prisma.AlbumWhereUniqueInput
 
 export const AlbumOrderByWithAggregationInputSchema: z.ZodType<Prisma.AlbumOrderByWithAggregationInput> = z.object({
   name: z.lazy(() => SortOrderSchema).optional(),
-  description: z.lazy(() => SortOrderSchema).optional(),
+  description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   _count: z.lazy(() => AlbumCountOrderByAggregateInputSchema).optional(),
   _max: z.lazy(() => AlbumMaxOrderByAggregateInputSchema).optional(),
@@ -342,7 +342,7 @@ export const AlbumScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.AlbumSc
   OR: z.lazy(() => AlbumScalarWhereWithAggregatesInputSchema).array().optional(),
   NOT: z.union([ z.lazy(() => AlbumScalarWhereWithAggregatesInputSchema),z.lazy(() => AlbumScalarWhereWithAggregatesInputSchema).array() ]).optional(),
   name: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
-  description: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  description: z.union([ z.lazy(() => StringNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
 }).strict();
 
@@ -506,7 +506,7 @@ export const GuildUncheckedUpdateManyInputSchema: z.ZodType<Prisma.GuildUnchecke
 
 export const AlbumCreateInputSchema: z.ZodType<Prisma.AlbumCreateInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   files: z.lazy(() => FileCreateNestedManyWithoutAlbumInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
@@ -514,7 +514,7 @@ export const AlbumCreateInputSchema: z.ZodType<Prisma.AlbumCreateInput> = z.obje
 
 export const AlbumUncheckedCreateInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   files: z.lazy(() => FileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
@@ -522,7 +522,7 @@ export const AlbumUncheckedCreateInputSchema: z.ZodType<Prisma.AlbumUncheckedCre
 
 export const AlbumUpdateInputSchema: z.ZodType<Prisma.AlbumUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   files: z.lazy(() => FileUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
@@ -530,7 +530,7 @@ export const AlbumUpdateInputSchema: z.ZodType<Prisma.AlbumUpdateInput> = z.obje
 
 export const AlbumUncheckedUpdateInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   files: z.lazy(() => FileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
@@ -538,19 +538,19 @@ export const AlbumUncheckedUpdateInputSchema: z.ZodType<Prisma.AlbumUncheckedUpd
 
 export const AlbumCreateManyInputSchema: z.ZodType<Prisma.AlbumCreateManyInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional()
 }).strict();
 
 export const AlbumUpdateManyMutationInputSchema: z.ZodType<Prisma.AlbumUpdateManyMutationInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const AlbumUncheckedUpdateManyInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateManyInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
@@ -746,10 +746,30 @@ export const DateTimeWithAggregatesFilterSchema: z.ZodType<Prisma.DateTimeWithAg
   _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
 
+export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  contains: z.string().optional(),
+  startsWith: z.string().optional(),
+  endsWith: z.string().optional(),
+  mode: z.lazy(() => QueryModeSchema).optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
 export const FileListRelationFilterSchema: z.ZodType<Prisma.FileListRelationFilter> = z.object({
   every: z.lazy(() => FileWhereInputSchema).optional(),
   some: z.lazy(() => FileWhereInputSchema).optional(),
   none: z.lazy(() => FileWhereInputSchema).optional()
+}).strict();
+
+export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
+  sort: z.lazy(() => SortOrderSchema),
+  nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 
 export const FileOrderByRelationAggregateInputSchema: z.ZodType<Prisma.FileOrderByRelationAggregateInput> = z.object({
@@ -772,6 +792,24 @@ export const AlbumMinOrderByAggregateInputSchema: z.ZodType<Prisma.AlbumMinOrder
   name: z.lazy(() => SortOrderSchema).optional(),
   description: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  contains: z.string().optional(),
+  startsWith: z.string().optional(),
+  endsWith: z.string().optional(),
+  mode: z.lazy(() => QueryModeSchema).optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedStringNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
 }).strict();
 
 export const GuildScalarRelationFilterSchema: z.ZodType<Prisma.GuildScalarRelationFilter> = z.object({
@@ -805,26 +843,6 @@ export const SubscribedChannelMinOrderByAggregateInputSchema: z.ZodType<Prisma.S
   albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
-export const StringNullableFilterSchema: z.ZodType<Prisma.StringNullableFilter> = z.object({
-  equals: z.string().optional().nullable(),
-  in: z.string().array().optional().nullable(),
-  notIn: z.string().array().optional().nullable(),
-  lt: z.string().optional(),
-  lte: z.string().optional(),
-  gt: z.string().optional(),
-  gte: z.string().optional(),
-  contains: z.string().optional(),
-  startsWith: z.string().optional(),
-  endsWith: z.string().optional(),
-  mode: z.lazy(() => QueryModeSchema).optional(),
-  not: z.union([ z.string(),z.lazy(() => NestedStringNullableFilterSchema) ]).optional().nullable(),
-}).strict();
-
-export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
-  sort: z.lazy(() => SortOrderSchema),
-  nulls: z.lazy(() => NullsOrderSchema).optional()
-}).strict();
-
 export const FileCountOrderByAggregateInputSchema: z.ZodType<Prisma.FileCountOrderByAggregateInput> = z.object({
   discordId: z.lazy(() => SortOrderSchema).optional(),
   uploaderId: z.lazy(() => SortOrderSchema).optional(),
@@ -850,24 +868,6 @@ export const FileMinOrderByAggregateInputSchema: z.ZodType<Prisma.FileMinOrderBy
   description: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   albumName: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-
-export const StringNullableWithAggregatesFilterSchema: z.ZodType<Prisma.StringNullableWithAggregatesFilter> = z.object({
-  equals: z.string().optional().nullable(),
-  in: z.string().array().optional().nullable(),
-  notIn: z.string().array().optional().nullable(),
-  lt: z.string().optional(),
-  lte: z.string().optional(),
-  gt: z.string().optional(),
-  gte: z.string().optional(),
-  contains: z.string().optional(),
-  startsWith: z.string().optional(),
-  endsWith: z.string().optional(),
-  mode: z.lazy(() => QueryModeSchema).optional(),
-  not: z.union([ z.string(),z.lazy(() => NestedStringNullableWithAggregatesFilterSchema) ]).optional().nullable(),
-  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-  _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
-  _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
 }).strict();
 
 export const SubscribedChannelCreateNestedManyWithoutGuildInputSchema: z.ZodType<Prisma.SubscribedChannelCreateNestedManyWithoutGuildInput> = z.object({
@@ -946,6 +946,10 @@ export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema: 
   connectOrCreate: z.union([ z.lazy(() => SubscribedChannelCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => SubscribedChannelCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
   createMany: z.lazy(() => SubscribedChannelCreateManyAlbumInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
+  set: z.string().optional().nullable()
 }).strict();
 
 export const FileUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.FileUpdateManyWithoutAlbumNestedInput> = z.object({
@@ -1036,10 +1040,6 @@ export const AlbumCreateNestedOneWithoutFilesInputSchema: z.ZodType<Prisma.Album
   create: z.union([ z.lazy(() => AlbumCreateWithoutFilesInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutFilesInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutFilesInputSchema).optional(),
   connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional()
-}).strict();
-
-export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
-  set: z.string().optional().nullable()
 }).strict();
 
 export const AlbumUpdateOneRequiredWithoutFilesNestedInputSchema: z.ZodType<Prisma.AlbumUpdateOneRequiredWithoutFilesNestedInput> = z.object({
@@ -1316,14 +1316,14 @@ export const GuildCreateOrConnectWithoutSubscribedChannelsInputSchema: z.ZodType
 
 export const AlbumCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreateWithoutChannelsInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   files: z.lazy(() => FileCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutChannelsInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   files: z.lazy(() => FileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
@@ -1367,28 +1367,28 @@ export const AlbumUpdateToOneWithWhereWithoutChannelsInputSchema: z.ZodType<Pris
 
 export const AlbumUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutChannelsInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   files: z.lazy(() => FileUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutChannelsInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   files: z.lazy(() => FileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumCreateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumCreateWithoutFilesInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutFilesInput> = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
@@ -1411,14 +1411,14 @@ export const AlbumUpdateToOneWithWhereWithoutFilesInputSchema: z.ZodType<Prisma.
 
 export const AlbumUpdateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutFilesInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutFilesInput> = z.object({
   name: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
-  description: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();

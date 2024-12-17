@@ -101,8 +101,7 @@ export const channelIsSubscribed = async (
  *   "guildId": string, // The guild ID that the channel is in
  *   "albumRequestType": AlbumRequestType, // Type of request: create new, or use existing
  *   "albumName": string, // The name of the album to be linked to the channel
- *   "albumDesc": string?, // The description of the album. This must be
- *                            non-null if the albumRequestType is CREATE_NEW.
+ *   "albumDesc": string?, // The description of the album.
  * }
  */
 export const addSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {

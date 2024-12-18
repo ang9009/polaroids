@@ -9,7 +9,8 @@ import { getCreateAlbumModal } from "./getCreateAlbumModal";
  * @param msg the message shown above the dropdown
  * @param interaction the interaction with the user
  * @param onSelectionComplete a callback function that is called once the user
- *        has selected an existing album/finished entering details for a new one
+ *        has selected an existing album/finished entering details for a new
+ *        one. This callback function must update the interaction somehow.
  * @param linkedAlbum the album that this channel is already linked to. If this
  *        is not undefined, the given album will be omitted from the dropdown.
  */
@@ -103,10 +104,10 @@ function getAlbumDropdownOptions(createNewOptionId, albums, linkedAlbum) {
         if (album.name === linkedAlbum) {
             continue;
         }
-        const option = new StringSelectMenuOptionBuilder()
-            .setLabel(album.name)
-            .setDescription(album.description)
-            .setValue(album.name);
+        const option = new StringSelectMenuOptionBuilder().setLabel(album.name).setValue(album.name);
+        if (album.description) {
+            option.setDescription(album.description);
+        }
         menuAlbumOptions.push(option);
     }
     return menuAlbumOptions;

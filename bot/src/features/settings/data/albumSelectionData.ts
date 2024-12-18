@@ -6,10 +6,8 @@ import { AlbumSelectionType } from "./albumSelectionType";
  * album name and description are required to do so. If the user wants to use an
  * existing album, only the album name is required.
  */
-export type AlbumSelectionData =
-  | {
-      type: AlbumSelectionType.CREATE_NEW;
-      albumName: string;
-      albumDesc: string;
-    }
-  | { type: AlbumSelectionType.EXISTING; albumName: string };
+export type AlbumSelectionData = {
+  type: AlbumSelectionType;
+  albumName: string;
+  albumDesc: string | undefined;
+};

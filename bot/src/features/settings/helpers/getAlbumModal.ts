@@ -7,11 +7,21 @@ import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from
  * respectively. The album name and description fields have min and max
  * restrictions of (1, 20) and (1, 40) respectively.
  * @param title the title of the modal
+ * @param albumNameInputId the id of the name input
+ * @param albumDescInputId the id of the description input
+ * @param albumNamePlaceholder the placeholder for the name
+ * @param albumDescPlaceholder the placeholder for the description
  * @returns a ModalBuilder object that represents the create album modal
  */
-export const getCreateAlbumModal = (title: string): ModalBuilder => {
+export const getAlbumModal = (
+  title: string,
+  albumNameInputId: string,
+  albumDescInputId: string,
+  albumNamePlaceholder?: string,
+  albumDescPlaceholder?: string | null,
+): ModalBuilder => {
   const albumNameField = new TextInputBuilder()
-    .setCustomId("albumNameField")
+    .setCustomId(albumNameInputId)
     .setLabel("Album name")
     .setStyle(TextInputStyle.Short)
     .setPlaceholder("Enter album name...")
@@ -19,7 +29,7 @@ export const getCreateAlbumModal = (title: string): ModalBuilder => {
     .setMaxLength(20)
     .setRequired();
   const albumDescField = new TextInputBuilder()
-    .setCustomId("albumDescField")
+    .setCustomId(albumDescInputId)
     .setLabel("Album description")
     .setPlaceholder("Enter album description...")
     .setMinLength(1)
@@ -28,6 +38,12 @@ export const getCreateAlbumModal = (title: string): ModalBuilder => {
     .setRequired(false);
   const albumNameRow = new ActionRowBuilder<TextInputBuilder>().addComponents(albumNameField);
   const albumDescRow = new ActionRowBuilder<TextInputBuilder>().addComponents(albumDescField);
+  if (albumNamePlaceholder) {
+    albumNameField.setPlaceholder(albumNamePlaceholder);
+  }
+  if (albumDescPlaceholder) {
+    albumDescField.setPlaceholder(albumDescPlaceholder);
+  }
 
   const modal = new ModalBuilder()
     .setCustomId("createAlbumModal")

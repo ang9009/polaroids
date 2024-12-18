@@ -16,14 +16,25 @@ import { createAlbum } from "../api/createAlbum";
  */
 const data = new SlashCommandBuilder()
   .setName("backup")
-  .setDescription("Find and upload images in this channel that have not already been archived");
+  .setDescription("Find and upload images in this channel that have not already been archived")
+  .addChannelOption((option) =>
+    option
+      .setName("channel")
+      .setDescription("The channel to backup. Leave this empty to backup the current channel"),
+  );
 
 /**
  * The execute function for the backup command.
  * @param interaction the interaction triggered by invoking the command
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  const channel = interaction.channel as TextChannel;
+  const channelOption = interaction.options.getChannel("channel");
+  if (channelOption && !(channelOption instanceof TextChannel)) {
+    replyWithErrorEmbed(interaction, "This command can only be called in text channels.");
+    return;
+  }
+
+  const channel = channelOption || (interaction.channel as TextChannel);
   if (!channel) {
     replyWithErrorEmbed(
       interaction,
@@ -35,8 +46,8 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   // If the channel is already subscribed to, use the linked album
   const channelSubData = await getChannelSubData(channel.id);
   if (channelSubData.isSubscribed) {
-    await interaction.reply("Linked album found.");
     const linkedAlbum = channelSubData.linkedAlbum;
+    await interaction.reply(`Linked album **${linkedAlbum}** found for ${channel.toString()}.`);
     await performBackupWithProgress(channel, linkedAlbum, interaction.user);
     return;
   }

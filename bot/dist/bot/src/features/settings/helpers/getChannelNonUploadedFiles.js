@@ -24,9 +24,6 @@ export const getChannelNonUploadedFiles = async (channel) => {
         }
         throw Error("Request to check for non uploaded files failed.");
     }
-    if (nonUploadedFilesData.length === 0) {
-        throw Error("All the attachments in this channel have already been archived.");
-    }
     return nonUploadedFilesData;
 };
 //# sourceMappingURL=getChannelNonUploadedFiles.js.map

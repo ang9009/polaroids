@@ -7,7 +7,7 @@ const guildCreate = {
     async execute(guild) {
         const welcomeMsg = new EmbedBuilder()
             .setTitle("Hello, I'm polaroids")
-            .setColor(PrimaryColors.PRIMARY_BLUE)
+            .setColor(PrimaryColors.PRIMARY_WHITE)
             .setDescription(`- Use \`/subscribe\` in a media-dedicated channel to get started
         \n- Type \`/help\` for a list of other commands
         \n\nFor more information, feel free to visit my [documentation](https://github.com/ang9009/polaroids/tree/main)!\n`)

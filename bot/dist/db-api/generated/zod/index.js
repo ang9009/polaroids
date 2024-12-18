@@ -47,7 +47,7 @@ export const AlbumSchema = z.object({
     /**
      * The album's description
      */
-    description: z.string(),
+    description: z.string().nullable(),
     /**
      * When the file was uploaded
      */
@@ -242,14 +242,14 @@ export const AlbumWhereInputSchema = z.object({
     OR: z.lazy(() => AlbumWhereInputSchema).array().optional(),
     NOT: z.union([z.lazy(() => AlbumWhereInputSchema), z.lazy(() => AlbumWhereInputSchema).array()]).optional(),
     name: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
-    description: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    description: z.union([z.lazy(() => StringNullableFilterSchema), z.string()]).optional().nullable(),
     createdAt: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
     files: z.lazy(() => FileListRelationFilterSchema).optional(),
     channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
 }).strict();
 export const AlbumOrderByWithRelationInputSchema = z.object({
     name: z.lazy(() => SortOrderSchema).optional(),
-    description: z.lazy(() => SortOrderSchema).optional(),
+    description: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional(),
     files: z.lazy(() => FileOrderByRelationAggregateInputSchema).optional(),
     channels: z.lazy(() => SubscribedChannelOrderByRelationAggregateInputSchema).optional()
@@ -262,14 +262,14 @@ export const AlbumWhereUniqueInputSchema = z.object({
     AND: z.union([z.lazy(() => AlbumWhereInputSchema), z.lazy(() => AlbumWhereInputSchema).array()]).optional(),
     OR: z.lazy(() => AlbumWhereInputSchema).array().optional(),
     NOT: z.union([z.lazy(() => AlbumWhereInputSchema), z.lazy(() => AlbumWhereInputSchema).array()]).optional(),
-    description: z.union([z.lazy(() => StringFilterSchema), z.string()]).optional(),
+    description: z.union([z.lazy(() => StringNullableFilterSchema), z.string()]).optional().nullable(),
     createdAt: z.union([z.lazy(() => DateTimeFilterSchema), z.coerce.date()]).optional(),
     files: z.lazy(() => FileListRelationFilterSchema).optional(),
     channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
 }).strict());
 export const AlbumOrderByWithAggregationInputSchema = z.object({
     name: z.lazy(() => SortOrderSchema).optional(),
-    description: z.lazy(() => SortOrderSchema).optional(),
+    description: z.union([z.lazy(() => SortOrderSchema), z.lazy(() => SortOrderInputSchema)]).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional(),
     _count: z.lazy(() => AlbumCountOrderByAggregateInputSchema).optional(),
     _max: z.lazy(() => AlbumMaxOrderByAggregateInputSchema).optional(),
@@ -280,7 +280,7 @@ export const AlbumScalarWhereWithAggregatesInputSchema = z.object({
     OR: z.lazy(() => AlbumScalarWhereWithAggregatesInputSchema).array().optional(),
     NOT: z.union([z.lazy(() => AlbumScalarWhereWithAggregatesInputSchema), z.lazy(() => AlbumScalarWhereWithAggregatesInputSchema).array()]).optional(),
     name: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
-    description: z.union([z.lazy(() => StringWithAggregatesFilterSchema), z.string()]).optional(),
+    description: z.union([z.lazy(() => StringNullableWithAggregatesFilterSchema), z.string()]).optional().nullable(),
     createdAt: z.union([z.lazy(() => DateTimeWithAggregatesFilterSchema), z.coerce.date()]).optional(),
 }).strict();
 export const SubscribedChannelWhereInputSchema = z.object({
@@ -426,45 +426,45 @@ export const GuildUncheckedUpdateManyInputSchema = z.object({
 }).strict();
 export const AlbumCreateInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     files: z.lazy(() => FileCreateNestedManyWithoutAlbumInputSchema).optional(),
     channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 export const AlbumUncheckedCreateInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     files: z.lazy(() => FileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
     channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 export const AlbumUpdateInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
     files: z.lazy(() => FileUpdateManyWithoutAlbumNestedInputSchema).optional(),
     channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 export const AlbumUncheckedUpdateInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
     files: z.lazy(() => FileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
     channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 export const AlbumCreateManyInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional()
 }).strict();
 export const AlbumUpdateManyMutationInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 export const AlbumUncheckedUpdateManyInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
 }).strict();
 export const SubscribedChannelCreateInputSchema = z.object({
@@ -636,10 +636,28 @@ export const DateTimeWithAggregatesFilterSchema = z.object({
     _min: z.lazy(() => NestedDateTimeFilterSchema).optional(),
     _max: z.lazy(() => NestedDateTimeFilterSchema).optional()
 }).strict();
+export const StringNullableFilterSchema = z.object({
+    equals: z.string().optional().nullable(),
+    in: z.string().array().optional().nullable(),
+    notIn: z.string().array().optional().nullable(),
+    lt: z.string().optional(),
+    lte: z.string().optional(),
+    gt: z.string().optional(),
+    gte: z.string().optional(),
+    contains: z.string().optional(),
+    startsWith: z.string().optional(),
+    endsWith: z.string().optional(),
+    mode: z.lazy(() => QueryModeSchema).optional(),
+    not: z.union([z.string(), z.lazy(() => NestedStringNullableFilterSchema)]).optional().nullable(),
+}).strict();
 export const FileListRelationFilterSchema = z.object({
     every: z.lazy(() => FileWhereInputSchema).optional(),
     some: z.lazy(() => FileWhereInputSchema).optional(),
     none: z.lazy(() => FileWhereInputSchema).optional()
+}).strict();
+export const SortOrderInputSchema = z.object({
+    sort: z.lazy(() => SortOrderSchema),
+    nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 export const FileOrderByRelationAggregateInputSchema = z.object({
     _count: z.lazy(() => SortOrderSchema).optional()
@@ -658,6 +676,23 @@ export const AlbumMinOrderByAggregateInputSchema = z.object({
     name: z.lazy(() => SortOrderSchema).optional(),
     description: z.lazy(() => SortOrderSchema).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+export const StringNullableWithAggregatesFilterSchema = z.object({
+    equals: z.string().optional().nullable(),
+    in: z.string().array().optional().nullable(),
+    notIn: z.string().array().optional().nullable(),
+    lt: z.string().optional(),
+    lte: z.string().optional(),
+    gt: z.string().optional(),
+    gte: z.string().optional(),
+    contains: z.string().optional(),
+    startsWith: z.string().optional(),
+    endsWith: z.string().optional(),
+    mode: z.lazy(() => QueryModeSchema).optional(),
+    not: z.union([z.string(), z.lazy(() => NestedStringNullableWithAggregatesFilterSchema)]).optional().nullable(),
+    _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+    _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
+    _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
 }).strict();
 export const GuildScalarRelationFilterSchema = z.object({
     is: z.lazy(() => GuildWhereInputSchema).optional(),
@@ -685,24 +720,6 @@ export const SubscribedChannelMinOrderByAggregateInputSchema = z.object({
     guildId: z.lazy(() => SortOrderSchema).optional(),
     albumName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
-export const StringNullableFilterSchema = z.object({
-    equals: z.string().optional().nullable(),
-    in: z.string().array().optional().nullable(),
-    notIn: z.string().array().optional().nullable(),
-    lt: z.string().optional(),
-    lte: z.string().optional(),
-    gt: z.string().optional(),
-    gte: z.string().optional(),
-    contains: z.string().optional(),
-    startsWith: z.string().optional(),
-    endsWith: z.string().optional(),
-    mode: z.lazy(() => QueryModeSchema).optional(),
-    not: z.union([z.string(), z.lazy(() => NestedStringNullableFilterSchema)]).optional().nullable(),
-}).strict();
-export const SortOrderInputSchema = z.object({
-    sort: z.lazy(() => SortOrderSchema),
-    nulls: z.lazy(() => NullsOrderSchema).optional()
-}).strict();
 export const FileCountOrderByAggregateInputSchema = z.object({
     discordId: z.lazy(() => SortOrderSchema).optional(),
     uploaderId: z.lazy(() => SortOrderSchema).optional(),
@@ -726,23 +743,6 @@ export const FileMinOrderByAggregateInputSchema = z.object({
     description: z.lazy(() => SortOrderSchema).optional(),
     createdAt: z.lazy(() => SortOrderSchema).optional(),
     albumName: z.lazy(() => SortOrderSchema).optional()
-}).strict();
-export const StringNullableWithAggregatesFilterSchema = z.object({
-    equals: z.string().optional().nullable(),
-    in: z.string().array().optional().nullable(),
-    notIn: z.string().array().optional().nullable(),
-    lt: z.string().optional(),
-    lte: z.string().optional(),
-    gt: z.string().optional(),
-    gte: z.string().optional(),
-    contains: z.string().optional(),
-    startsWith: z.string().optional(),
-    endsWith: z.string().optional(),
-    mode: z.lazy(() => QueryModeSchema).optional(),
-    not: z.union([z.string(), z.lazy(() => NestedStringNullableWithAggregatesFilterSchema)]).optional().nullable(),
-    _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
-    _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
-    _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
 }).strict();
 export const SubscribedChannelCreateNestedManyWithoutGuildInputSchema = z.object({
     create: z.union([z.lazy(() => SubscribedChannelCreateWithoutGuildInputSchema), z.lazy(() => SubscribedChannelCreateWithoutGuildInputSchema).array(), z.lazy(() => SubscribedChannelUncheckedCreateWithoutGuildInputSchema), z.lazy(() => SubscribedChannelUncheckedCreateWithoutGuildInputSchema).array()]).optional(),
@@ -811,6 +811,9 @@ export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema =
     connectOrCreate: z.union([z.lazy(() => SubscribedChannelCreateOrConnectWithoutAlbumInputSchema), z.lazy(() => SubscribedChannelCreateOrConnectWithoutAlbumInputSchema).array()]).optional(),
     createMany: z.lazy(() => SubscribedChannelCreateManyAlbumInputEnvelopeSchema).optional(),
     connect: z.union([z.lazy(() => SubscribedChannelWhereUniqueInputSchema), z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array()]).optional(),
+}).strict();
+export const NullableStringFieldUpdateOperationsInputSchema = z.object({
+    set: z.string().optional().nullable()
 }).strict();
 export const FileUpdateManyWithoutAlbumNestedInputSchema = z.object({
     create: z.union([z.lazy(() => FileCreateWithoutAlbumInputSchema), z.lazy(() => FileCreateWithoutAlbumInputSchema).array(), z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema), z.lazy(() => FileUncheckedCreateWithoutAlbumInputSchema).array()]).optional(),
@@ -892,9 +895,6 @@ export const AlbumCreateNestedOneWithoutFilesInputSchema = z.object({
     create: z.union([z.lazy(() => AlbumCreateWithoutFilesInputSchema), z.lazy(() => AlbumUncheckedCreateWithoutFilesInputSchema)]).optional(),
     connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutFilesInputSchema).optional(),
     connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional()
-}).strict();
-export const NullableStringFieldUpdateOperationsInputSchema = z.object({
-    set: z.string().optional().nullable()
 }).strict();
 export const AlbumUpdateOneRequiredWithoutFilesNestedInputSchema = z.object({
     create: z.union([z.lazy(() => AlbumCreateWithoutFilesInputSchema), z.lazy(() => AlbumUncheckedCreateWithoutFilesInputSchema)]).optional(),
@@ -1135,13 +1135,13 @@ export const GuildCreateOrConnectWithoutSubscribedChannelsInputSchema = z.object
 }).strict();
 export const AlbumCreateWithoutChannelsInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     files: z.lazy(() => FileCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 export const AlbumUncheckedCreateWithoutChannelsInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     files: z.lazy(() => FileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
@@ -1177,25 +1177,25 @@ export const AlbumUpdateToOneWithWhereWithoutChannelsInputSchema = z.object({
 }).strict();
 export const AlbumUpdateWithoutChannelsInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
     files: z.lazy(() => FileUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 export const AlbumUncheckedUpdateWithoutChannelsInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
     files: z.lazy(() => FileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 export const AlbumCreateWithoutFilesInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 export const AlbumUncheckedCreateWithoutFilesInputSchema = z.object({
     name: z.string(),
-    description: z.string(),
+    description: z.string().optional().nullable(),
     createdAt: z.coerce.date().optional(),
     channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
@@ -1214,13 +1214,13 @@ export const AlbumUpdateToOneWithWhereWithoutFilesInputSchema = z.object({
 }).strict();
 export const AlbumUpdateWithoutFilesInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
     channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 export const AlbumUncheckedUpdateWithoutFilesInputSchema = z.object({
     name: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
-    description: z.union([z.string(), z.lazy(() => StringFieldUpdateOperationsInputSchema)]).optional(),
+    description: z.union([z.string(), z.lazy(() => NullableStringFieldUpdateOperationsInputSchema)]).optional().nullable(),
     createdAt: z.union([z.coerce.date(), z.lazy(() => DateTimeFieldUpdateOperationsInputSchema)]).optional(),
     channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();

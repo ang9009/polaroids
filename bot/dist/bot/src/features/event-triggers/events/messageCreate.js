@@ -1,6 +1,7 @@
-import { Events } from "discord.js";
+import { EmbedBuilder, Events } from "discord.js";
 import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
 import { getChannelSubData } from "../../../api/getChannelSubData";
+import { PrimaryColors } from "../../../data/primaryColors";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { getFileDataFromAttachment } from "../api/getFileDataFromAttachment";
@@ -40,7 +41,15 @@ const execute = async (message) => {
         }
         return;
     }
-    const initialMessage = await message.reply("Uploading images...");
+    const uploadStatusEmbed = new EmbedBuilder()
+        .setTitle("Attachment upload")
+        .setFields([
+        { name: "Status", value: `Processing ${attachments.length} file(s)...` },
+        { name: "Album", value: linkedAlbum },
+        { name: "Sent by", value: message.author.toString() },
+    ])
+        .setColor(PrimaryColors.PRIMARY_WHITE);
+    const initialMessage = await message.reply({ embeds: [uploadStatusEmbed] });
     const attachmentFilePromises = attachments.map((attachment) => {
         return getFileDataFromAttachment(attachment, message.createdAt, message.author.id);
     });
@@ -54,7 +63,13 @@ const execute = async (message) => {
         initialMessage.edit({ content: "", embeds: [errEmbed] });
         return;
     }
-    initialMessage.edit(`Successfully uploaded ${attachmentFiles.length} file(s).`);
+    uploadStatusEmbed
+        .spliceFields(0, 1, {
+        name: "Status",
+        value: `Successfully uploaded ${attachmentFiles.length} file(s)`,
+    })
+        .setColor(PrimaryColors.SUCCESS_GREEN);
+    initialMessage.edit({ embeds: [uploadStatusEmbed] });
 };
 /**
  * Validates the given attachments against the allowed MIME types.

@@ -18,12 +18,13 @@ export const performBackupWithProgress = async (
 ) => {
   const statusEmbed = new EmbedBuilder()
     .setTitle("Channel backup request")
-    .setColor(PrimaryColors.PRIMARY_BLUE)
+    .setColor(PrimaryColors.PRIMARY_WHITE)
     .addFields([
       { name: "Status", value: "Processing channel history... (this may take a while)" },
       { name: "Album", value: albumName },
       { name: "Requested by", value: requester.toString() },
     ]);
+
   const processingMsg = await channel.send({ embeds: [statusEmbed] });
 
   // Get all the files in the channel that have not been uploaded
@@ -86,6 +87,8 @@ export const performBackupWithProgress = async (
   } else {
     uploadConfirmMsg = `Successfully uploaded ${uploadedFileCount} attachment(s).`;
   }
+
+  // Update the status embed with a success message
   statusEmbed
     .spliceFields(0, 1, {
       name: "Status",

@@ -6,4 +6,4 @@ import { AlbumSelectionType } from "./albumSelectionType";
  */
 export type AlbumDropdownSelection =
   | { type: AlbumSelectionType.CREATE_NEW }
-  | { type: AlbumSelectionType.EXISTING; albumName: string };
+  | { type: AlbumSelectionType.EXISTING; albumName: string; albumDesc: string | undefined };

@@ -13,6 +13,7 @@ import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/i
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
+import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { AlbumSelectionData } from "../data/albumSelectionData";
 import { handleAlbumSelection } from "../helpers/handleAlbumSelection";
 import { performBackupWithProgress } from "../helpers/performBackupWithProgress";
@@ -25,10 +26,19 @@ import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
  */
 const data = new SlashCommandBuilder()
   .setName("subscribe")
-  .setDescription("Ask polaroids to archive any attachments sent in this channel");
+  .setDescription("Ask polaroids to archive any attachments sent in a channel")
+  .addChannelOption((option) =>
+    option
+      .setName("channel")
+      .setDescription(
+        "The channel to be subscribed to. Leave this empty to subscribe to the current channel",
+      ),
+  );
 
 /**
  * A helper function that is run once the user has selected/created an album.
+ * @param subChannel the channel to be subscribed to. If this is undefined, the
+ *                   channel that the interaction is taking place is in will be used
  * @param albumData data regarding the album selected/created
  * @param interaction the ongoing interaction
  * @param alreadySubscribed whether the current channel has already been
@@ -36,6 +46,7 @@ const data = new SlashCommandBuilder()
  * @returns the name of the album, or undefined if the selection is invalid
  */
 export const onAlbumSelectionComplete = async (
+  subChannel: TextChannel | null,
   albumData: AlbumSelectionData,
   interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
   alreadySubscribed: boolean,
@@ -44,7 +55,7 @@ export const onAlbumSelectionComplete = async (
   if (!channelId) {
     throw Error("Could not find channel id");
   }
-  const channel = interaction.guild?.channels.cache.get(channelId) as TextChannel;
+  const channel = subChannel || (interaction.guild?.channels.cache.get(channelId) as TextChannel);
   // Link the channel to the album according to the user's instructions
   try {
     await handleAlbumSelection(albumData, channelId, guildId, alreadySubscribed);
@@ -72,7 +83,7 @@ export const onAlbumSelectionComplete = async (
   const backupOptionsFollowUp = await channel.send({
     content:
       "Would you like me to look through this channel's history " +
-      "and backup any unarchived files to its linked album?",
+      `and backup any unarchived files to its linked album **${albumData.albumName}**?`,
     components: [row],
   });
 
@@ -110,14 +121,21 @@ export const onAlbumSelectionComplete = async (
  * @param interaction the interaction object associated with the interaction
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  const channelSubData: IsSubscribedResponse = await getChannelSubData(interaction.channelId);
+  const subChannel = interaction.options.getChannel("channel");
+  if (subChannel && !(subChannel instanceof TextChannel)) {
+    replyWithErrorEmbed(interaction, "Only text channels can be subscribed to.");
+    return;
+  }
 
+  const channelSubData: IsSubscribedResponse = await getChannelSubData(interaction.channelId);
   const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbum : undefined;
 
   const isAlreadySubscribedMsg =
     `This channel is currently linked to album **${linkedAlbum}**. ` +
     "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
-  const notSubscribedMsg = "Select an album to link this channel to.";
+  const notSubscribedMsg = subChannel
+    ? `Select an album to link ${subChannel.toString()} to.`
+    : "Select an album to link this channel to.";
   const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
 
   // Rest of logic is in onAlbumSelectionComplete
@@ -125,7 +143,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     msg,
     interaction,
     (albumData, interaction) => {
-      onAlbumSelectionComplete(albumData, interaction, channelSubData.isSubscribed);
+      onAlbumSelectionComplete(subChannel, albumData, interaction, channelSubData.isSubscribed);
     },
     linkedAlbum,
   );

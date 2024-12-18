@@ -6,14 +6,23 @@ import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 
 const data = new SlashCommandBuilder()
   .setName("unsubscribe")
-  .setDescription("Make polaroids stop watching for attachments in this channel");
+  .setDescription("Make polaroids stop watching for attachments in a channel")
+  .addChannelOption((option) =>
+    option
+      .setName("channel")
+      .setRequired(false)
+      .setDescription(
+        "The channel to unsubscribe from. Leave this empty to unsubscribe from the current channel",
+      ),
+  );
 
 /**
  * The execute function for the "unsubscribe" command.
  * @param interaction the interaction triggered by invoking the command
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
-  const channelId = interaction.channelId;
+  const channelOption = interaction.options.getChannel("channel");
+  const channelId = channelOption ? channelOption.id : interaction.channelId;
 
   try {
     const { isSubscribed } = await getChannelSubData(channelId);

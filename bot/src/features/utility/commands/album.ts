@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
@@ -125,6 +126,9 @@ const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteracti
         originalAlbumName,
         albumDesc,
       );
+      if (!(interaction instanceof StringSelectMenuInteraction)) {
+        throw Error("Unexpected interaction type");
+      }
       await interaction.showModal(modal);
       const {
         name: newAlbumName,

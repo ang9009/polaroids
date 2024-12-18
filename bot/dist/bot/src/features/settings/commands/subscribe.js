@@ -93,22 +93,24 @@ export const onAlbumSelectionComplete = async (subChannel, albumData, interactio
  * @param interaction the interaction object associated with the interaction
  */
 const execute = async (interaction) => {
-    const subChannel = interaction.options.getChannel("channel");
-    if (subChannel && !(subChannel instanceof TextChannel)) {
+    const channelArg = interaction.options.getChannel("channel");
+    if (channelArg && !(channelArg instanceof TextChannel)) {
         replyWithErrorEmbed(interaction, "Only text channels can be subscribed to.");
         return;
     }
-    const channelSubData = await getChannelSubData(interaction.channelId);
+    const channel = channelArg || interaction.channel;
+    if (!channel) {
+        throw Error("Could not find channel");
+    }
+    const channelSubData = await getChannelSubData(channel.id);
     const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbum : undefined;
-    const isAlreadySubscribedMsg = `This channel is currently linked to album **${linkedAlbum}**. ` +
+    const isAlreadySubscribedMsg = `${channel.toString()} is currently linked to album **${linkedAlbum}**. ` +
         "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
-    const notSubscribedMsg = subChannel
-        ? `Select an album to link ${subChannel.toString()} to.`
-        : "Select an album to link this channel to.";
+    const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
     const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
     // Rest of logic is in onAlbumSelectionComplete
     showAlbumDropdown(msg, interaction, (albumData, interaction) => {
-        onAlbumSelectionComplete(subChannel, albumData, interaction, channelSubData.isSubscribed);
+        onAlbumSelectionComplete(channel, albumData, interaction, channelSubData.isSubscribed);
     }, linkedAlbum);
 };
 const commandData = {

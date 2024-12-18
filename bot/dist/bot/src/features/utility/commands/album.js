@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, SlashCommandSubcommandBuilder, } from "discord.js";
+import { SlashCommandBuilder, SlashCommandSubcommandBuilder, StringSelectMenuInteraction, } from "discord.js";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { getAlbumModal } from "../../settings/helpers/getAlbumModal";
@@ -93,6 +93,9 @@ const handleEditAlbumInteraction = async (interaction) => {
         const nameInputId = "albumNameInput";
         const descInputId = "albumDescInput";
         const modal = getAlbumModal("Edit album info", nameInputId, descInputId, originalAlbumName, albumDesc);
+        if (!(interaction instanceof StringSelectMenuInteraction)) {
+            throw Error("Unexpected interaction type");
+        }
         await interaction.showModal(modal);
         const { name: newAlbumName, description: newAlbumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, nameInputId, descInputId);
         try {

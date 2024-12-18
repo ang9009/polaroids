@@ -3,6 +3,7 @@ import {
   CacheType,
   ChatInputCommandInteraction,
   ComponentType,
+  ModalSubmitInteraction,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
@@ -33,7 +34,7 @@ export const showAlbumDropdown = async (
   interaction: ChatInputCommandInteraction,
   onSelectionComplete: (
     albumData: AlbumSelectionData,
-    interaction: StringSelectMenuInteraction<CacheType>,
+    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
   ) => void,
   linkedAlbum?: string,
   hideCreateAlbumOption?: boolean,
@@ -66,9 +67,9 @@ export const showAlbumDropdown = async (
   });
 
   collector.on("collect", async (selectInteraction) => {
-    const selection = selectInteraction.values[0];
+    const albumSelection = selectInteraction.values[0];
 
-    if (selection === createNewOptionId) {
+    if (albumSelection === createNewOptionId) {
       await onAlbumSelect(
         { type: AlbumSelectionType.CREATE_NEW },
         selectInteraction,
@@ -77,19 +78,21 @@ export const showAlbumDropdown = async (
     } else {
       await onAlbumSelect(
         {
-          albumName: selection,
-          albumDesc: albums.find((album) => album.name === selection)?.description || undefined,
+          albumName: albumSelection,
+          albumDesc:
+            albums.find((album) => album.name === albumSelection)?.description || undefined,
           type: AlbumSelectionType.EXISTING,
         },
         selectInteraction,
         onSelectionComplete,
       );
     }
+    dropdown.setDisabled(true);
+    const disabledDropdownRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+      dropdown,
+    );
 
-    await interaction.editReply({
-      content: `Album **${selection}** was selected.`,
-      components: [],
-    });
+    await response.edit({ components: [disabledDropdownRow] });
   });
 };
 
@@ -107,7 +110,7 @@ const onAlbumSelect = async (
   interaction: StringSelectMenuInteraction<CacheType>,
   onSelectionComplete: (
     albumData: AlbumSelectionData,
-    interaction: StringSelectMenuInteraction<CacheType>,
+    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
   ) => void,
 ): Promise<string> => {
   // If the user wants to create a new album
@@ -117,17 +120,17 @@ const onAlbumSelect = async (
     const modal = getAlbumModal(title, "albumNameField", "albumDescField");
     await interaction.showModal(modal);
 
-    const { name: albumName, description: albumDesc } = await getAlbumModalInputs(
-      interaction,
-      "albumNameField",
-      "albumDescField",
-    );
+    const {
+      name: albumName,
+      description: albumDesc,
+      modalInteraction,
+    } = await getAlbumModalInputs(interaction, "albumNameField", "albumDescField");
     const albumData: AlbumSelectionData = {
       type: AlbumSelectionType.CREATE_NEW,
       albumName,
       albumDesc: albumDesc || undefined,
     };
-    onSelectionComplete(albumData, interaction);
+    onSelectionComplete(albumData, modalInteraction);
     return albumName;
   } else {
     // If the user wants to use an existing album

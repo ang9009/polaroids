@@ -36,21 +36,20 @@ export const showAlbumDropdown = async (msg, interaction, onSelectionComplete, l
         time: 3600000,
     });
     collector.on("collect", async (selectInteraction) => {
-        const selection = selectInteraction.values[0];
-        if (selection === createNewOptionId) {
+        const albumSelection = selectInteraction.values[0];
+        if (albumSelection === createNewOptionId) {
             await onAlbumSelect({ type: AlbumSelectionType.CREATE_NEW }, selectInteraction, onSelectionComplete);
         }
         else {
             await onAlbumSelect({
-                albumName: selection,
-                albumDesc: albums.find((album) => album.name === selection)?.description || undefined,
+                albumName: albumSelection,
+                albumDesc: albums.find((album) => album.name === albumSelection)?.description || undefined,
                 type: AlbumSelectionType.EXISTING,
             }, selectInteraction, onSelectionComplete);
         }
-        await interaction.editReply({
-            content: `Album **${selection}** was selected.`,
-            components: [],
-        });
+        dropdown.setDisabled(true);
+        const disabledDropdownRow = new ActionRowBuilder().addComponents(dropdown);
+        await response.edit({ components: [disabledDropdownRow] });
     });
 };
 /**
@@ -69,13 +68,13 @@ const onAlbumSelect = async (selection, interaction, onSelectionComplete) => {
         const title = "Create & Link Album";
         const modal = getAlbumModal(title, "albumNameField", "albumDescField");
         await interaction.showModal(modal);
-        const { name: albumName, description: albumDesc } = await getAlbumModalInputs(interaction, "albumNameField", "albumDescField");
+        const { name: albumName, description: albumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, "albumNameField", "albumDescField");
         const albumData = {
             type: AlbumSelectionType.CREATE_NEW,
             albumName,
             albumDesc: albumDesc || undefined,
         };
-        onSelectionComplete(albumData, interaction);
+        onSelectionComplete(albumData, modalInteraction);
         return albumName;
     }
     else {

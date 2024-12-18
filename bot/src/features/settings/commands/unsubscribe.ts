@@ -22,10 +22,13 @@ const data = new SlashCommandBuilder()
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
   const channelOption = interaction.options.getChannel("channel");
-  const channelId = channelOption ? channelOption.id : interaction.channelId;
+  const channel = channelOption || interaction.channel;
+  if (!channel) {
+    throw Error("Could not find channel");
+  }
 
   try {
-    const { isSubscribed } = await getChannelSubData(channelId);
+    const { isSubscribed } = await getChannelSubData(channel.id);
     if (!isSubscribed) {
       const errEmbed = getErrorEmbed("polaroids is not subscribed to this channel.");
       interaction.reply({ embeds: [errEmbed] });
@@ -38,18 +41,20 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   }
 
   const { DB_API_URL } = process.env;
-  const url = `${DB_API_URL}/subscribed-channels/${channelId}`;
+  const url = `${DB_API_URL}/subscribed-channels/${channel.id}`;
   try {
     await axios.delete(url);
   } catch (err) {
     if (isAxiosError(err)) {
       console.error("Failed to unsubscribe: " + err.message);
     }
-    const errEmbed = getErrorEmbed("Failed to unsubscribe from this channel. Please try again.");
+    const errEmbed = getErrorEmbed(
+      `Failed to unsubscribe from ${channel.toString()}. Please try again.`,
+    );
     interaction.reply({ embeds: [errEmbed] });
     return;
   }
-  interaction.reply("Successfully unsubscribed from this channel.");
+  interaction.reply(`Successfully unsubscribed from ${channel.toString()}.`);
 };
 
 const commandData: CommandData = {

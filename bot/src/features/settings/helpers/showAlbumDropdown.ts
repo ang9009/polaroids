@@ -7,7 +7,7 @@ import {
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { Album } from "../../../../../db-api/node_modules/.prisma/client";
+import { Album } from "../../../../../backend/node_modules/.prisma/client";
 import { getAlbums } from "../api/getAlbumNames";
 import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
 import { AlbumSelectionData } from "../data/albumSelectionData";

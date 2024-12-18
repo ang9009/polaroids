@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AlbumSchema } from "../../../../db-api/generated/zod/index";
+import { AlbumSchema } from "../../../../backend/generated/zod/index";
 
 const GetAlbumsResponseSchema = z.array(AlbumSchema);
 

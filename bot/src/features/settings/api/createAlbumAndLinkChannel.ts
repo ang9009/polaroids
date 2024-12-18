@@ -13,7 +13,7 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
  */
 export const createAlbumAndLinkChannel = async (
   albumName: string,
-  albumDesc: string,
+  albumDesc: string | undefined,
   channelId: string,
   guildId: string,
 ) => {

@@ -1,5 +1,5 @@
 import { CacheType, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
-import { Album } from "../../../../../db-api/generated/zod";
+import { Album } from "../../../../../backend/generated/zod";
 
 /**
  * Returns the user's inputs after they submit an album modal.

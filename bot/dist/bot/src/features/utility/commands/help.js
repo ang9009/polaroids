@@ -10,13 +10,11 @@ const data = new SlashCommandBuilder().setName("help").setDescription("List avai
  * @param interaction the interaction triggered by invoking the command
  */
 const execute = async (interaction) => {
-    const settingCmds = "- `/subscribe`: ask polaroids to upload any attachments sent in a channel, or link a channel to a different album\n" +
-        "- `/unsubscribe`: unsubscribe polaroids from changes in a channel\n";
-    const utilCmds = "- `/createalbum <album_name> <album_desc>`: create a new album\n" +
-        "- `/editalbum <album_name>`: change an album's name or description\n" +
-        "- `/deletealbum <album_name>`: delete an album\n" +
+    const settingCmds = "- `/subscribe <channel>`: ask polaroids to upload any attachments sent in a channel, or link a channel to a different album\n" +
+        "- `/unsubscribe <channel>`: unsubscribe polaroids from changes in a channel\n";
+    const utilCmds = "- `/album create | edit | delete`: create, edit, or delete an album\n" +
         "- `/upload <message_id>`: upload files attached to a specified message\n" +
-        "- `/backup`: find and upload all unarchived attachments in a channel\n";
+        "- `/backup <channel>`: find and upload all unarchived attachments in a channel\n";
     const infoCmds = "- `/list albums | channels`: list all existing albums/subscribed channels in this guild and their associated albums\n" +
         "- `/website`: get a link to the polaroids site\n" +
         "- `/help`: list available commands";

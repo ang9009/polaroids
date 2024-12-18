@@ -19,7 +19,7 @@ set polaroids up for yourself:
 
 1. Run `npm run setup` in the root directory
 
-2. Create .env files in the root, bot, and db-api directories
+2. Create .env files in the root, bot, and backend directories
 
    The `.env` file in the `bot` directory should look like this:
 
@@ -34,7 +34,7 @@ set polaroids up for yourself:
    that the user associated with your login details has admin permissions.
    More information about the FileStation API can be found [here](https://global.download.synology.com/download/Document/Software/DeveloperGuide/Package/FileStation/All/enu/Synology_File_Station_API_Guide.pdf).
 
-   The `.env` file in the `db-api` folder should look like this:
+   The `.env` file in the `backend` folder should look like this:
 
    ```sh
    # FileStation details
@@ -74,11 +74,11 @@ Refer to the docker compose file for port information.
 
 ## Folder structure
 
-There are three main directories: the `bot` directory, the `db-api` directory, and the
+There are three main directories: the `bot` directory, the `backend` directory, and the
 `shared` directory.
 
 - `bot` contains everything relevant to the polaroids Discord bot.
-- `db-api` contains everything relevant to the API that interacts with the
+- `backend` contains everything relevant to the API that interacts with the
   Postgres database, which stores data about the bot's settings and the images
   it archives.
 - `shared` contains error codes and response interfaces that are shared between

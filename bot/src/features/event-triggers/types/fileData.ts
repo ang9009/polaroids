@@ -1,4 +1,4 @@
-import { File } from "./../../../../../db-api/generated/zod/index";
+import { File } from "./../../../../../backend/generated/zod/index";
 type FileWithBlob = File & {
   blob: Blob;
 };

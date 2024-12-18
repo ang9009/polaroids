@@ -66,7 +66,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     const selectionConfirmReply = await interaction.reply(`Selected album: **${albumName}**`);
     if (type === AlbumSelectionType.CREATE_NEW) {
       try {
-        await createAlbum(albumName, albumData.albumDesc);
+        await createAlbum(albumName, albumData.albumDesc || null);
       } catch (err) {
         if (err instanceof Error) {
           await editMsgWithErrorEmbed(selectionConfirmReply, err.message);

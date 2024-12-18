@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup": "(npm i); (cd db-api && npm i); (cd bot && npm i); (cd shared && npm i)",
-    "lint": "eslint ."
+    "setup": "(npm i); (cd backend && npm i); (cd bot && npm i); (cd shared && npm i)",
+    "lint": "eslint .",
+    "dev": "(cd backend && npm run dev) & (cd bot && npm run dev) & (docker-compose up)"
   },
   "author": "",
   "license": "ISC",

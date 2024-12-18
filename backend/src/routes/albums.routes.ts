@@ -1,5 +1,11 @@
 import express from "express";
-import { albumExists, createAlbum, editAlbum, getAlbums } from "../controllers/albums.controller";
+import {
+  albumExists,
+  createAlbum,
+  deleteAlbum,
+  editAlbum,
+  getAlbums,
+} from "../controllers/albums.controller";
 
 const router = express.Router();
 
@@ -14,5 +20,8 @@ router.post("/", createAlbum);
 
 // Edit an existing album
 router.patch("/", editAlbum);
+
+// Delete an album
+router.delete("/:albumName", deleteAlbum);
 
 export default router;

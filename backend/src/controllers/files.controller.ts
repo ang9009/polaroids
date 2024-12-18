@@ -9,7 +9,7 @@ import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filter
 import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
-import UnknownException from "../types/error/genericException";
+import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";

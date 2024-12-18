@@ -47,9 +47,8 @@ export const showAlbumDropdown = async (msg, interaction, onSelectionComplete, l
                 type: AlbumSelectionType.EXISTING,
             }, selectInteraction, onSelectionComplete);
         }
-        // Disable the dropdown
         await interaction.editReply({
-            content: `The album **${selection}** was selected.`,
+            content: `Album **${selection}** was selected.`,
             components: [],
         });
     });

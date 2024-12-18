@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import DbException from "../types/error/dbException";
-import UnknownException from "../types/error/genericException";
 import { HttpException } from "../types/error/httpException";
+import UnknownException from "../types/error/unknownException";
 
 /**
  * Provides a appropriate database-related exception based on an error object

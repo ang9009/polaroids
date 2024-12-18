@@ -18,7 +18,7 @@ class UnknownException implements HttpException {
    */
   constructor(message: string) {
     this.message = message;
-    this.name = "RuntimeException";
+    this.name = "UnknownException";
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc

@@ -86,9 +86,8 @@ export const showAlbumDropdown = async (
       );
     }
 
-    // Disable the dropdown
     await interaction.editReply({
-      content: `The album **${selection}** was selected.`,
+      content: `Album **${selection}** was selected.`,
       components: [],
     });
   });

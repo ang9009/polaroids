@@ -3,12 +3,14 @@
 import { Album } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { AlbumNameQueryParamSchema } from "shared/src/requests/albums/albumExists";
+import { DeleteAlbumRequestSchema } from "shared/src/requests/albums/deleteAlbum";
 import { EditAlbumRequestSchema } from "shared/src/requests/albums/editAlbum";
 import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
 import { CreateAlbumRequestSchema } from "../../../bot/node_modules/shared/src/requests/albums/createAlbum";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";
+import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
@@ -133,4 +135,48 @@ export const editAlbum = async (req: Request, res: Response, next: NextFunction)
   }
 
   res.status(HttpStatusCode.OK).send(successJson);
+};
+
+/**
+ * Deletes an album given its name.
+ * Throws an error if the album has any associated files.
+ *
+ * Route: DELETE /api/albums/:albumName
+ */
+export const deleteAlbum = async (req: Request, res: Response, next: NextFunction) => {
+  const parsedReqBody = DeleteAlbumRequestSchema.safeParse(req.params);
+  if (!parsedReqBody.success) {
+    const error = new ValidationException(parsedReqBody.error);
+    return next(error);
+  }
+  const { albumName } = parsedReqBody.data;
+
+  let filesCount: number;
+  try {
+    filesCount = await prisma.file.count({
+      where: {
+        albumName: albumName,
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  if (filesCount !== 0) {
+    const error = new UnknownException("Albums that have associated files cannot be deleted");
+    return next(error);
+  }
+
+  try {
+    await prisma.album.delete({
+      where: {
+        name: albumName,
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+
+  res.send(successJson).status(HttpStatusCode.OK);
 };

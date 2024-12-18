@@ -3,26 +3,24 @@ import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { getAlbumModal } from "../../settings/helpers/getAlbumModal";
 import { getAlbumModalInputs } from "../../settings/helpers/getAlbumModalInputs";
-import { showAlbumDropdown } from "../../settings/helpers/showAlbumDropdown";
 import { createAlbum } from "../api/createAlbum";
+import { deleteAlbum } from "../api/deleteAlbum";
 import { editAlbum } from "../api/editAlbum";
+import { showAlbumDropdown } from "./../../settings/helpers/showAlbumDropdown";
 var SubCommand;
 (function (SubCommand) {
     SubCommand["CREATE"] = "create";
     SubCommand["EDIT_INFO"] = "editinfo";
     SubCommand["DELETE"] = "delete";
 })(SubCommand || (SubCommand = {}));
-// The create album subcommand
 const createAlbumSubCmd = new SlashCommandSubcommandBuilder()
     .setName(SubCommand.CREATE)
     .setDescription("Create a new album")
     .addStringOption((nameOption) => nameOption.setName("name").setDescription("The name of the album").setRequired(true))
     .addStringOption((descOption) => descOption.setName("description").setDescription("The album's description").setRequired(false));
-// The edit album subcommand
 const editAlbumSubCmd = new SlashCommandSubcommandBuilder()
     .setName(SubCommand.EDIT_INFO)
     .setDescription("Edit an existing album's name/description");
-// The edit album subcommand
 const deleteAlbumSubCmd = new SlashCommandSubcommandBuilder()
     .setName(SubCommand.DELETE)
     .setDescription("Delete an empty album");
@@ -50,14 +48,43 @@ const execute = async (interaction) => {
             await handleEditAlbumInteraction(interaction);
             break;
         }
+        case SubCommand.DELETE: {
+            await handleDeleteAlbumInteraction(interaction);
+            break;
+        }
         default:
             throw Error("Unrecognized subcommand");
     }
 };
 /**
+ * Handles the delete album interaction. This presents the user with a dropdown
+ * to select the album to be deleted, then deletes the specified album.
+ * @param interaction
+ */
+const handleDeleteAlbumInteraction = async (interaction) => {
+    await showAlbumDropdown("Please select the album you would like to delete. Albums with files cannot be deleted.", interaction, async (albumData, interaction) => {
+        try {
+            await deleteAlbum(albumData.albumName);
+        }
+        catch (err) {
+            let errMsg;
+            if (err instanceof Error) {
+                errMsg = err.message;
+            }
+            else {
+                errMsg = "An unknown error occurred. Please try again.";
+            }
+            const errEmbed = getErrorEmbed(errMsg);
+            await interaction.reply({ embeds: [errEmbed] });
+            return;
+        }
+        await interaction.reply(`Successfully deleted album **${albumData.albumName}**.`);
+    }, undefined, true);
+};
+/**
  * Handles the "edit album" subcommand interaction. This provides the user with
  * a dropdown of albums to select from, then opens a modal where the user can
- * edit the name and description of the selected album.
+ * provide the new name and/or description of the selected album.
  * @param interaction the ongoing interaction
  */
 const handleEditAlbumInteraction = async (interaction) => {

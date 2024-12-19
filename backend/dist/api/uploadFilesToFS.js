@@ -1,8 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import "dotenv/config";
-import { getValue } from "node-global-storage";
-import { sessionIdKey, synoTokenKey } from "../data/constants";
 import { FSWebUploadResponseSchema, } from "../types/filestation/FSWebUploadResponse";
+import { FileStationCredentials } from "./fileStationCredentials";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 /**
  * Uploads the given files to FileStation.
@@ -16,7 +15,7 @@ export const uploadFilesToFS = async (files) => {
     }
     catch (err) {
         if (isAxiosError(err)) {
-            throw Error("An Axios error occurred while trying to upload files to FileStation: " + err.code);
+            throw Error("An Axios error occurred while trying to upload files to FileStation");
         }
         throw Error("A FileStation error occurred: " + err);
     }
@@ -28,8 +27,7 @@ export const uploadFilesToFS = async (files) => {
  */
 async function uploadFile(file) {
     const { FS_API_URL, FS_FOLDER_PATH } = process.env;
-    const sessionId = getValue(sessionIdKey);
-    const synoToken = getValue(synoTokenKey);
+    const { sessionId, synoToken } = await FileStationCredentials.getInstance();
     // Set up url and headers
     const url = `${FS_API_URL}/webman/modules/FileBrowser/webfm/webUI/html5_upload.cgi`;
     const headers = {

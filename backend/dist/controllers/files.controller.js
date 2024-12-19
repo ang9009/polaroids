@@ -6,7 +6,7 @@ import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/fi
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
 import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
-import UnknownException from "../types/error/genericException";
+import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
@@ -87,28 +87,16 @@ export const uploadFiles = async (req, res, next) => {
             };
         });
         let filesUploaded = 0;
-        if (throwUniqueConstraintError) {
-            try {
-                const uploadRes = await prisma.file.createMany({
-                    data: fileObjects,
-                    skipDuplicates: true,
-                });
-                filesUploaded = uploadRes.count;
-            }
-            catch (err) {
-                const error = getDbExFromPrismaErr(err);
-                return next(error);
-            }
+        try {
+            const uploadRes = await prisma.file.createMany({
+                data: fileObjects,
+                skipDuplicates: !throwUniqueConstraintError,
+            });
+            filesUploaded = uploadRes.count;
         }
-        else {
-            for (const file of fileObjects) {
-                try {
-                    await prisma.file.create({ data: file });
-                    filesUploaded++;
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
-                }
-                catch (ignored) { }
-            }
+        catch (err) {
+            const error = getDbExFromPrismaErr(err);
+            return next(error);
         }
         res.status(200).send({ filesUploaded });
     });

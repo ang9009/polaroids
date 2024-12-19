@@ -6,6 +6,6 @@
 export const isDbExceptionResponse = (err) => {
     return (err.dbErrorCode !== undefined &&
         err.message !== undefined &&
-        err.error !== undefined);
+        err.dbErrorCode !== undefined);
 };
 //# sourceMappingURL=isDbExceptionResponse.js.map

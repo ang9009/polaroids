@@ -96,25 +96,15 @@ export const uploadFiles = async (
     });
 
     let filesUploaded: number = 0;
-    if (throwUniqueConstraintError) {
-      try {
-        const uploadRes = await prisma.file.createMany({
-          data: fileObjects,
-          skipDuplicates: true,
-        });
-        filesUploaded = uploadRes.count;
-      } catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-      }
-    } else {
-      for (const file of fileObjects) {
-        try {
-          await prisma.file.create({ data: file });
-          filesUploaded++;
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty
-        } catch (ignored) {}
-      }
+    try {
+      const uploadRes = await prisma.file.createMany({
+        data: fileObjects,
+        skipDuplicates: !throwUniqueConstraintError,
+      });
+      filesUploaded = uploadRes.count;
+    } catch (err) {
+      const error = getDbExFromPrismaErr(err);
+      return next(error);
     }
 
     res.status(200).send({ filesUploaded });

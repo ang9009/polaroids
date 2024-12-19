@@ -9,6 +9,6 @@ export const isDbExceptionResponse = (err: unknown): err is DbExceptionResponse 
   return (
     (err as DbExceptionResponse).dbErrorCode !== undefined &&
     (err as DbExceptionResponse).message !== undefined &&
-    (err as DbExceptionResponse).error !== undefined
+    (err as DbExceptionResponse).dbErrorCode !== undefined
   );
 };

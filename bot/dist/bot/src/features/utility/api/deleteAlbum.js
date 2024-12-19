@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
-import { callIfAxiosErrHasErrResponse } from "../../../utils/callIfAxiosErrHasErrResponse";
+import { ApiErrorResponseSchema } from "shared/src/responses/error/apiErrorResponse";
 /**
  * Deletes an album, provided that it has no associated files.
  * @param albumName the album's original name
@@ -12,11 +12,16 @@ export const deleteAlbum = async (albumName) => {
         await axios.delete(url);
     }
     catch (err) {
-        callIfAxiosErrHasErrResponse(err, (errResponse) => {
-            if (errResponse.error === DbApiErrorType.UNKNOWN_EXCEPTION) {
+        if (isAxiosError(err)) {
+            const parsedRes = ApiErrorResponseSchema.safeParse(err.response);
+            if (!parsedRes.success) {
+                return;
+            }
+            const { data: errResponse } = parsedRes;
+            if (errResponse.errorType === DbApiErrorType.UNKNOWN_EXCEPTION) {
                 throw Error("Albums that have associated files cannot be deleted.");
             }
-        });
+        }
     }
 };
 //# sourceMappingURL=deleteAlbum.js.map

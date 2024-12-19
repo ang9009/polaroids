@@ -1,8 +1,11 @@
+import { z } from "zod";
+import { DbApiErrorType } from "../../error-codes/dbApiErrorType";
 import { FileStationError } from "../../error-codes/fileStationError";
-import { ErrorResponse } from "./errorResponse";
 
-interface FSExceptionResponse extends ErrorResponse {
-  fileStationError: FileStationError;
-}
+export const FSExceptionResponseSchema = z.object({
+  message: z.string(),
+  errorType: z.literal(DbApiErrorType.FILESTATION_EXCEPTION),
+  fileStationError: z.nativeEnum(FileStationError),
+});
 
-export { FSExceptionResponse };
+export type FSExceptionResponse = z.infer<typeof FSExceptionResponseSchema>;

@@ -18,7 +18,7 @@ class DbException {
     // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
         return {
-            error: DbApiErrorType.DB_EXCEPTION,
+            errorType: DbApiErrorType.DB_EXCEPTION,
             message: this.message,
             dbErrorCode: this.dbErrorCode,
         };

@@ -1,5 +1,4 @@
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
-import { ErrorResponse } from "shared/src/responses/error/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";
 
@@ -22,7 +21,7 @@ class UnknownException implements HttpException {
   }
 
   // eslint-disable-next-line jsdoc/require-jsdoc
-  getResponse(): ErrorResponse {
+  getResponse(): unknown {
     return { error: DbApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
   }
 }

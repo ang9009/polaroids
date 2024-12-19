@@ -12,7 +12,7 @@ export const callIfAxiosErrHasErrResponse = (error, callback) => {
         if (!parsedRes.success || !error.response) {
             throw error;
         }
-        callback(parsedRes.data);
+        callback(parsedRes.data, error);
     }
 };
 //# sourceMappingURL=callIfAxiosErrHasErrResponse.js.map

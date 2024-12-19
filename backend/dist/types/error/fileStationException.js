@@ -20,7 +20,7 @@ class FSException {
      */
     getResponse() {
         return {
-            error: DbApiErrorType.FILESTATION_EXCEPTION,
+            errorType: DbApiErrorType.FILESTATION_EXCEPTION,
             fileStationError: this.fileStationError,
             message: this.message,
         };

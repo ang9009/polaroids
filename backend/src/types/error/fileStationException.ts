@@ -1,6 +1,6 @@
 import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
 import { FileStationError } from "shared/src/error-codes/fileStationError";
-import { FSExceptionResponse } from "shared/src/responses/error//fsExceptionResponse";
+import { FSExceptionResponse } from "shared/src/responses/error/fsExceptionResponse";
 import HttpStatusCode from "../../data/httpStatusCode";
 import { HttpException } from "./httpException";
 
@@ -29,7 +29,7 @@ class FSException implements HttpException {
    */
   getResponse(): FSExceptionResponse {
     return {
-      error: DbApiErrorType.FILESTATION_EXCEPTION,
+      errorType: DbApiErrorType.FILESTATION_EXCEPTION,
       fileStationError: this.fileStationError,
       message: this.message,
     };

@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "setup": "(npm i); (cd backend && npm i); (cd bot && npm i); (cd shared && npm i)",
     "lint": "eslint .",
-    "dev": "(cd backend && npm run dev) & (cd bot && npm run dev) & (docker-compose up)"
+    "dev": "(cd backend && npm run dev) & (cd bot && npm run dev) & (docker-compose up)",
+    "build": "(cd backend && npm run build) & (cd bot && npm run build)"
   },
   "author": "",
   "license": "ISC",

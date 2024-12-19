@@ -1,4 +1,3 @@
-import { ErrorResponse } from "shared/src/responses/error/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
 import { HttpException } from "./httpException";
 /**
@@ -12,6 +11,6 @@ declare class NotFoundException implements HttpException {
      * Constructor for a NotFoundException.
      */
     constructor();
-    getResponse(): ErrorResponse;
+    getResponse(): unknown;
 }
 export default NotFoundException;

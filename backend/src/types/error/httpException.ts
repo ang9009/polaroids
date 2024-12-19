@@ -1,4 +1,3 @@
-import { ErrorResponse } from "shared/src/responses/error/errorResponse";
 import HttpStatusCode from "../../data/statusCodes";
 
 /**
@@ -6,7 +5,7 @@ import HttpStatusCode from "../../data/statusCodes";
  */
 interface HttpException extends Error {
   readonly status: HttpStatusCode;
-  getResponse(): ErrorResponse;
+  getResponse(): unknown;
 }
 
 export { HttpException };

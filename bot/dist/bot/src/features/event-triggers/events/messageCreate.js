@@ -1,11 +1,8 @@
-import { EmbedBuilder, Events } from "discord.js";
+import { Events } from "discord.js";
 import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
 import { getChannelSubData } from "../../../api/getChannelSubData";
-import { PrimaryColors } from "../../../data/primaryColors";
-import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
-import { getFileDataFromAttachment } from "../api/getFileDataFromAttachment";
-import { uploadFiles } from "../api/uploadFiles";
+import { uploadAttachmentsWithProgress } from "../helpers/uploadFilesWithProgress";
 /**
  * The execute function for messageCreate.
  * @param message the message that triggered this event
@@ -41,35 +38,7 @@ const execute = async (message) => {
         }
         return;
     }
-    const uploadStatusEmbed = new EmbedBuilder()
-        .setTitle("Attachment upload")
-        .setFields([
-        { name: "Status", value: `Processing ${attachments.length} file(s)...` },
-        { name: "Album", value: linkedAlbum },
-        { name: "Sent by", value: message.author.toString() },
-    ])
-        .setColor(PrimaryColors.PRIMARY_WHITE);
-    const initialMessage = await message.reply({ embeds: [uploadStatusEmbed] });
-    const attachmentFilePromises = attachments.map((attachment) => {
-        return getFileDataFromAttachment(attachment, message.createdAt, message.author.id);
-    });
-    const attachmentFiles = await Promise.all(attachmentFilePromises);
-    try {
-        await uploadFiles(attachmentFiles, linkedAlbum, true);
-    }
-    catch (err) {
-        console.error(err);
-        const errEmbed = getErrorEmbed("Something went wrong while uploading your media. Please try again.");
-        initialMessage.edit({ content: "", embeds: [errEmbed] });
-        return;
-    }
-    uploadStatusEmbed
-        .spliceFields(0, 1, {
-        name: "Status",
-        value: `Successfully uploaded ${attachmentFiles.length} file(s)`,
-    })
-        .setColor(PrimaryColors.SUCCESS_GREEN);
-    initialMessage.edit({ embeds: [uploadStatusEmbed] });
+    await uploadAttachmentsWithProgress(message, linkedAlbum);
 };
 /**
  * Validates the given attachments against the allowed MIME types.

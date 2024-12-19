@@ -18,9 +18,7 @@ export const uploadFilesToFS = async (files: Express.Multer.File[]) => {
     }
   } catch (err) {
     if (isAxiosError(err)) {
-      throw Error(
-        "An Axios error occurred while trying to upload files to FileStation: " + err.code
-      );
+      throw Error("An Axios error occurred while trying to upload files to FileStation");
     }
     throw Error("A FileStation error occurred: " + err);
   }

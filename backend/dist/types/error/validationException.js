@@ -18,7 +18,7 @@ class ValidationException {
     // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
         return {
-            error: DbApiErrorType.REQUEST_EXCEPTION,
+            errorType: DbApiErrorType.REQUEST_EXCEPTION,
             message: this.message,
             errors: this.zodError.errors,
         };

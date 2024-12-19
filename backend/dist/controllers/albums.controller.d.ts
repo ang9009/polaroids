@@ -20,8 +20,23 @@ export declare const albumExists: (req: Request, res: Response, next: NextFuncti
  *      albumDesc: string // the album's description
  * }
  */
-export declare const createAlbum: (req: Request, res: Response<GetAlbumsResponse>, next: NextFunction) => Promise<void | Response<{
-    createdAt: Date;
-    name: string;
-    description: string;
-}[], Record<string, any>>>;
+export declare const createAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void | Response<any, Record<string, any>>>;
+/**
+ * Changes the name/description of an existing album.
+ * Route: PATCH /api/albums
+ *
+ * Request body:
+ * {
+ *      albumName: string, // the name of the original album
+ *      newAlbumName: string, // the album's new name
+ *      newAlbumDesc: string // the album's new description
+ * }
+ */
+export declare const editAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+/**
+ * Deletes an album given its name.
+ * Throws an error if the album has any associated files.
+ *
+ * Route: DELETE /api/albums/:albumName
+ */
+export declare const deleteAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void>;

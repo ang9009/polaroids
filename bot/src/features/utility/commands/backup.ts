@@ -54,34 +54,32 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   // Otherwise, ask the user to specify an album
   const msg = "Select an album to upload the contents of this channel to.";
-  showAlbumDropdown(msg, interaction, async (albumData, interaction) => {
-    const { albumName, type } = albumData;
-    const albumExists = await checkAlbumExists(albumName);
-    if (albumExists) {
-      const msg = `An album with the name "${albumName}" already exists. Please try again.`;
-      const errorEmbed = getErrorEmbed(msg);
-      return interaction.reply({ embeds: [errorEmbed] });
-    }
+  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(msg, interaction);
 
-    const selectionConfirmReply = await interaction.reply(`Selected album: **${albumName}**`);
-    if (type === AlbumSelectionType.CREATE_NEW) {
-      try {
-        await createAlbum(albumName, albumData.albumDesc || null);
-      } catch (err) {
-        if (err instanceof Error) {
-          await editMsgWithErrorEmbed(selectionConfirmReply, err.message);
-          return;
-        }
-        await editMsgWithErrorEmbed(
-          selectionConfirmReply,
-          "Something went wrong. Please try again.",
-        );
+  const { albumName, albumDesc, type } = selectedAlbum;
+  const albumExists = await checkAlbumExists(albumName);
+  if (albumExists) {
+    const msg = `An album with the name "${albumName}" already exists. Please try again.`;
+    const errorEmbed = getErrorEmbed(msg);
+    await interaction.reply({ embeds: [errorEmbed] });
+    return;
+  }
+
+  const selectionConfirmReply = await dropdownInteraction.reply(`Selected album: **${albumName}**`);
+  if (type === AlbumSelectionType.CREATE_NEW) {
+    try {
+      await createAlbum(albumName, albumDesc || null);
+    } catch (err) {
+      if (err instanceof Error) {
+        await editMsgWithErrorEmbed(selectionConfirmReply, err.message);
         return;
       }
+      await editMsgWithErrorEmbed(selectionConfirmReply, "Something went wrong. Please try again.");
+      return;
     }
+  }
 
-    await performBackupWithProgress(channel, albumName, interaction.user);
-  });
+  await performBackupWithProgress(channel, albumName, interaction.user);
 };
 
 const commandData: CommandData = {

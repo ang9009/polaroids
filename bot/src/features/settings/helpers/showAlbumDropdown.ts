@@ -2,7 +2,7 @@ import {
   ActionRowBuilder,
   CacheType,
   ChatInputCommandInteraction,
-  ComponentType,
+  Interaction,
   ModalSubmitInteraction,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
@@ -22,23 +22,20 @@ import { getAlbumModalInputs } from "./getAlbumModalInputs";
  * the interaction reply when the user makes their selection.
  * @param msg the message shown above the dropdown
  * @param interaction the interaction with the user
- * @param onSelectionComplete a callback function that is called once the user
- *        has selected an existing album/finished entering details for a new
- *        one. This callback function must update the interaction somehow.
  * @param linkedAlbum the album that this channel is already linked to. If this
  *        is not undefined, the given album will be omitted from the dropdown.
  * @param hideCreateAlbumOption whether the create album option should be hidden
+ * @returns data regarding the selected album and the ongoing interaction
  */
 export const showAlbumDropdown = async (
   msg: string,
   interaction: ChatInputCommandInteraction,
-  onSelectionComplete: (
-    albumData: AlbumSelectionData,
-    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
-  ) => void,
   linkedAlbum?: string,
   hideCreateAlbumOption?: boolean,
-) => {
+): Promise<{
+  selectedAlbum: AlbumSelectionData;
+  dropdownInteraction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
+}> => {
   const albums: Album[] = await getAlbums();
 
   // At the top of the menu, add an option for creating a new menu
@@ -61,39 +58,51 @@ export const showAlbumDropdown = async (
   });
 
   // Handle the album selection
-  const collector = response.createMessageComponentCollector({
-    componentType: ComponentType.StringSelect,
-    time: 3600000,
-  });
+  // eslint-disable-next-line jsdoc/require-jsdoc
+  const collectorFilter = (i: Interaction) =>
+    i.user.id === interaction.user.id && i instanceof StringSelectMenuInteraction;
 
-  collector.on("collect", async (selectInteraction) => {
-    const albumSelection = selectInteraction.values[0];
+  let selectInteraction: StringSelectMenuInteraction<CacheType>;
+  try {
+    const confirmation = await response.awaitMessageComponent({
+      filter: collectorFilter,
+      time: 60_000,
+    });
+    selectInteraction = confirmation as StringSelectMenuInteraction;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (err) {
+    await response.edit({
+      content: "Confirmation not received within 1 minute, cancelling",
+      components: [],
+    });
+    throw Error("No confirmation received");
+  }
 
-    if (albumSelection === createNewOptionId) {
-      await onAlbumSelect(
-        { type: AlbumSelectionType.CREATE_NEW },
-        selectInteraction,
-        onSelectionComplete,
-      );
-    } else {
-      await onAlbumSelect(
-        {
-          albumName: albumSelection,
-          albumDesc:
-            albums.find((album) => album.name === albumSelection)?.description || undefined,
-          type: AlbumSelectionType.EXISTING,
-        },
-        selectInteraction,
-        onSelectionComplete,
-      );
-    }
-    dropdown.setDisabled(true);
-    const disabledDropdownRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
-      dropdown,
+  const albumSelection = selectInteraction.values[0];
+  let selectionResult: {
+    albumData: AlbumSelectionData;
+    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
+  };
+  if (albumSelection === createNewOptionId) {
+    selectionResult = await handleAlbumDropdownSelection(
+      { type: AlbumSelectionType.CREATE_NEW },
+      selectInteraction,
     );
+  } else {
+    const selection = {
+      albumName: albumSelection,
+      albumDesc: albums.find((album) => album.name === albumSelection)?.description || undefined,
+      type: AlbumSelectionType.EXISTING,
+    };
+    selectionResult = await handleAlbumDropdownSelection(selection, selectInteraction);
+  }
+  dropdown.setDisabled(true);
+  const disabledDropdownRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+    dropdown,
+  );
 
-    await response.edit({ components: [disabledDropdownRow] });
-  });
+  await response.edit({ components: [disabledDropdownRow] });
+  return selectionResult;
 };
 
 /**
@@ -101,18 +110,15 @@ export const showAlbumDropdown = async (
  * user can either choose to select an existing album, or create a new one.
  * @param selection the selection that was made
  * @param interaction the ongoing interaction
- * @param onSelectionComplete a callback function that is called when the
- *        function finishes processing the user's selection
  * @returns the name of the album that was selected/created
  */
-const onAlbumSelect = async (
+const handleAlbumDropdownSelection = async (
   selection: AlbumDropdownSelection,
   interaction: StringSelectMenuInteraction<CacheType>,
-  onSelectionComplete: (
-    albumData: AlbumSelectionData,
-    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>,
-  ) => void,
-): Promise<string> => {
+): Promise<{
+  albumData: AlbumSelectionData;
+  interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
+}> => {
   // If the user wants to create a new album
   if (selection.type === AlbumSelectionType.CREATE_NEW) {
     // Show a modal for the user to enter the details of the album
@@ -130,8 +136,7 @@ const onAlbumSelect = async (
       albumName,
       albumDesc: albumDesc || undefined,
     };
-    onSelectionComplete(albumData, modalInteraction);
-    return albumName;
+    return { albumData, interaction: modalInteraction };
   } else {
     // If the user wants to use an existing album
     const { albumName, albumDesc } = selection;
@@ -140,8 +145,7 @@ const onAlbumSelect = async (
       albumName: albumName,
       albumDesc: albumDesc,
     };
-    onSelectionComplete(albumData, interaction);
-    return albumName;
+    return { albumData, interaction };
   }
 };
 

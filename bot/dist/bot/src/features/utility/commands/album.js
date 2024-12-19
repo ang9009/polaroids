@@ -62,24 +62,24 @@ const execute = async (interaction) => {
  * @param interaction
  */
 const handleDeleteAlbumInteraction = async (interaction) => {
-    await showAlbumDropdown("Please select the album you would like to delete. Albums with files cannot be deleted.", interaction, async (albumData, interaction) => {
-        try {
-            await deleteAlbum(albumData.albumName);
+    const { selectedAlbum } = await showAlbumDropdown("Please select the album you would like to delete. Albums with files cannot be deleted.", interaction, undefined, true);
+    const { albumName } = selectedAlbum;
+    try {
+        await deleteAlbum(albumName);
+    }
+    catch (err) {
+        let errMsg;
+        if (err instanceof Error) {
+            errMsg = err.message;
         }
-        catch (err) {
-            let errMsg;
-            if (err instanceof Error) {
-                errMsg = err.message;
-            }
-            else {
-                errMsg = "An unknown error occurred. Please try again.";
-            }
-            const errEmbed = getErrorEmbed(errMsg);
-            await interaction.reply({ embeds: [errEmbed] });
-            return;
+        else {
+            errMsg = "An unknown error occurred. Please try again.";
         }
-        await interaction.reply(`Successfully deleted album **${albumData.albumName}**.`);
-    }, undefined, true);
+        const errEmbed = getErrorEmbed(errMsg);
+        await interaction.reply({ embeds: [errEmbed] });
+        return;
+    }
+    await interaction.reply(`Successfully deleted album **${albumName}**.`);
 };
 /**
  * Handles the "edit album" subcommand interaction. This provides the user with
@@ -88,33 +88,32 @@ const handleDeleteAlbumInteraction = async (interaction) => {
  * @param interaction the ongoing interaction
  */
 const handleEditAlbumInteraction = async (interaction) => {
-    await showAlbumDropdown("Please select the album you would like to edit.", interaction, async (albumData, interaction) => {
-        const { albumName: originalAlbumName, albumDesc } = albumData;
-        const nameInputId = "albumNameInput";
-        const descInputId = "albumDescInput";
-        const modal = getAlbumModal("Edit album info", nameInputId, descInputId, originalAlbumName, albumDesc);
-        if (!(interaction instanceof StringSelectMenuInteraction)) {
-            throw Error("Unexpected interaction type");
+    const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown("Please select the album you would like to edit.", interaction, undefined, true);
+    const { albumName: originalAlbumName, albumDesc } = selectedAlbum;
+    const nameInputId = "albumNameInput";
+    const descInputId = "albumDescInput";
+    const modal = getAlbumModal("Edit album info", nameInputId, descInputId, originalAlbumName, albumDesc);
+    if (!(dropdownInteraction instanceof StringSelectMenuInteraction)) {
+        throw Error("Unexpected interaction type");
+    }
+    await dropdownInteraction.showModal(modal);
+    const { name: newAlbumName, description: newAlbumDesc, modalInteraction, } = await getAlbumModalInputs(dropdownInteraction, nameInputId, descInputId);
+    try {
+        await editAlbum(originalAlbumName, newAlbumName, newAlbumDesc);
+    }
+    catch (err) {
+        let errMsg;
+        if (err instanceof Error) {
+            errMsg = err.message;
         }
-        await interaction.showModal(modal);
-        const { name: newAlbumName, description: newAlbumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, nameInputId, descInputId);
-        try {
-            await editAlbum(originalAlbumName, newAlbumName, newAlbumDesc);
+        else {
+            errMsg = "Something went wrong. Please try again.";
         }
-        catch (err) {
-            let errMsg;
-            if (err instanceof Error) {
-                errMsg = err.message;
-            }
-            else {
-                errMsg = "Something went wrong. Please try again.";
-            }
-            const errEmbed = getErrorEmbed(errMsg);
-            modalInteraction.reply({ embeds: [errEmbed] });
-        }
-        const editedAlbumName = originalAlbumName === newAlbumName ? originalAlbumName : newAlbumName;
-        modalInteraction.reply(`Successfully edited album **${editedAlbumName}**.`);
-    }, undefined, true);
+        const errEmbed = getErrorEmbed(errMsg);
+        modalInteraction.reply({ embeds: [errEmbed] });
+    }
+    const editedAlbumName = originalAlbumName === newAlbumName ? originalAlbumName : newAlbumName;
+    modalInteraction.reply(`Successfully edited album **${editedAlbumName}**.`);
 };
 /**
  * Uses the arguments from the "create album" subcommand interaction to create

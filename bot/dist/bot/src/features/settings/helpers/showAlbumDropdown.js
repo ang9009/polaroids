@@ -85,7 +85,7 @@ const handleAlbumDropdownSelection = async (selection, interaction) => {
             albumName,
             albumDesc: albumDesc || undefined,
         };
-        return { albumData, interaction: modalInteraction };
+        return { selectedAlbum: albumData, dropdownInteraction: modalInteraction };
     }
     else {
         // If the user wants to use an existing album
@@ -95,7 +95,7 @@ const handleAlbumDropdownSelection = async (selection, interaction) => {
             albumName: albumName,
             albumDesc: albumDesc,
         };
-        return { albumData, interaction };
+        return { selectedAlbum: albumData, dropdownInteraction: interaction };
     }
 };
 /**

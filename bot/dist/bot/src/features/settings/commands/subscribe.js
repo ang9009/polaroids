@@ -75,8 +75,8 @@ async function startBackupInteraction(channel, albumName, interaction) {
         .setLabel("Cancel")
         .setStyle(ButtonStyle.Secondary);
     const row = new ActionRowBuilder().addComponents(confirm, cancel);
-    const backupOptionsFollowUp = await channel.send({
-        content: "Would you like me to look through this channel's history " +
+    const backupOptionsFollowUp = await interaction.followUp({
+        content: `Would you like me to look through ${channel.toString()}'s message history ` +
             `and backup any unarchived files to its linked album **${albumName}**?`,
         components: [row],
     });

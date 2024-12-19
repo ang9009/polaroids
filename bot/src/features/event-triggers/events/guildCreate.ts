@@ -33,8 +33,6 @@ const guildCreate: EventData<Guild> = {
 
     // Add guild id to database
     await addGuildToDb(guild.id);
-
-    console.log("Successfully saved guild id");
     channel.send({ embeds: [welcomeMsg] });
   },
 };

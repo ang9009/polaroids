@@ -79,7 +79,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
  * @param interaction
  */
 const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const { selectedAlbum } = await showAlbumDropdown(
+  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(
     "Please select the album you would like to delete. Albums with files cannot be deleted.",
     interaction,
     undefined,
@@ -97,11 +97,11 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
       errMsg = "An unknown error occurred. Please try again.";
     }
     const errEmbed = getErrorEmbed(errMsg);
-    await interaction.reply({ embeds: [errEmbed] });
+    await dropdownInteraction.reply({ embeds: [errEmbed] });
     return;
   }
 
-  await interaction.reply(`Successfully deleted album **${albumName}**.`);
+  await dropdownInteraction.reply(`Successfully deleted album **${albumName}**.`);
 };
 
 /**

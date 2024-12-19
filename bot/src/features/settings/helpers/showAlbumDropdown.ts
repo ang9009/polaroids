@@ -16,6 +16,11 @@ import { AlbumSelectionType } from "../data/albumSelectionType";
 import { getAlbumModal } from "./getAlbumModal";
 import { getAlbumModalInputs } from "./getAlbumModalInputs";
 
+type AlbumDropdownSelectionResult = {
+  selectedAlbum: AlbumSelectionData;
+  dropdownInteraction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
+};
+
 /**
  * Shows a dropdown menu which allows the user to select from a list of existing
  * albums, or create a new album. Calls a given callback function and deletes
@@ -32,10 +37,7 @@ export const showAlbumDropdown = async (
   interaction: ChatInputCommandInteraction,
   linkedAlbum?: string,
   hideCreateAlbumOption?: boolean,
-): Promise<{
-  selectedAlbum: AlbumSelectionData;
-  dropdownInteraction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
-}> => {
+): Promise<AlbumDropdownSelectionResult> => {
   const albums: Album[] = await getAlbums();
 
   // At the top of the menu, add an option for creating a new menu
@@ -80,8 +82,8 @@ export const showAlbumDropdown = async (
 
   const albumSelection = selectInteraction.values[0];
   let selectionResult: {
-    albumData: AlbumSelectionData;
-    interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
+    selectedAlbum: AlbumSelectionData;
+    dropdownInteraction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
   };
   if (albumSelection === createNewOptionId) {
     selectionResult = await handleAlbumDropdownSelection(
@@ -115,10 +117,7 @@ export const showAlbumDropdown = async (
 const handleAlbumDropdownSelection = async (
   selection: AlbumDropdownSelection,
   interaction: StringSelectMenuInteraction<CacheType>,
-): Promise<{
-  albumData: AlbumSelectionData;
-  interaction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
-}> => {
+): Promise<AlbumDropdownSelectionResult> => {
   // If the user wants to create a new album
   if (selection.type === AlbumSelectionType.CREATE_NEW) {
     // Show a modal for the user to enter the details of the album
@@ -136,7 +135,7 @@ const handleAlbumDropdownSelection = async (
       albumName,
       albumDesc: albumDesc || undefined,
     };
-    return { albumData, interaction: modalInteraction };
+    return { selectedAlbum: albumData, dropdownInteraction: modalInteraction };
   } else {
     // If the user wants to use an existing album
     const { albumName, albumDesc } = selection;
@@ -145,7 +144,7 @@ const handleAlbumDropdownSelection = async (
       albumName: albumName,
       albumDesc: albumDesc,
     };
-    return { albumData, interaction };
+    return { selectedAlbum: albumData, dropdownInteraction: interaction };
   }
 };
 

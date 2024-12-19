@@ -62,7 +62,7 @@ const execute = async (interaction) => {
  * @param interaction
  */
 const handleDeleteAlbumInteraction = async (interaction) => {
-    const { selectedAlbum } = await showAlbumDropdown("Please select the album you would like to delete. Albums with files cannot be deleted.", interaction, undefined, true);
+    const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown("Please select the album you would like to delete. Albums with files cannot be deleted.", interaction, undefined, true);
     const { albumName } = selectedAlbum;
     try {
         await deleteAlbum(albumName);
@@ -76,10 +76,10 @@ const handleDeleteAlbumInteraction = async (interaction) => {
             errMsg = "An unknown error occurred. Please try again.";
         }
         const errEmbed = getErrorEmbed(errMsg);
-        await interaction.reply({ embeds: [errEmbed] });
+        await dropdownInteraction.reply({ embeds: [errEmbed] });
         return;
     }
-    await interaction.reply(`Successfully deleted album **${albumName}**.`);
+    await dropdownInteraction.reply(`Successfully deleted album **${albumName}**.`);
 };
 /**
  * Handles the "edit album" subcommand interaction. This provides the user with

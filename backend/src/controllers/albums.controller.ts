@@ -178,5 +178,5 @@ export const deleteAlbum = async (req: Request, res: Response, next: NextFunctio
     return next(error);
   }
 
-  res.send(successJson).status(HttpStatusCode.OK);
+  res.json(successJson).status(HttpStatusCode.OK);
 };

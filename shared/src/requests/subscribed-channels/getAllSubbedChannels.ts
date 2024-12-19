@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export const GetAllSubbedChannelsRequestSchema = z.object({
+export const GetSubbedChannelsRequestSchema = z.object({
   guildId: z.string(),
 });
 
-export type GetAllSubbedChannelsRequest = z.infer<typeof GetAllSubbedChannelsRequestSchema>;
+export type GetAllSubbedChannelsRequestBody = z.infer<typeof GetSubbedChannelsRequestSchema>;

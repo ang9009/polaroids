@@ -3,6 +3,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { getAlbums } from "../../settings/api/getAlbumNames";
+import { getSubbedChannelsInfo } from "../api/getSubbedChannelsInfo";
 var ListCommandArgument;
 (function (ListCommandArgument) {
     ListCommandArgument["ALBUMS"] = "albums";
@@ -30,11 +31,43 @@ const execute = async (interaction) => {
             break;
         }
         case ListCommandArgument.CHANNELS: {
+            await handleListChannelsInteraction(interaction);
             break;
         }
         default:
             throw Error("Unrecognized subcommand");
     }
+};
+/**
+ * Displays a list of all subscribed channels in the current guild with the
+ * album they are linked to.
+ * @param interaction the ongoing interaction
+ */
+const handleListChannelsInteraction = async (interaction) => {
+    const { guildId } = interaction;
+    if (!guildId || !interaction.guild) {
+        throw Error("Could not find guild");
+    }
+    const subbedChannelsInfo = await getSubbedChannelsInfo(guildId);
+    if (subbedChannelsInfo.length === 0) {
+        interaction.reply("No subscribed channels found in this guild. " +
+            "To subscribe polaroids to a channel, use the command `/subscribe`.");
+    }
+    const subbedChannelsInfoListPromises = subbedChannelsInfo.map(async (channelInfo, i) => {
+        const { channelId, album: { name }, } = channelInfo;
+        const channel = await interaction.client.channels.fetch(channelId);
+        if (!channel) {
+            throw Error("Could not find channel");
+        }
+        return `${i + 1}. ${channel?.toString()}: linked to album **${name}**`;
+    });
+    const subbedChannelsInfoList = await Promise.all(subbedChannelsInfoListPromises);
+    const subbedChannelsEmbedBody = subbedChannelsInfoList.join("\n");
+    const subbedChannelsEmbed = new EmbedBuilder()
+        .setTitle(`All subscribed channels in ${interaction.guild.name}`)
+        .setDescription(subbedChannelsEmbedBody)
+        .setFooter({ text: footerCredits });
+    await interaction.reply({ embeds: [subbedChannelsEmbed] });
 };
 /**
  * Displays a list of all existing albums with their name and description. If

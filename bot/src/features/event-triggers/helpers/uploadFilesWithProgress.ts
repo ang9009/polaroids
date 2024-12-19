@@ -29,7 +29,8 @@ export const uploadAttachmentsWithProgress = async (message: Message, albumName:
       { name: "Album", value: albumName },
       { name: "Sent by", value: uploader.toString() },
     ])
-    .setColor(PrimaryColors.PRIMARY_WHITE);
+    .setColor(PrimaryColors.PRIMARY_WHITE)
+    .setThumbnail(attachmentsList[0].proxyURL);
   const initialMessage = await message.reply({ embeds: [uploadStatusEmbed] });
 
   try {
@@ -57,7 +58,7 @@ export const uploadAttachmentsWithProgress = async (message: Message, albumName:
   uploadStatusEmbed
     .spliceFields(0, 1, {
       name: "Status",
-      value: `Successfully uploaded ${attachmentFiles.length} file(s)`,
+      value: `Successfully uploaded ${attachmentFiles.length} file(s).`,
     })
     .setColor(PrimaryColors.SUCCESS_GREEN);
   initialMessage.edit({ embeds: [uploadStatusEmbed] });

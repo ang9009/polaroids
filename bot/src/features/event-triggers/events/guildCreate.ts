@@ -1,4 +1,5 @@
 import { ChannelType, EmbedBuilder, Events, Guild, TextChannel } from "discord.js";
+import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { EventData } from "../../../types/eventData";
 import { addGuildToDb } from "../api/addGuildToDb";
@@ -16,7 +17,7 @@ const guildCreate: EventData<Guild> = {
         \n\nFor more information, feel free to visit my [documentation](https://github.com/ang9009/polaroids/tree/main)!\n`,
       )
       .setFooter({
-        text: "📸 polaroids v1.0 | by dalfie",
+        text: footerCredits,
       });
 
     // Find a channel where the welcome message can be sent

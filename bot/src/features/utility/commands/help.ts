@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { CommandData } from "../../../types/commandData";
 
@@ -33,7 +34,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
       { name: "Info", value: infoCmds },
     ])
     .setFooter({
-      text: "📸 polaroids v1.0 | by dalfie",
+      text: footerCredits,
     })
     .setColor(PrimaryColors.PRIMARY_WHITE);
   interaction.reply({ embeds: [helpEmbed] });

@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "@discordjs/builders";
 import { SlashCommandBuilder } from "discord.js";
+import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
 /**
  * A command that lists all available commands.
@@ -26,7 +27,7 @@ const execute = async (interaction) => {
         { name: "Info", value: infoCmds },
     ])
         .setFooter({
-        text: "📸 polaroids v1.0 | by dalfie",
+        text: footerCredits,
     })
         .setColor(PrimaryColors.PRIMARY_WHITE);
     interaction.reply({ embeds: [helpEmbed] });

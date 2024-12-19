@@ -23,7 +23,7 @@ export const handleAlbumSelection = async (albumData, channelId, guildId, alread
         const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
         const albumExists = await checkAlbumExists(newAlbumName);
         if (albumExists) {
-            throw Error("An album with this name already exists! Please try again.");
+            throw Error(`An album with the name ${newAlbumName} already exists! Please try again.`);
         }
         // If channel is already subscribed to, create album and link the existing
         // channel to it

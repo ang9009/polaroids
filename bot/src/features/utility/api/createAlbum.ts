@@ -23,7 +23,7 @@ export const createAlbum = async (albumName: string, albumDesc: string | null) =
       const errorRes = err.response?.data;
       if (isDbExceptionResponse(errorRes)) {
         if (errorRes.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
-          throw Error("An album with this name already exists!");
+          throw Error(`An album with the name ${albumName} already exists!`);
         }
       }
     }

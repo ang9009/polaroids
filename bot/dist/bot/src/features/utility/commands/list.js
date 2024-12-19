@@ -50,8 +50,9 @@ const handleListChannelsInteraction = async (interaction) => {
     }
     const subbedChannelsInfo = await getSubbedChannelsInfo(guildId);
     if (subbedChannelsInfo.length === 0) {
-        interaction.reply("No subscribed channels found in this guild. " +
+        await interaction.reply("No subscribed channels found in this guild. " +
             "To subscribe polaroids to a channel, use the command `/subscribe`.");
+        return;
     }
     const subbedChannelsInfoListPromises = subbedChannelsInfo.map(async (channelInfo, i) => {
         const { channelId, album: { name }, } = channelInfo;

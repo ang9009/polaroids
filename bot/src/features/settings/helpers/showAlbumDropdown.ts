@@ -37,7 +37,7 @@ export const showAlbumDropdown = async (
   interaction: ChatInputCommandInteraction,
   linkedAlbum?: string,
   hideCreateAlbumOption?: boolean,
-): Promise<AlbumDropdownSelectionResult> => {
+): Promise<AlbumDropdownSelectionResult | undefined> => {
   const albums: Album[] = await getAlbums();
 
   // At the top of the menu, add an option for creating a new menu
@@ -74,10 +74,11 @@ export const showAlbumDropdown = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
     await response.edit({
-      content: "Confirmation not received within 1 minute, cancelling",
+      content: "Interaction timed out. Please try again.",
       components: [],
     });
-    throw Error("No confirmation received");
+
+    return undefined;
   }
 
   const albumSelection = selectInteraction.values[0];

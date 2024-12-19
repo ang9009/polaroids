@@ -46,12 +46,17 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return;
   }
 
-  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(
+  const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album that the attachments will be uploaded to.",
     interaction,
     undefined,
     true,
   );
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   await dropdownInteraction.deferUpdate();
 
   const { albumName } = selectedAlbum;

@@ -36,7 +36,11 @@ const execute = async (interaction) => {
         "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
     const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
     const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
-    const { selectedAlbum: selectedAlbum, dropdownInteraction: dropdownInteraction } = await showAlbumDropdown(msg, interaction, linkedAlbum);
+    const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
+    if (dropdownSelectionRes === undefined) {
+        return;
+    }
+    const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
     const { guildId, channelId } = interaction;
     if (!channelId) {
         throw Error("Could not find channel id");
@@ -84,7 +88,7 @@ async function startBackupInteraction(channel, albumName, interaction) {
         const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
             // eslint-disable-next-line jsdoc/require-jsdoc
             filter: (i) => i.user.id === interaction.user.id,
-            time: 60000,
+            time: 60_000,
         });
         if (confirmation.customId === confirmBtnId) {
             await backupOptionsFollowUp.delete();
@@ -101,8 +105,7 @@ async function startBackupInteraction(channel, albumName, interaction) {
     }
     catch (e) {
         await backupOptionsFollowUp.edit({
-            content: "No response was received." +
-                "You can find and upload unarchived files using `/backup` anytime.",
+            content: "Timed out." + "You can find and upload unarchived files using `/backup` anytime.",
             components: [],
         });
     }

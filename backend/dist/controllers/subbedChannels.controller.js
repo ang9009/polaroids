@@ -1,6 +1,6 @@
 import { AddSubbedChannelRequestSchema } from "shared/src/requests/subscribed-channels/addSubbedChannel";
 import { CreateAndLinkAlbumRequestSchema } from "shared/src/requests/subscribed-channels/createAlbumAndLinkChannel";
-import { GetAllSubbedChannelsRequestSchema } from "shared/src/requests/subscribed-channels/getAllSubbedChannels";
+import { GetSubbedChannelsRequestSchema } from "shared/src/requests/subscribed-channels/getAllSubbedChannels";
 import { IsSubscribedQueryParamsSchema } from "shared/src/requests/subscribed-channels/isSubscribed";
 import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
 import { UnsubChannelRequestSchema } from "shared/src/requests/subscribed-channels/unsubChannel";
@@ -11,21 +11,30 @@ import prisma from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 /**
- * Used to get the ids of all the subscribed channels for a given guild.
+ * Used to get the ids of all the subscribed channels for a given guild and
+ * their associated albums.
  * Route: GET /api/subscribed-channels/:guildId
  */
 export const getAllSubbedChannels = async (req, res, next) => {
-    const parseRes = GetAllSubbedChannelsRequestSchema.safeParse(req.params);
+    const parseRes = GetSubbedChannelsRequestSchema.safeParse(req.params);
     if (!parseRes.success) {
         const error = new ValidationException(parseRes.error);
         return next(error);
     }
     const { guildId } = parseRes.data;
-    let subbedChannels;
+    let subbedChannelsData;
     try {
-        subbedChannels = await prisma.subscribedChannel.findMany({
+        subbedChannelsData = await prisma.subscribedChannel.findMany({
             where: {
                 guildId: guildId,
+            },
+            select: {
+                channelId: true,
+                album: {
+                    select: {
+                        name: true,
+                    },
+                },
             },
         });
     }
@@ -33,8 +42,7 @@ export const getAllSubbedChannels = async (req, res, next) => {
         const error = getDbExFromPrismaErr(err);
         return next(error);
     }
-    const channelIds = subbedChannels.map((channel) => channel.channelId);
-    res.status(HttpStatusCode.OK).json({ channelIds: channelIds });
+    res.status(HttpStatusCode.OK).json(subbedChannelsData);
 };
 /**
  * Used to check if polaroids has already subscribed to a channel.

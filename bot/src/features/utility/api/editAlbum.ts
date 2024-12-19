@@ -29,7 +29,7 @@ export const editAlbum = async (
       const errorRes = err.response?.data;
       if (isDbExceptionResponse(errorRes)) {
         if (errorRes.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
-          throw Error("An album with this name already exists! Please try again.");
+          throw Error(`An album with the name ${newAlbumName} already exists! Please try again.`);
         }
       }
     }

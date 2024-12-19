@@ -79,12 +79,17 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
  * @param interaction
  */
 const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(
+  const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album you would like to delete. Albums with files cannot be deleted.",
     interaction,
     undefined,
     true,
   );
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { albumName } = selectedAlbum;
 
   try {
@@ -111,12 +116,17 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
  * @param interaction the ongoing interaction
  */
 const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(
+  const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album you would like to edit.",
     interaction,
     undefined,
     true,
   );
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
 
   const { albumName: originalAlbumName, albumDesc } = selectedAlbum;
   const nameInputId = "albumNameInput";

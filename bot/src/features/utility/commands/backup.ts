@@ -1,10 +1,8 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
-import { editMsgWithErrorEmbed } from "../../../utils/editMsgWithErrorEmbed";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
-import { checkAlbumExists } from "../../settings/api/checkAlbumExists";
 import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { performBackupWithProgress } from "../../settings/helpers/performBackupWithProgress";
 import { showAlbumDropdown } from "../../settings/helpers/showAlbumDropdown";
@@ -61,24 +59,15 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { albumName, albumDesc, type } = selectedAlbum;
-  const albumExists = await checkAlbumExists(albumName);
-  if (albumExists) {
-    const msg = `An album with the name "${albumName}" already exists. Please try again.`;
-    const errorEmbed = getErrorEmbed(msg);
-    await interaction.reply({ embeds: [errorEmbed] });
-    return;
-  }
 
-  const selectionConfirmReply = await dropdownInteraction.reply(`Selected album: **${albumName}**`);
+  await dropdownInteraction.deferUpdate();
   if (type === AlbumSelectionType.CREATE_NEW) {
     try {
       await createAlbum(albumName, albumDesc || null);
     } catch (err) {
-      if (err instanceof Error) {
-        await editMsgWithErrorEmbed(selectionConfirmReply, err.message);
-        return;
-      }
-      await editMsgWithErrorEmbed(selectionConfirmReply, "Something went wrong. Please try again.");
+      const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      const errEmbed = getErrorEmbed(errMsg);
+      await dropdownInteraction.reply({ embeds: [errEmbed] });
       return;
     }
   }

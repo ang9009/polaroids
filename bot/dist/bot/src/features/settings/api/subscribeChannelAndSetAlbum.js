@@ -32,7 +32,7 @@ export const subscribeChannelAndSetAlbum = async (albumName, channelId, guildId)
                     throw Error(`polaroids is no longer subscribed to this channel. Please try again.`);
                 }
                 else if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
-                    throw Error(`An album with the name ${albumName} already exists. Please try again.`);
+                    throw Error(`polraoids is already subscribed to this channel.`);
                 }
             }
         }

@@ -65,7 +65,7 @@ const handleListChannelsInteraction = async (interaction) => {
     const subbedChannelsInfoList = await Promise.all(subbedChannelsInfoListPromises);
     const subbedChannelsEmbedBody = subbedChannelsInfoList.join("\n");
     const subbedChannelsEmbed = new EmbedBuilder()
-        .setTitle(`All subscribed channels in ${interaction.guild.name}`)
+        .setTitle(`Subscribed channels in ${interaction.guild.name}`)
         .setDescription(subbedChannelsEmbedBody)
         .setFooter({ text: footerCredits });
     await interaction.reply({ embeds: [subbedChannelsEmbed] });

@@ -81,7 +81,7 @@ const handleListChannelsInteraction = async (interaction: ChatInputCommandIntera
   const subbedChannelsEmbedBody = subbedChannelsInfoList.join("\n");
 
   const subbedChannelsEmbed = new EmbedBuilder()
-    .setTitle(`All subscribed channels in ${interaction.guild.name}`)
+    .setTitle(`Subscribed channels in ${interaction.guild.name}`)
     .setDescription(subbedChannelsEmbedBody)
     .setFooter({ text: footerCredits });
   await interaction.reply({ embeds: [subbedChannelsEmbed] });

@@ -6,7 +6,6 @@ import {
 } from "discord.js";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
-import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { getAlbumModal } from "../../settings/helpers/getAlbumModal";
 import { getAlbumModalInputs } from "../../settings/helpers/getAlbumModalInputs";
 import { createAlbum } from "../api/createAlbum";
@@ -22,13 +21,7 @@ enum SubCommand {
 
 const createAlbumSubCmd = new SlashCommandSubcommandBuilder()
   .setName(SubCommand.CREATE)
-  .setDescription("Create a new album")
-  .addStringOption((nameOption) =>
-    nameOption.setName("name").setDescription("The name of the album").setRequired(true),
-  )
-  .addStringOption((descOption) =>
-    descOption.setName("description").setDescription("The album's description").setRequired(false),
-  );
+  .setDescription("Create a new album");
 
 const editAlbumSubCmd = new SlashCommandSubcommandBuilder()
   .setName(SubCommand.EDIT_INFO)
@@ -79,12 +72,17 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
  * @param interaction
  */
 const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(
+  const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album you would like to delete. Albums with files cannot be deleted.",
     interaction,
     undefined,
     true,
   );
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { albumName } = selectedAlbum;
 
   try {
@@ -111,12 +109,17 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
  * @param interaction the ongoing interaction
  */
 const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(
+  const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album you would like to edit.",
     interaction,
     undefined,
     true,
   );
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
 
   const { albumName: originalAlbumName, albumDesc } = selectedAlbum;
   const nameInputId = "albumNameInput";
@@ -162,24 +165,32 @@ const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteracti
  * @param interaction the ongoing interaction
  */
 const handleCreateAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const albumName = interaction.options.getString("name");
-  const albumDesc = interaction.options.getString("description");
-  if (!albumName) {
-    throw Error("Album name was somehow null even though it is required");
-  }
+  const nameInputId = "albumNameInput";
+  const descInputId = "albumDescInput";
+
+  const modal = getAlbumModal("Create album", nameInputId, descInputId);
+  await interaction.showModal(modal);
+  const {
+    name: albumName,
+    description: albumDesc,
+    modalInteraction,
+  } = await getAlbumModalInputs(interaction, nameInputId, descInputId);
 
   try {
     await createAlbum(albumName, albumDesc);
   } catch (err) {
+    let errMsg;
     if (err instanceof Error) {
-      replyWithErrorEmbed(interaction, err.message);
+      errMsg = err.message;
     } else {
-      replyWithErrorEmbed(interaction, "Something went wrong. Please try again.");
+      errMsg = "Something went wrong. Please try again.";
     }
+    const errEmbed = getErrorEmbed(errMsg);
+    await modalInteraction.reply({ embeds: [errEmbed] });
     return;
   }
 
-  await interaction.reply(`Successfully created album **${albumName}**.`);
+  await modalInteraction.reply(`Successfully created album **${albumName}**.`);
 };
 
 const commandData: CommandData = {

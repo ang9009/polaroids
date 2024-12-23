@@ -1,8 +1,8 @@
 import { ZodIssue } from "zod";
-import { DbApiErrorType } from "../../error-codes/dbApiErrorType";
+import { ApiErrorType } from "../../error-codes/apiErrorType";
 
 export type ValidationExceptionResponse = {
   errors: ZodIssue[];
   message: string;
-  errorType: DbApiErrorType.REQUEST_EXCEPTION;
+  errorType: ApiErrorType.REQUEST_EXCEPTION;
 };

@@ -1,4 +1,4 @@
-import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import { ApiErrorType } from "shared/src/error-codes/apiErrorType";
 import { ValidationExceptionResponse } from "shared/src/responses/error//validationExceptionResponse";
 import { ZodError } from "zod";
 import HttpStatusCode from "../../data/statusCodes";
@@ -28,7 +28,7 @@ class ValidationException implements HttpException {
   // eslint-disable-next-line jsdoc/require-jsdoc
   getResponse(): ValidationExceptionResponse {
     return {
-      errorType: DbApiErrorType.REQUEST_EXCEPTION,
+      errorType: ApiErrorType.REQUEST_EXCEPTION,
       message: this.message,
       errors: this.zodError.errors,
     };

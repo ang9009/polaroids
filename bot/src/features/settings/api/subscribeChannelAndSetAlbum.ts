@@ -1,8 +1,11 @@
 import axios from "axios";
+import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { AddSubbedChannelRequest } from "shared/src/requests/subscribed-channels/addSubbedChannel";
 import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { isAxiosErrorResponse } from "../../../utils/ensureAxiosErrorResponse";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
+import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 
 /**
  * Subscribes polaroids to the given channel, then sets its linked album to a
@@ -24,5 +27,21 @@ export const subscribeChannelAndSetAlbum = async (
     guildId,
   };
 
-  await axios.post(url, data);
+  try {
+    await axios.post(url, data);
+  } catch (err) {
+    if (isAxiosErrorResponse(err)) {
+      const errorRes = err.response?.data;
+      if (isDbExceptionResponse(errorRes)) {
+        const { dbErrorCode } = errorRes;
+        if (dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND) {
+          throw Error(`polaroids is no longer subscribed to this channel. Please try again.`);
+        } else if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
+          throw Error(`An album with the name ${albumName} already exists. Please try again.`);
+        }
+      }
+    }
+
+    throw err;
+  }
 };

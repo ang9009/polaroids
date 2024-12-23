@@ -1,4 +1,4 @@
-export enum DbApiErrorType {
+export enum ApiErrorType {
   DB_EXCEPTION = "DB_EXCEPTION",
   UNKNOWN_EXCEPTION = "UNKNOWN_EXCEPTION",
   NOT_FOUND_EXCEPTION = "NOT_FOUND_EXCEPTION",

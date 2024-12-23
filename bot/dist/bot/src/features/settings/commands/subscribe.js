@@ -36,7 +36,11 @@ const execute = async (interaction) => {
         "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
     const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
     const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
-    const { selectedAlbum: selectedAlbum, dropdownInteraction: dropdownInteraction } = await showAlbumDropdown(msg, interaction, linkedAlbum);
+    const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
+    if (dropdownSelectionRes === undefined) {
+        return;
+    }
+    const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
     const { guildId, channelId } = interaction;
     if (!channelId) {
         throw Error("Could not find channel id");
@@ -46,11 +50,13 @@ const execute = async (interaction) => {
         await handleAlbumSelection(selectedAlbum, channelId, guildId, channelSubData.isSubscribed);
     }
     catch (err) {
+        let errMsg = "An unknown error occurred. Please try again.";
         if (err instanceof Error) {
-            const errEmbed = getErrorEmbed(err.message);
-            dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
-            return;
+            errMsg = err.message;
         }
+        const errEmbed = getErrorEmbed(errMsg);
+        dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
+        return;
     }
     await dropdownInteraction.reply(`Successfully linked channel to album **${selectedAlbum.albumName}**.`);
     // Ask user if they would like to back up previously uploaded attachments
@@ -84,7 +90,7 @@ async function startBackupInteraction(channel, albumName, interaction) {
         const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
             // eslint-disable-next-line jsdoc/require-jsdoc
             filter: (i) => i.user.id === interaction.user.id,
-            time: 60000,
+            time: 60_000,
         });
         if (confirmation.customId === confirmBtnId) {
             await backupOptionsFollowUp.delete();
@@ -101,8 +107,7 @@ async function startBackupInteraction(channel, albumName, interaction) {
     }
     catch (e) {
         await backupOptionsFollowUp.edit({
-            content: "No response was received." +
-                "You can find and upload unarchived files using `/backup` anytime.",
+            content: "Timed out. " + "You can find and upload unarchived files using `/backup` anytime.",
             components: [],
         });
     }

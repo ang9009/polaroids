@@ -1,7 +1,10 @@
 import axios from "axios";
+import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { isAxiosErrorResponse } from "../../../utils/ensureAxiosErrorResponse";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
+import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 /**
  * Creates an album, then subscribes polaroids to the given channel and links it
  * to the newly created album. Note that the channel should not be subscribed to before.
@@ -19,6 +22,20 @@ export const subscribeChannelWithNewAlbum = async (albumName, albumDesc, channel
         guildId,
         albumDesc,
     };
-    await axios.post(url, data);
+    try {
+        await axios.post(url, data);
+    }
+    catch (err) {
+        if (isAxiosErrorResponse(err)) {
+            const errorRes = err.response?.data;
+            if (isDbExceptionResponse(errorRes)) {
+                const { dbErrorCode } = errorRes;
+                if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
+                    throw Error(`An album with the name ${albumName} already exists. Please try again.`);
+                }
+            }
+        }
+        throw err;
+    }
 };
 //# sourceMappingURL=subscribeChannelWithNewAlbum.ts.js.map

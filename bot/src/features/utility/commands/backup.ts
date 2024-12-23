@@ -54,8 +54,12 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 
   // Otherwise, ask the user to specify an album
   const msg = "Select an album to upload the contents of this channel to.";
-  const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown(msg, interaction);
+  const dropdownSelectionRes = await showAlbumDropdown(msg, interaction);
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
 
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { albumName, albumDesc, type } = selectedAlbum;
   const albumExists = await checkAlbumExists(albumName);
   if (albumExists) {

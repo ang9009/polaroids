@@ -32,10 +32,10 @@ export const getAlbumModal = (title, albumNameInputId, albumDescInputId, albumNa
     const albumNameRow = new ActionRowBuilder().addComponents(albumNameField);
     const albumDescRow = new ActionRowBuilder().addComponents(albumDescField);
     if (albumNamePlaceholder) {
-        albumNameField.setPlaceholder(albumNamePlaceholder);
+        albumNameField.setValue(albumNamePlaceholder);
     }
     if (albumDescPlaceholder) {
-        albumDescField.setPlaceholder(albumDescPlaceholder);
+        albumDescField.setValue(albumDescPlaceholder);
     }
     const modal = new ModalBuilder()
         .setCustomId("createAlbumModal")

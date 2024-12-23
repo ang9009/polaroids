@@ -33,7 +33,11 @@ const execute = async (interaction) => {
         replyWithErrorEmbed(interaction, `The specified message with id "${messageId}" has no attachments. Please try again.`);
         return;
     }
-    const { selectedAlbum, dropdownInteraction } = await showAlbumDropdown("Please select the album that the attachments will be uploaded to.", interaction, undefined, true);
+    const dropdownSelectionRes = await showAlbumDropdown("Please select the album that the attachments will be uploaded to.", interaction, undefined, true);
+    if (dropdownSelectionRes === undefined) {
+        return;
+    }
+    const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
     await dropdownInteraction.deferUpdate();
     const { albumName } = selectedAlbum;
     await uploadAttachmentsWithProgress(msg, albumName);

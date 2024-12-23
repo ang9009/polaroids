@@ -56,8 +56,12 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
   const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
 
-  const { selectedAlbum: selectedAlbum, dropdownInteraction: dropdownInteraction } =
-    await showAlbumDropdown(msg, interaction, linkedAlbum);
+  const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { guildId, channelId } = interaction;
   if (!channelId) {
     throw Error("Could not find channel id");
@@ -67,11 +71,13 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   try {
     await handleAlbumSelection(selectedAlbum, channelId, guildId, channelSubData.isSubscribed);
   } catch (err) {
+    let errMsg = "An unknown error occurred. Please try again.";
     if (err instanceof Error) {
-      const errEmbed = getErrorEmbed(err.message);
-      dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
-      return;
+      errMsg = err.message;
     }
+    const errEmbed = getErrorEmbed(errMsg);
+    dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
+    return;
   }
   await dropdownInteraction.reply(
     `Successfully linked channel to album **${selectedAlbum.albumName}**.`,
@@ -115,7 +121,7 @@ async function startBackupInteraction(
     const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
       // eslint-disable-next-line jsdoc/require-jsdoc
       filter: (i) => i.user.id === interaction.user.id,
-      time: 60000,
+      time: 60_000,
     });
 
     if (confirmation.customId === confirmBtnId) {
@@ -132,9 +138,7 @@ async function startBackupInteraction(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     await backupOptionsFollowUp.edit({
-      content:
-        "No response was received." +
-        "You can find and upload unarchived files using `/backup` anytime.",
+      content: "Timed out. " + "You can find and upload unarchived files using `/backup` anytime.",
       components: [],
     });
   }

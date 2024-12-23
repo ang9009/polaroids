@@ -1,6 +1,6 @@
 /**
  * Returns the user's inputs after they submit an album modal.
- * @param interaction the interaction where the modal is shown
+ * @param interaction the interaction that triggers the modal opening
  * @param albumNameFieldId the id of the modal's name field
  * @param albumDescFieldId the id of the modal's description field
  * @returns the name and description input by the user, and the modal interaction

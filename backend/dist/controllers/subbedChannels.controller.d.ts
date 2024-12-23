@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { GetSubbedChannelsResponse } from "shared/src/responses/subscribed-channels/getSubbedChannels";
 import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/isSubscribed";
 /**
- * Used to get the ids of all the subscribed channels for a given guild.
+ * Used to get the ids of all the subscribed channels for a given guild and
+ * their associated albums.
  * Route: GET /api/subscribed-channels/:guildId
  */
 export declare const getAllSubbedChannels: (req: Request, res: Response<GetSubbedChannelsResponse>, next: NextFunction) => Promise<void>;

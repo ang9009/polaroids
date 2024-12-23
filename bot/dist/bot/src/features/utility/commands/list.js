@@ -50,8 +50,9 @@ const handleListChannelsInteraction = async (interaction) => {
     }
     const subbedChannelsInfo = await getSubbedChannelsInfo(guildId);
     if (subbedChannelsInfo.length === 0) {
-        interaction.reply("No subscribed channels found in this guild. " +
+        await interaction.reply("No subscribed channels found in this guild. " +
             "To subscribe polaroids to a channel, use the command `/subscribe`.");
+        return;
     }
     const subbedChannelsInfoListPromises = subbedChannelsInfo.map(async (channelInfo, i) => {
         const { channelId, album: { name }, } = channelInfo;
@@ -82,7 +83,8 @@ const handleListAlbumsInteraction = async (interaction) => {
     }
     //   Construct a list of album names and their descriptions, separated by newlines
     const albumsInfo = albums.map((album, i) => {
-        return `${i + 1}. **${album.name}**: ${album.description}`;
+        const prefix = album.description ? `: ${album.description}` : "";
+        return `${i + 1}. **${album.name}**` + prefix;
     });
     const albumsEmbedBody = albumsInfo.join("\n");
     const albumsEmbed = new EmbedBuilder()

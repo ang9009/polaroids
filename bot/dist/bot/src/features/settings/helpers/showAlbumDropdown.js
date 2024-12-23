@@ -42,10 +42,10 @@ export const showAlbumDropdown = async (msg, interaction, linkedAlbum, hideCreat
     }
     catch (err) {
         await response.edit({
-            content: "Confirmation not received within 1 minute, cancelling",
+            content: "Interaction timed out. Please try again.",
             components: [],
         });
-        throw Error("No confirmation received");
+        return undefined;
     }
     const albumSelection = selectInteraction.values[0];
     let selectionResult;

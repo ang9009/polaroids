@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 import { EmbedBuilder, Message } from "discord.js";
-import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import { ApiErrorType } from "shared/src/error-codes/apiErrorType";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { ApiErrorResponseSchema } from "shared/src/responses/error/apiErrorResponse";
 import { PrimaryColors } from "../../../data/primaryColors";
@@ -42,7 +42,7 @@ export const uploadAttachmentsWithProgress = async (message: Message, albumName:
       const parseErrorRes = ApiErrorResponseSchema.safeParse(err.response?.data);
       if (!parseErrorRes.success) {
         return;
-      } else if (parseErrorRes.data.errorType === DbApiErrorType.DB_EXCEPTION) {
+      } else if (parseErrorRes.data.errorType === ApiErrorType.DB_EXCEPTION) {
         const { dbErrorCode } = parseErrorRes.data;
         if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
           errMsg = "The specified attachments have already been uploaded.";

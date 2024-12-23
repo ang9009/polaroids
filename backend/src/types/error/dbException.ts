@@ -1,5 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { DbApiErrorType } from "shared/src/error-codes/dbApiErrorType";
+import { ApiErrorType } from "shared/src/error-codes/apiErrorType";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { DbExceptionResponse } from "shared/src/responses/error/dbExceptionResponse";
 import HttpStatusCode from "../../data/statusCodes";
@@ -28,7 +28,7 @@ class DbException implements HttpException {
   // eslint-disable-next-line jsdoc/require-jsdoc
   getResponse(): DbExceptionResponse {
     return {
-      errorType: DbApiErrorType.DB_EXCEPTION,
+      errorType: ApiErrorType.DB_EXCEPTION,
       message: this.message,
       dbErrorCode: this.dbErrorCode,
     };

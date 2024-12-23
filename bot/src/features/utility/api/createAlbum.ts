@@ -4,7 +4,8 @@ import { CreateAlbumRequestBody } from "shared/src/requests/albums/createAlbum";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 
 /**
- * Creates an album with the given name and description.
+ * Creates an album with the given name and description. This assumes that the
+ * album does not already exist.
  * @param albumName the name of the album
  * @param albumDesc the album's description
  */
@@ -23,7 +24,7 @@ export const createAlbum = async (albumName: string, albumDesc: string | null) =
       const errorRes = err.response?.data;
       if (isDbExceptionResponse(errorRes)) {
         if (errorRes.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
-          throw Error("An album with this name already exists!");
+          throw Error(`An album with the name ${albumName} already exists!`);
         }
       }
     }

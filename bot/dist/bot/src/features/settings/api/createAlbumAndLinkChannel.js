@@ -1,6 +1,9 @@
 import axios from "axios";
+import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { isAxiosErrorResponse } from "../../../utils/ensureAxiosErrorResponse";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
+import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 /**
  * Creates an album based on the fields in the given modal submit interaction
  * object, and links the channel with the given channel id to it.
@@ -12,6 +15,23 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 export const createAlbumAndLinkChannel = async (albumName, albumDesc, channelId, guildId) => {
     const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "link-new-album");
     const data = { guildId, channelId, albumName, albumDesc };
-    await axios.patch(url, data);
+    try {
+        await axios.patch(url, data);
+    }
+    catch (err) {
+        if (isAxiosErrorResponse(err)) {
+            const errorRes = err.response?.data;
+            if (isDbExceptionResponse(errorRes)) {
+                const { dbErrorCode } = errorRes;
+                if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
+                    throw Error(`An album with the name ${albumName} already exists. Please try again.`);
+                }
+                else if (dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND) {
+                    throw Error("polaroids is no longer subscribed to this channel. Please try again.");
+                }
+            }
+        }
+        throw err;
+    }
 };
 //# sourceMappingURL=createAlbumAndLinkChannel.js.map

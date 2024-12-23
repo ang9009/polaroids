@@ -1,4 +1,3 @@
-import { checkAlbumExists } from "../api/checkAlbumExists";
 import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
 import { setChannelAlbum } from "../api/setChannelAlbum";
 import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum";
@@ -21,10 +20,6 @@ export const handleAlbumSelection = async (albumData, channelId, guildId, alread
     }
     if (albumData.type === AlbumSelectionType.CREATE_NEW) {
         const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
-        const albumExists = await checkAlbumExists(newAlbumName);
-        if (albumExists) {
-            throw Error("An album with this name already exists! Please try again.");
-        }
         // If channel is already subscribed to, create album and link the existing
         // channel to it
         if (alreadySubscribed) {

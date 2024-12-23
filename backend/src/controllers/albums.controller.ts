@@ -108,7 +108,6 @@ export const createAlbum = async (req: Request, res: Response, next: NextFunctio
  * {
  *      albumName: string, // the name of the original album
  *      newAlbumName: string, // the album's new name
- *      newAlbumDesc: string // the album's new description
  * }
  */
 export const editAlbum = async (req: Request, res: Response, next: NextFunction) => {
@@ -118,12 +117,12 @@ export const editAlbum = async (req: Request, res: Response, next: NextFunction)
     return next(error);
   }
 
-  const { albumName, newAlbumName, newAlbumDesc } = parsedReqBody.data;
+  const { albumName, newAlbumName, albumDesc } = parsedReqBody.data;
   try {
     await prisma.album.update({
       data: {
         name: newAlbumName,
-        description: newAlbumDesc,
+        description: albumDesc,
       },
       where: {
         name: albumName,

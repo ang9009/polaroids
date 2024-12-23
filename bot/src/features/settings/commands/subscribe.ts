@@ -62,6 +62,12 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   }
 
   const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
+  const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
+  if (dropdownSelectionRes === undefined) {
+    return;
+  }
+
+  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { guildId, channelId } = interaction;
   if (!channelId) {
     throw Error("Could not find channel id");
@@ -121,6 +127,7 @@ async function startBackupInteraction(
     const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
       // eslint-disable-next-line jsdoc/require-jsdoc
       filter: (i) => i.user.id === interaction.user.id,
+      time: 60_000,
       time: 60_000,
     });
 

@@ -194,7 +194,7 @@ export const createAlbumAndLinkChannel = async (req, res, next) => {
     }
     const { guildId, channelId, albumName, albumDesc } = parseRes.data;
     try {
-        prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx) => {
             await tx.album.create({
                 data: {
                     name: albumName,

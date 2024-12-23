@@ -1,10 +1,4 @@
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  SlashCommandBuilder,
-  TextChannel,
-} from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder, TextChannel, } from "discord.js";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
@@ -17,67 +11,56 @@ import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
  * a new album, or select an existing one to link to the channel this command was called in.
  */
 const data = new SlashCommandBuilder()
-  .setName("subscribe")
-  .setDescription("Ask polaroids to archive any attachments sent in a channel")
-  .addChannelOption((option) =>
-    option
-      .setName("channel")
-      .setDescription(
-        "The channel to be subscribed to. Leave this empty to subscribe to the current channel",
-      ),
-  );
+    .setName("subscribe")
+    .setDescription("Ask polaroids to archive any attachments sent in a channel")
+    .addChannelOption((option) => option
+    .setName("channel")
+    .setDescription("The channel to be subscribed to. Leave this empty to subscribe to the current channel"));
 /**
  * The execute function for the "subscribe" command.
  * @param interaction the interaction object associated with the interaction
  */
 const execute = async (interaction) => {
-  const channelArg = interaction.options.getChannel("channel");
-  if (channelArg && !(channelArg instanceof TextChannel)) {
-    replyWithErrorEmbed(interaction, "Only text channels can be subscribed to.");
-    return;
-  }
-  const channel = channelArg || interaction.channel;
-  if (!channel) {
-    throw Error("Could not find channel");
-  }
-  const channelSubData = await getChannelSubData(channel.id);
-  const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbum : undefined;
-  const isAlreadySubscribedMsg =
-    `${channel.toString()} is currently linked to album **${linkedAlbum}**. ` +
-    "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
-  const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
-  const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
-  const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
-  if (dropdownSelectionRes === undefined) {
-    return;
-  }
-  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
-  const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
-  if (dropdownSelectionRes === undefined) {
-    return;
-  }
-  const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
-  const { guildId, channelId } = interaction;
-  if (!channelId) {
-    throw Error("Could not find channel id");
-  }
-  // Link the channel to the album according to the user's instructions
-  try {
-    await handleAlbumSelection(selectedAlbum, channelId, guildId, channelSubData.isSubscribed);
-  } catch (err) {
-    let errMsg = "An unknown error occurred. Please try again.";
-    if (err instanceof Error) {
-      errMsg = err.message;
+    const channelArg = interaction.options.getChannel("channel");
+    if (channelArg && !(channelArg instanceof TextChannel)) {
+        replyWithErrorEmbed(interaction, "Only text channels can be subscribed to.");
+        return;
     }
-    const errEmbed = getErrorEmbed(errMsg);
-    dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
-    return;
-  }
-  await dropdownInteraction.reply(
-    `Successfully linked channel to album **${selectedAlbum.albumName}**.`,
-  );
-  // Ask user if they would like to back up previously uploaded attachments
-  await startBackupInteraction(channel, selectedAlbum.albumName, interaction);
+    const channel = channelArg || interaction.channel;
+    if (!channel) {
+        throw Error("Could not find channel");
+    }
+    const channelSubData = await getChannelSubData(channel.id);
+    const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbum : undefined;
+    const isAlreadySubscribedMsg = `${channel.toString()} is currently linked to album **${linkedAlbum}**. ` +
+        "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
+    const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
+    const msg = channelSubData.isSubscribed ? isAlreadySubscribedMsg : notSubscribedMsg;
+    const dropdownSelectionRes = await showAlbumDropdown(msg, interaction, linkedAlbum);
+    if (dropdownSelectionRes === undefined) {
+        return;
+    }
+    const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
+    const { guildId, channelId } = interaction;
+    if (!channelId) {
+        throw Error("Could not find channel id");
+    }
+    // Link the channel to the album according to the user's instructions
+    try {
+        await handleAlbumSelection(selectedAlbum, channelId, guildId, channelSubData.isSubscribed);
+    }
+    catch (err) {
+        let errMsg = "An unknown error occurred. Please try again.";
+        if (err instanceof Error) {
+            errMsg = err.message;
+        }
+        const errEmbed = getErrorEmbed(errMsg);
+        dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
+        return;
+    }
+    await dropdownInteraction.reply(`Successfully linked channel to album **${selectedAlbum.albumName}**.`);
+    // Ask user if they would like to back up previously uploaded attachments
+    await startBackupInteraction(channel, selectedAlbum.albumName, interaction);
 };
 /**
  * Asks the user if they would like to back up previously uploaded attachments
@@ -87,52 +70,51 @@ const execute = async (interaction) => {
  * @param interaction the ongoing interaction
  */
 async function startBackupInteraction(channel, albumName, interaction) {
-  const confirmBtnId = "confirm";
-  const cancelBtnId = "cancel";
-  const confirm = new ButtonBuilder()
-    .setCustomId(confirmBtnId)
-    .setLabel("Confirm")
-    .setStyle(ButtonStyle.Primary);
-  const cancel = new ButtonBuilder()
-    .setCustomId(cancelBtnId)
-    .setLabel("Cancel")
-    .setStyle(ButtonStyle.Secondary);
-  const row = new ActionRowBuilder().addComponents(confirm, cancel);
-  const backupOptionsFollowUp = await interaction.followUp({
-    content:
-      `Would you like me to look through ${channel.toString()}'s message history ` +
-      `and backup any unarchived files to its linked album **${albumName}**?`,
-    components: [row],
-  });
-  try {
-    const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
-      // eslint-disable-next-line jsdoc/require-jsdoc
-      filter: (i) => i.user.id === interaction.user.id,
-      time: 60_000,
-      time: 60_000,
+    const confirmBtnId = "confirm";
+    const cancelBtnId = "cancel";
+    const confirm = new ButtonBuilder()
+        .setCustomId(confirmBtnId)
+        .setLabel("Confirm")
+        .setStyle(ButtonStyle.Primary);
+    const cancel = new ButtonBuilder()
+        .setCustomId(cancelBtnId)
+        .setLabel("Cancel")
+        .setStyle(ButtonStyle.Secondary);
+    const row = new ActionRowBuilder().addComponents(confirm, cancel);
+    const backupOptionsFollowUp = await interaction.followUp({
+        content: `Would you like me to look through ${channel.toString()}'s message history ` +
+            `and backup any unarchived files to its linked album **${albumName}**?`,
+        components: [row],
     });
-    if (confirmation.customId === confirmBtnId) {
-      await backupOptionsFollowUp.delete();
-      await performBackupWithProgress(channel, albumName, interaction.user);
-    } else if (confirmation.customId === cancelBtnId) {
-      await backupOptionsFollowUp.edit({
-        content:
-          "Backup operation cancelled. " +
-          "You can find and upload unarchived files using `/backup` anytime.",
-        components: [],
-      });
+    try {
+        const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
+            // eslint-disable-next-line jsdoc/require-jsdoc
+            filter: (i) => i.user.id === interaction.user.id,
+            time: 60_000,
+        });
+        if (confirmation.customId === confirmBtnId) {
+            await backupOptionsFollowUp.delete();
+            await performBackupWithProgress(channel, albumName, interaction.user);
+        }
+        else if (confirmation.customId === cancelBtnId) {
+            await backupOptionsFollowUp.edit({
+                content: "Backup operation cancelled. " +
+                    "You can find and upload unarchived files using `/backup` anytime.",
+                components: [],
+            });
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    await backupOptionsFollowUp.edit({
-      content: "Timed out. " + "You can find and upload unarchived files using `/backup` anytime.",
-      components: [],
-    });
-  }
+    catch (e) {
+        await backupOptionsFollowUp.edit({
+            content: "Timed out. " + "You can find and upload unarchived files using `/backup` anytime.",
+            components: [],
+        });
+    }
 }
 const commandData = {
-  data,
-  execute,
+    data,
+    execute,
 };
 export default commandData;
 //# sourceMappingURL=subscribe.js.map

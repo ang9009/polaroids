@@ -5,18 +5,18 @@ import HttpStatusCode from "../../data/statusCodes";
  * Allows for a message to be provided.
  */
 class UnknownException {
-  /**
-   * Constructor for an UnknownException.
-   * @param message the message for this exception
-   */
-  constructor(message) {
-    this.status = HttpStatusCode.INTERNAL_SERVER_ERROR;
-    this.message = message;
-    this.name = "UnknownException";
-  }
-  // eslint-disable-next-line jsdoc/require-jsdoc
-  getResponse() {
-    return { error: ApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
-  }
+    /**
+     * Constructor for an UnknownException.
+     * @param message the message for this exception
+     */
+    constructor(message) {
+        this.status = HttpStatusCode.INTERNAL_SERVER_ERROR;
+        this.message = message;
+        this.name = "UnknownException";
+    }
+    // eslint-disable-next-line jsdoc/require-jsdoc
+    getResponse() {
+        return { errorType: ApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
+    }
 }
 export default UnknownException;

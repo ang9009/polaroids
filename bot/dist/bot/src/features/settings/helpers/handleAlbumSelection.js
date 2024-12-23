@@ -15,29 +15,32 @@ import { AlbumSelectionType } from "../data/albumSelectionType";
  * @param alreadySubscribed whether the channel has already been subscribed to
  */
 export const handleAlbumSelection = async (albumData, channelId, guildId, alreadySubscribed) => {
-  if (!guildId || !channelId) {
-    throw Error("guildId or channelId is undefined");
-  }
-  if (albumData.type === AlbumSelectionType.CREATE_NEW) {
-    const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
-    // If channel is already subscribed to, create album and link the existing
-    // channel to it
-    if (alreadySubscribed) {
-      await createAlbumAndLinkChannel(newAlbumName, newAlbumDesc, channelId, guildId);
-    } else {
-      // Otherwise, create a new album and save the channel
-      await subscribeChannelWithNewAlbum(newAlbumName, newAlbumDesc, channelId, guildId);
+    if (!guildId || !channelId) {
+        throw Error("guildId or channelId is undefined");
     }
-  } else {
-    // If user wants to use existing album
-    const { albumName: newAlbumName } = albumData;
-    // If channel is already subscribed to, change its linked album
-    if (alreadySubscribed) {
-      await setChannelAlbum(newAlbumName, channelId, guildId);
-    } else {
-      // Otherwise, save the channel and set its linked album
-      await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
+    if (albumData.type === AlbumSelectionType.CREATE_NEW) {
+        const { albumName: newAlbumName, albumDesc: newAlbumDesc } = albumData;
+        // If channel is already subscribed to, create album and link the existing
+        // channel to it
+        if (alreadySubscribed) {
+            await createAlbumAndLinkChannel(newAlbumName, newAlbumDesc, channelId, guildId);
+        }
+        else {
+            // Otherwise, create a new album and save the channel
+            await subscribeChannelWithNewAlbum(newAlbumName, newAlbumDesc, channelId, guildId);
+        }
     }
-  }
+    else {
+        // If user wants to use existing album
+        const { albumName: newAlbumName } = albumData;
+        // If channel is already subscribed to, change its linked album
+        if (alreadySubscribed) {
+            await setChannelAlbum(newAlbumName, channelId, guildId);
+        }
+        else {
+            // Otherwise, save the channel and set its linked album
+            await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
+        }
+    }
 };
 //# sourceMappingURL=handleAlbumSelection.js.map

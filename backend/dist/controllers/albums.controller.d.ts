@@ -29,7 +29,6 @@ export declare const createAlbum: (req: Request, res: Response, next: NextFuncti
  * {
  *      albumName: string, // the name of the original album
  *      newAlbumName: string, // the album's new name
- *      newAlbumDesc: string // the album's new description
  * }
  */
 export declare const editAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void>;

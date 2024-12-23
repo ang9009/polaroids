@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from "axios";
 import { ApiErrorType } from "shared/src/error-codes/apiErrorType";
+import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { ApiErrorResponseSchema } from "shared/src/responses/error/apiErrorResponse";
 
 /**
@@ -21,6 +22,11 @@ export const deleteAlbum = async (albumName: string) => {
       const { data: errResponse } = parsedRes;
       if (errResponse.errorType === ApiErrorType.UNKNOWN_EXCEPTION) {
         throw Error("Albums that have associated files cannot be deleted.");
+      } else if (
+        errResponse.errorType === ApiErrorType.DB_EXCEPTION &&
+        errResponse.dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND
+      ) {
+        throw Error(`The album ${albumName} no longer exists.`);
       }
     }
   }

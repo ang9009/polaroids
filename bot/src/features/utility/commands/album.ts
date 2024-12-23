@@ -69,7 +69,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
 /**
  * Handles the delete album interaction. This presents the user with a dropdown
  * to select the album to be deleted, then deletes the specified album.
- * @param interaction
+ * @param interaction the ongoing interaction
  */
 const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
   const dropdownSelectionRes = await showAlbumDropdown(
@@ -88,12 +88,8 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
   try {
     await deleteAlbum(albumName);
   } catch (err) {
-    let errMsg;
-    if (err instanceof Error) {
-      errMsg = err.message;
-    } else {
-      errMsg = "An unknown error occurred. Please try again.";
-    }
+    const errMsg =
+      err instanceof Error ? err.message : "An unknown error occurred. Please try again.";
     const errEmbed = getErrorEmbed(errMsg);
     await dropdownInteraction.reply({ embeds: [errEmbed] });
     return;
@@ -145,18 +141,14 @@ const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteracti
   try {
     await editAlbum(originalAlbumName, newAlbumName, newAlbumDesc);
   } catch (err) {
-    let errMsg;
-    if (err instanceof Error) {
-      errMsg = err.message;
-    } else {
-      errMsg = "Something went wrong. Please try again.";
-    }
+    const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
     const errEmbed = getErrorEmbed(errMsg);
-    modalInteraction.reply({ embeds: [errEmbed] });
+    await modalInteraction.reply({ embeds: [errEmbed] });
+    return;
   }
 
   const editedAlbumName = originalAlbumName === newAlbumName ? originalAlbumName : newAlbumName;
-  modalInteraction.reply(`Successfully edited album **${editedAlbumName}**.`);
+  await modalInteraction.reply(`Successfully edited album **${editedAlbumName}**.`);
 };
 
 /**

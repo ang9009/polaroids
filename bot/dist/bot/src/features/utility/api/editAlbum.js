@@ -25,6 +25,9 @@ export const editAlbum = async (albumName, newAlbumName, newAlbumDesc) => {
                 if (errorRes.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
                     throw Error(`An album with the name ${newAlbumName} already exists! Please try again.`);
                 }
+                else if (errorRes.dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND) {
+                    throw Error(`The album ${albumName} no longer exists. Please try again.`);
+                }
             }
         }
         throw err;

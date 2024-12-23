@@ -16,9 +16,7 @@ export const createAlbum = async (albumName: string, albumDesc: string | null) =
   const body: CreateAlbumRequestBody = { albumName, albumDesc: albumDesc || undefined };
 
   try {
-    await axios.post(url, body).then(() => {
-      console.log("Request complete");
-    });
+    await axios.post(url, body);
   } catch (err) {
     if (isAxiosError(err)) {
       const errorRes = err.response?.data;

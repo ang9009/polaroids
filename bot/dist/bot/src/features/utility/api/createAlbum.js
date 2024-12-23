@@ -12,9 +12,7 @@ export const createAlbum = async (albumName, albumDesc) => {
     const url = `${DB_API_URL}/albums`;
     const body = { albumName, albumDesc: albumDesc || undefined };
     try {
-        await axios.post(url, body).then(() => {
-            console.log("Request complete");
-        });
+        await axios.post(url, body);
     }
     catch (err) {
         if (isAxiosError(err)) {

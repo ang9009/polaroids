@@ -56,7 +56,7 @@ const execute = async (interaction) => {
 /**
  * Handles the delete album interaction. This presents the user with a dropdown
  * to select the album to be deleted, then deletes the specified album.
- * @param interaction
+ * @param interaction the ongoing interaction
  */
 const handleDeleteAlbumInteraction = async (interaction) => {
     const dropdownSelectionRes = await showAlbumDropdown("Please select the album you would like to delete. Albums with files cannot be deleted.", interaction, undefined, true);
@@ -69,13 +69,7 @@ const handleDeleteAlbumInteraction = async (interaction) => {
         await deleteAlbum(albumName);
     }
     catch (err) {
-        let errMsg;
-        if (err instanceof Error) {
-            errMsg = err.message;
-        }
-        else {
-            errMsg = "An unknown error occurred. Please try again.";
-        }
+        const errMsg = err instanceof Error ? err.message : "An unknown error occurred. Please try again.";
         const errEmbed = getErrorEmbed(errMsg);
         await dropdownInteraction.reply({ embeds: [errEmbed] });
         return;
@@ -107,18 +101,13 @@ const handleEditAlbumInteraction = async (interaction) => {
         await editAlbum(originalAlbumName, newAlbumName, newAlbumDesc);
     }
     catch (err) {
-        let errMsg;
-        if (err instanceof Error) {
-            errMsg = err.message;
-        }
-        else {
-            errMsg = "Something went wrong. Please try again.";
-        }
+        const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
         const errEmbed = getErrorEmbed(errMsg);
-        modalInteraction.reply({ embeds: [errEmbed] });
+        await modalInteraction.reply({ embeds: [errEmbed] });
+        return;
     }
     const editedAlbumName = originalAlbumName === newAlbumName ? originalAlbumName : newAlbumName;
-    modalInteraction.reply(`Successfully edited album **${editedAlbumName}**.`);
+    await modalInteraction.reply(`Successfully edited album **${editedAlbumName}**.`);
 };
 /**
  * Uses the arguments from the "create album" subcommand interaction to create

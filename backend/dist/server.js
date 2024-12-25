@@ -24,6 +24,6 @@ apiRouter.use("/subscribed-channels", subscribedChannels);
 apiRouter.use("/files", files);
 app.use("/api", apiRouter);
 // Error handlers
-app.use(notFound);
 app.use(errorHandler);
+app.use(notFound);
 app.listen(port, () => console.log(`Server running on port ${port}`));

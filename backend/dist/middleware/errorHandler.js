@@ -3,7 +3,7 @@
  * @param err the error object
  * @param req request
  * @param res response
- * @param next next function
+ * @param next the next function
  */
 export const errorHandler = (err, req, res, next) => {
     console.log(err.getResponse());

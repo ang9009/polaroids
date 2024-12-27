@@ -47,7 +47,6 @@ const data = new SlashCommandBuilder()
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
   const subCmd = interaction.options.getSubcommand();
-
   switch (subCmd) {
     case SubCommand.CREATE: {
       await handleCreateAlbumInteraction(interaction);
@@ -72,6 +71,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
  * @param interaction the ongoing interaction
  */
 const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
+  await interaction.deferReply();
   const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album you would like to delete. Albums with files cannot be deleted.",
     interaction,
@@ -105,6 +105,7 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
  * @param interaction the ongoing interaction
  */
 const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteraction) => {
+  await interaction.deferReply();
   const dropdownSelectionRes = await showAlbumDropdown(
     "Please select the album you would like to edit.",
     interaction,

@@ -73,15 +73,6 @@ export const uploadFiles = async (
       }
     }
 
-    try {
-      await uploadFilesToFS(files);
-    } catch (err) {
-      if (err instanceof Error) {
-        const error = new UnknownException(err.message);
-        return next(error);
-      }
-    }
-
     const fileObjects = files.map((file) => {
       const fileData = filesData[file.originalname];
       const { createdAt, fileName, uploaderId } = fileData;
@@ -105,6 +96,15 @@ export const uploadFiles = async (
     } catch (err) {
       const error = getDbExFromPrismaErr(err);
       return next(error);
+    }
+
+    try {
+      await uploadFilesToFS(files);
+    } catch (err) {
+      if (err instanceof Error) {
+        const error = new UnknownException(err.message);
+        return next(error);
+      }
     }
 
     res.status(200).send({ filesUploaded });

@@ -1,10 +1,9 @@
 FROM node:18.20.4
 
-WORKDIR /app
-COPY package*.json ./
+WORKDIR /app/backend
+COPY package*.json /app/backend
 RUN npm i
-COPY . .
-RUN npm run build
+COPY . /app/backend
 RUN npx prisma generate
 EXPOSE 8080
 

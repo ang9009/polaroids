@@ -3,10 +3,10 @@
 import { Album } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { AlbumNameQueryParamSchema } from "shared/src/requests/albums/albumExists";
+import { CreateAlbumRequestSchema } from "shared/src/requests/albums/createAlbum";
 import { DeleteAlbumRequestSchema } from "shared/src/requests/albums/deleteAlbum";
 import { EditAlbumRequestSchema } from "shared/src/requests/albums/editAlbum";
 import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
-import { CreateAlbumRequestSchema } from "../../../bot/node_modules/shared/src/requests/albums/createAlbum";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
 import prisma from "../lib/prisma";

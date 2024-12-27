@@ -47,6 +47,8 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   if (!channel) {
     throw Error("Could not find channel");
   }
+
+  await interaction.deferReply();
   const channelSubData: IsSubscribedResponse = await getChannelSubData(channel.id);
   const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbum : undefined;
 
@@ -112,7 +114,7 @@ async function startBackupInteraction(
   const backupOptionsFollowUp = await interaction.followUp({
     content:
       `Would you like me to look through ${channel.toString()}'s message history ` +
-      `and backup any unarchived files to its linked album **${albumName}**?`,
+      `and backup any unarchived files to its album **${albumName}**?`,
     components: [row],
   });
 

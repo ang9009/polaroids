@@ -1,9 +1,9 @@
+import { Album } from "backend/generated/zod";
 import {
   CommandInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
 } from "discord.js";
-import { Album } from "../../../../../backend/generated/zod";
 
 /**
  * Returns the user's inputs after they submit an album modal.

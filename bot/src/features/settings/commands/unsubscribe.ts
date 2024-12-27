@@ -27,11 +27,12 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     throw Error("Could not find channel");
   }
 
+  await interaction.deferReply();
   try {
     const { isSubscribed } = await getChannelSubData(channel.id);
     if (!isSubscribed) {
       const errEmbed = getErrorEmbed("polaroids is not subscribed to this channel.");
-      interaction.reply({ embeds: [errEmbed] });
+      await interaction.editReply({ embeds: [errEmbed] });
       return;
     }
   } catch (err) {
@@ -51,10 +52,10 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     const errEmbed = getErrorEmbed(
       `Failed to unsubscribe from ${channel.toString()}. Please try again.`,
     );
-    interaction.reply({ embeds: [errEmbed] });
+    interaction.editReply({ embeds: [errEmbed] });
     return;
   }
-  interaction.reply(`Successfully unsubscribed from ${channel.toString()}.`);
+  interaction.editReply(`Successfully unsubscribed from ${channel.toString()}.`);
 };
 
 const commandData: CommandData = {

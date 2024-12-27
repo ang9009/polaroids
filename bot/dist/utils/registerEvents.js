@@ -9,18 +9,33 @@ const __dirname = getDirname(import.meta.url);
  */
 export const registerEvents = async (client) => {
     // Retrieve all events files from events folder
-    const eventsPath = path.join(__dirname, "../events");
-    const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".ts"));
+    const featuresPath = path.join(__dirname, "../features");
+    const eventFilePaths = fs.readdirSync(featuresPath).reduce((acc, curr) => {
+        // Get the events folder path for the current feature
+        const eventsFolderPath = path.join(featuresPath, curr, "events");
+        if (!fs.existsSync(eventsFolderPath)) {
+            return acc;
+        }
+        const eventsFolderContents = fs.readdirSync(eventsFolderPath);
+        // Add the folder path prefix
+        const eventsFolderContentsPaths = eventsFolderContents.map((file) => {
+            return path.join(eventsFolderPath, file);
+        });
+        return acc.concat(eventsFolderContentsPaths);
+    }, []);
     // Attach events as listeners on the client
-    for (const file of eventFiles) {
-        const filePath = path.join(eventsPath, file);
+    for (const filePath of eventFilePaths) {
         const eventFile = await import(filePath);
-        const event = eventFile.default;
-        if (event.once) {
-            client.once(event.name, (...args) => event.execute(...args));
+        const eventData = eventFile.default;
+        if (!eventData) {
+            console.error("registerEvents could not find a default export in " + filePath);
+            continue;
+        }
+        if (eventData.once) {
+            client.once(eventData.event.toString(), (...args) => eventData.execute(...args));
         }
         else {
-            client.on(event.name, (...args) => event.execute(...args));
+            client.on(eventData.event.toString(), (...args) => eventData.execute(...args));
         }
     }
 };

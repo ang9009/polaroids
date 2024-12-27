@@ -1,5 +1,12 @@
 import { z } from "zod";
-import { AlbumSchema } from "../../../../backend/generated/zod/index";
+
+export const AlbumSchema = z.object({
+  name: z.string(),
+  description: z.string().nullable(),
+  createdAt: z.coerce.date(),
+});
+
+export type Album = z.infer<typeof AlbumSchema>;
 
 const GetAlbumsResponseSchema = z.array(AlbumSchema);
 

@@ -1,6 +1,6 @@
 import axios from "axios";
+import { Album } from "backend/node_modules/.prisma/client";
 import { GetAlbumsResponseSchema } from "shared/src/responses/albums/getAlbums";
-import { Album } from "../../../../../backend/node_modules/.prisma/client";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 

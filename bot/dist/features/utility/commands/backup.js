@@ -1,9 +1,7 @@
 import { SlashCommandBuilder, TextChannel } from "discord.js";
 import { getChannelSubData } from "../../../api/getChannelSubData";
-import { editMsgWithErrorEmbed } from "../../../utils/editMsgWithErrorEmbed";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
-import { checkAlbumExists } from "../../settings/api/checkAlbumExists";
 import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { performBackupWithProgress } from "../../settings/helpers/performBackupWithProgress";
 import { showAlbumDropdown } from "../../settings/helpers/showAlbumDropdown";
@@ -33,40 +31,35 @@ const execute = async (interaction) => {
         replyWithErrorEmbed(interaction, "Could not find the channel `backup` was called in. Please try again.");
         return;
     }
+    await interaction.deferReply();
     // If the channel is already subscribed to, use the linked album
     const channelSubData = await getChannelSubData(channel.id);
     if (channelSubData.isSubscribed) {
         const linkedAlbum = channelSubData.linkedAlbum;
-        await interaction.reply(`Linked album **${linkedAlbum}** found for ${channel.toString()}.`);
+        await interaction.editReply(`Linked album **${linkedAlbum}** found for ${channel.toString()}.`);
         await performBackupWithProgress(channel, linkedAlbum, interaction.user);
         return;
     }
     // Otherwise, ask the user to specify an album
     const msg = "Select an album to upload the contents of this channel to.";
-    showAlbumDropdown(msg, interaction, async (albumData, interaction) => {
-        const { albumName, type } = albumData;
-        const albumExists = await checkAlbumExists(albumName);
-        if (albumExists) {
-            const msg = `An album with the name "${albumName}" already exists. Please try again.`;
-            const errorEmbed = getErrorEmbed(msg);
-            return interaction.reply({ embeds: [errorEmbed] });
+    const dropdownSelectionRes = await showAlbumDropdown(msg, interaction);
+    if (dropdownSelectionRes === undefined) {
+        return;
+    }
+    const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
+    const { albumName, albumDesc, type } = selectedAlbum;
+    if (type === AlbumSelectionType.CREATE_NEW) {
+        try {
+            await createAlbum(albumName, albumDesc || null);
         }
-        const selectionConfirmReply = await interaction.reply(`Selected album: **${albumName}**`);
-        if (type === AlbumSelectionType.CREATE_NEW) {
-            try {
-                await createAlbum(albumName, albumData.albumDesc || null);
-            }
-            catch (err) {
-                if (err instanceof Error) {
-                    await editMsgWithErrorEmbed(selectionConfirmReply, err.message);
-                    return;
-                }
-                await editMsgWithErrorEmbed(selectionConfirmReply, "Something went wrong. Please try again.");
-                return;
-            }
+        catch (err) {
+            const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+            const errEmbed = getErrorEmbed(errMsg);
+            await dropdownInteraction.reply({ embeds: [errEmbed] });
+            return;
         }
-        await performBackupWithProgress(channel, albumName, interaction.user);
-    });
+    }
+    await performBackupWithProgress(channel, albumName, interaction.user);
 };
 const commandData = {
     data,

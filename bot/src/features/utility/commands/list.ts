@@ -32,6 +32,8 @@ const data = new SlashCommandBuilder()
  */
 const execute = async (interaction: ChatInputCommandInteraction) => {
   const optionArg = interaction.options.getSubcommand();
+  await interaction.deferReply();
+
   switch (optionArg) {
     case ListCommandArgument.ALBUMS: {
       await handleListAlbumsInteraction(interaction);
@@ -59,7 +61,7 @@ const handleListChannelsInteraction = async (interaction: ChatInputCommandIntera
 
   const subbedChannelsInfo = await getSubbedChannelsInfo(guildId);
   if (subbedChannelsInfo.length === 0) {
-    await interaction.reply(
+    await interaction.editReply(
       "No subscribed channels found in this guild. " +
         "To subscribe polaroids to a channel, use the command `/subscribe`.",
     );
@@ -84,7 +86,7 @@ const handleListChannelsInteraction = async (interaction: ChatInputCommandIntera
     .setTitle(`Subscribed channels in ${interaction.guild.name}`)
     .setDescription(subbedChannelsEmbedBody)
     .setFooter({ text: footerCredits });
-  await interaction.reply({ embeds: [subbedChannelsEmbed] });
+  await interaction.editReply({ embeds: [subbedChannelsEmbed] });
 };
 
 /**
@@ -95,7 +97,7 @@ const handleListChannelsInteraction = async (interaction: ChatInputCommandIntera
 const handleListAlbumsInteraction = async (interaction: ChatInputCommandInteraction) => {
   const albums = await getAlbums();
   if (albums.length === 0) {
-    await interaction.reply(
+    await interaction.editReply(
       "No albums found. To create an album, use the command `/album create`.",
     );
     return;
@@ -112,7 +114,7 @@ const handleListAlbumsInteraction = async (interaction: ChatInputCommandInteract
     .setTitle("All albums")
     .setDescription(albumsEmbedBody)
     .setFooter({ text: footerCredits });
-  await interaction.reply({ embeds: [albumsEmbed] });
+  await interaction.editReply({ embeds: [albumsEmbed] });
 };
 
 const cmdData: CommandData = {

@@ -4,6 +4,6 @@ import HttpStatusCode from "../../data/statusCodes";
  */
 interface HttpException extends Error {
     readonly status: HttpStatusCode;
-    getResponse(): JSON;
+    getResponse(): unknown;
 }
 export { HttpException };

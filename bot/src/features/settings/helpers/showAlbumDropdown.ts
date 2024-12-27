@@ -1,3 +1,4 @@
+import { Album } from "backend/node_modules/.prisma/client";
 import {
   ActionRowBuilder,
   CacheType,
@@ -8,7 +9,6 @@ import {
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { Album } from "../../../../../backend/node_modules/.prisma/client";
 import { getAlbums } from "../api/getAlbumNames";
 import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
 import { AlbumSelectionData } from "../data/albumSelectionData";
@@ -54,10 +54,15 @@ export const showAlbumDropdown = async (
     .setPlaceholder("Select an album...")
     .addOptions(menuAlbumOptions);
   const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(dropdown);
-  const response = await interaction.reply({
-    content: msg,
-    components: [row],
-  });
+  const response = interaction.deferred
+    ? await interaction.editReply({
+        content: msg,
+        components: [row],
+      })
+    : await interaction.reply({
+        content: msg,
+        components: [row],
+      });
 
   // Handle the album selection
   // eslint-disable-next-line jsdoc/require-jsdoc

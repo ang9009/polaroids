@@ -21,7 +21,8 @@
     "zod": "^3.23.8"
   },
   "workspaces": [
-    "../shared"
+    "../shared",
+    "../backend"
   ],
   "devDependencies": {
     "@types/node": "^22.7.5",

@@ -41,11 +41,12 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
     return;
   }
 
+  await interaction.deferReply();
   // If the channel is already subscribed to, use the linked album
   const channelSubData = await getChannelSubData(channel.id);
   if (channelSubData.isSubscribed) {
     const linkedAlbum = channelSubData.linkedAlbum;
-    await interaction.reply(`Linked album **${linkedAlbum}** found for ${channel.toString()}.`);
+    await interaction.editReply(`Linked album **${linkedAlbum}** found for ${channel.toString()}.`);
     await performBackupWithProgress(channel, linkedAlbum, interaction.user);
     return;
   }
@@ -60,7 +61,6 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
   const { albumName, albumDesc, type } = selectedAlbum;
 
-  await dropdownInteraction.deferUpdate();
   if (type === AlbumSelectionType.CREATE_NEW) {
     try {
       await createAlbum(albumName, albumDesc || null);

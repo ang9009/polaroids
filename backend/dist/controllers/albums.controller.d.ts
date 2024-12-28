@@ -36,6 +36,6 @@ export declare const editAlbum: (req: Request, res: Response, next: NextFunction
  * Deletes an album given its name.
  * Throws an error if the album has any associated files.
  *
- * Route: DELETE /api/albums/:albumName
+ * Route: DELETE /api/albums/:albumId
  */
 export declare const deleteAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void>;

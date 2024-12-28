@@ -4,11 +4,11 @@ import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { ApiErrorResponseSchema } from "shared/src/responses/error/apiErrorResponse";
 /**
  * Deletes an album, provided that it has no associated files.
- * @param albumName the album's original name
+ * @param albumId the album's id
  */
-export const deleteAlbum = async (albumName) => {
+export const deleteAlbum = async (albumId) => {
     const { DB_API_URL } = process.env;
-    const url = `${DB_API_URL}/albums/${albumName}`;
+    const url = `${DB_API_URL}/albums/${albumId}`;
     try {
         await axios.delete(url);
     }
@@ -24,9 +24,10 @@ export const deleteAlbum = async (albumName) => {
             }
             else if (errResponse.errorType === ApiErrorType.DB_EXCEPTION &&
                 errResponse.dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND) {
-                throw Error(`The album ${albumName} no longer exists.`);
+                throw Error(`The specified album no longer exists.`);
             }
         }
+        throw Error("An unknown error occurred. Please try again.");
     }
 };
 //# sourceMappingURL=deleteAlbum.js.map

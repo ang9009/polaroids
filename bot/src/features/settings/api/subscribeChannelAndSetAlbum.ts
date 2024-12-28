@@ -10,12 +10,12 @@ import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 /**
  * Subscribes polaroids to the given channel, then sets its linked album to a
  * given existing album.
- * @param albumName the name of the album
+ * @param albumId the id of the album
  * @param channelId the id of the channel
  * @param guildId the id of the guild the channel is in
  */
 export const subscribeChannelAndSetAlbum = async (
-  albumName: string,
+  albumId: string,
   channelId: string,
   guildId: string,
 ) => {
@@ -23,7 +23,7 @@ export const subscribeChannelAndSetAlbum = async (
   const data: AddSubbedChannelRequest = {
     channelId,
     albumRequestType: AlbumRequestType.EXISTING,
-    albumName,
+    albumId,
     guildId,
   };
 

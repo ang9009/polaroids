@@ -1,12 +1,5 @@
 import { z } from "zod";
-
-export const AlbumSchema = z.object({
-  name: z.string(),
-  description: z.string().nullable(),
-  createdAt: z.coerce.date(),
-});
-
-export type Album = z.infer<typeof AlbumSchema>;
+import { AlbumSchema } from "../../../../backend/prisma/generated/zod";
 
 const GetAlbumsResponseSchema = z.array(AlbumSchema);
 

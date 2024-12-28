@@ -22,6 +22,6 @@ router.post("/", createAlbum);
 router.patch("/", editAlbum);
 
 // Delete an album
-router.delete("/:albumName", deleteAlbum);
+router.delete("/:albumId", deleteAlbum);
 
 export default router;

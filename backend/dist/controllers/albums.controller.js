@@ -16,7 +16,7 @@ export const getAlbums = async (req, res, next) => {
     let albums;
     try {
         albums = await prisma.album.findMany({
-            orderBy: [{ name: "asc" }],
+            orderBy: [{ albumName: "asc" }],
         });
     }
     catch (err) {
@@ -39,7 +39,7 @@ export const albumExists = async (req, res, next) => {
     try {
         album = await prisma.album.findFirst({
             where: {
-                name: reqParams.data.albumName,
+                albumName: reqParams.data.albumName,
             },
         });
     }
@@ -75,7 +75,7 @@ export const createAlbum = async (req, res, next) => {
     try {
         await prisma.album.create({
             data: {
-                name: albumName,
+                albumName: albumName,
                 description: albumDesc,
             },
         });
@@ -102,15 +102,15 @@ export const editAlbum = async (req, res, next) => {
         const error = new ValidationException(parsedReqBody.error);
         return next(error);
     }
-    const { albumName, newAlbumName, albumDesc } = parsedReqBody.data;
+    const { albumId, newAlbumName, newAlbumDesc } = parsedReqBody.data;
     try {
         await prisma.album.update({
             data: {
-                name: newAlbumName,
-                description: albumDesc,
+                albumName: newAlbumName,
+                description: newAlbumDesc,
             },
             where: {
-                name: albumName,
+                albumId: albumId,
             },
         });
     }
@@ -124,7 +124,7 @@ export const editAlbum = async (req, res, next) => {
  * Deletes an album given its name.
  * Throws an error if the album has any associated files.
  *
- * Route: DELETE /api/albums/:albumName
+ * Route: DELETE /api/albums/:albumId
  */
 export const deleteAlbum = async (req, res, next) => {
     const parsedReqBody = DeleteAlbumRequestSchema.safeParse(req.params);
@@ -132,12 +132,12 @@ export const deleteAlbum = async (req, res, next) => {
         const error = new ValidationException(parsedReqBody.error);
         return next(error);
     }
-    const { albumName } = parsedReqBody.data;
+    const { albumId } = parsedReqBody.data;
     let filesCount;
     try {
         filesCount = await prisma.file.count({
             where: {
-                albumName: albumName,
+                albumId: albumId,
             },
         });
     }
@@ -152,7 +152,7 @@ export const deleteAlbum = async (req, res, next) => {
     try {
         await prisma.album.delete({
             where: {
-                name: albumName,
+                albumId: albumId,
             },
         });
     }

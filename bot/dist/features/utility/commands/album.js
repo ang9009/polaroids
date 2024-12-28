@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder, StringSelectMenuInteraction, } from "discord.js";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
+import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { getAlbumModal } from "../../settings/helpers/getAlbumModal";
 import { getAlbumModalInputs } from "../../settings/helpers/getAlbumModalInputs";
 import { createAlbum } from "../api/createAlbum";
@@ -65,9 +66,13 @@ const handleDeleteAlbumInteraction = async (interaction) => {
         return;
     }
     const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
-    const { albumName } = selectedAlbum;
+    const { type } = selectedAlbum;
+    if (type === AlbumSelectionType.CREATE_NEW) {
+        throw Error("Create new should not be an option when deleting an album");
+    }
+    const { albumName, albumId } = selectedAlbum;
     try {
-        await deleteAlbum(albumName);
+        await deleteAlbum(albumId);
     }
     catch (err) {
         const errMsg = err instanceof Error ? err.message : "An unknown error occurred. Please try again.";
@@ -75,7 +80,7 @@ const handleDeleteAlbumInteraction = async (interaction) => {
         await dropdownInteraction.reply({ embeds: [errEmbed] });
         return;
     }
-    await dropdownInteraction.reply(`Successfully deleted album **${albumName}**.`);
+    await dropdownInteraction.reply(`Successfully deleted album ${albumName}.`);
 };
 /**
  * Handles the "edit album" subcommand interaction. This provides the user with
@@ -98,7 +103,7 @@ const handleEditAlbumInteraction = async (interaction) => {
         throw Error("Unexpected interaction type");
     }
     await dropdownInteraction.showModal(modal);
-    const { name: newAlbumName, description: newAlbumDesc, modalInteraction, } = await getAlbumModalInputs(dropdownInteraction, nameInputId, descInputId);
+    const { albumName: newAlbumName, description: newAlbumDesc, modalInteraction, } = await getAlbumModalInputs(dropdownInteraction, nameInputId, descInputId);
     try {
         await editAlbum(originalAlbumName, newAlbumName, newAlbumDesc);
     }
@@ -121,7 +126,7 @@ const handleCreateAlbumInteraction = async (interaction) => {
     const descInputId = "albumDescInput";
     const modal = getAlbumModal("Create album", nameInputId, descInputId);
     await interaction.showModal(modal);
-    const { name: albumName, description: albumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, nameInputId, descInputId);
+    const { albumName: albumName, description: albumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, nameInputId, descInputId);
     try {
         await createAlbum(albumName, albumDesc);
     }

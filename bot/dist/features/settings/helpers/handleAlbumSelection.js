@@ -4,8 +4,8 @@ import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum"
 import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 /**
- * A helper function that handles  the user's album selection: if the user wants
- * to create a new album,  then this should do so using the given name and
+ * A helper function that handles the user's album selection: if the user wants
+ * to create a new album, then this should do so using the given name and
  * description. If the user wants to select an existing album, this should link
  * the current channel with the specified album. If the channel has already been
  * subscribed to, this should send a PATCH request instead of a POST request.
@@ -32,14 +32,14 @@ export const handleAlbumSelection = async (albumData, channelId, guildId, alread
     }
     else {
         // If user wants to use existing album
-        const { albumName: newAlbumName } = albumData;
+        const { albumId } = albumData;
         // If channel is already subscribed to, change its linked album
         if (alreadySubscribed) {
-            await setChannelAlbum(newAlbumName, channelId, guildId);
+            await setChannelAlbum(albumId, channelId, guildId);
         }
         else {
             // Otherwise, save the channel and set its linked album
-            await subscribeChannelAndSetAlbum(newAlbumName, channelId, guildId);
+            await subscribeChannelAndSetAlbum(albumId, channelId, guildId);
         }
     }
 };

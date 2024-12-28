@@ -65,7 +65,7 @@ export const uploadFiles = async (
     }
     // Make sure that nothing goes wrong with FS upload before updating database
     const files = req.files as Express.Multer.File[];
-    const { albumName, filesData, throwUniqueConstraintError } = parseRes.data!;
+    const { albumId, filesData, throwUniqueConstraintError } = parseRes.data!;
     for (const file of files) {
       if (!(file.originalname in filesData)) {
         const error = new UnknownException("One or many files have unmatched filesData properties");
@@ -80,7 +80,7 @@ export const uploadFiles = async (
       return {
         discordId: file.originalname,
         fileName: fileName,
-        albumName: albumName,
+        albumId: albumId,
         createdAt: createdAt,
         uploaderId: uploaderId,
       };

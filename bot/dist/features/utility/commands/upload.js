@@ -1,7 +1,9 @@
 import { SlashCommandBuilder } from "discord.js";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { uploadAttachmentsWithProgress } from "../../event-triggers/helpers/uploadFilesWithProgress";
+import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { showAlbumDropdown } from "../../settings/helpers/showAlbumDropdown";
+import { createAlbum } from "../api/createAlbum";
 /**
  * Uploads files attached to a specified message (using its message id).
  */
@@ -36,13 +38,31 @@ const execute = async (interaction) => {
         await interaction.editReply({ embeds: [errEmbed] });
         return;
     }
-    const dropdownSelectionRes = await showAlbumDropdown("Please select the album that the attachments will be uploaded to.", interaction, undefined, true);
+    const dropdownSelectionRes = await showAlbumDropdown("Please select the album that the attachments will be uploaded to.", interaction, undefined);
     if (dropdownSelectionRes === undefined) {
         return;
     }
-    const { selectedAlbum } = dropdownSelectionRes;
-    const { albumName } = selectedAlbum;
-    await uploadAttachmentsWithProgress(msg, albumName);
+    const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
+    const { albumName, albumDesc, type } = selectedAlbum;
+    await dropdownInteraction.deferUpdate();
+    let albumId;
+    if (type === AlbumSelectionType.CREATE_NEW) {
+        try {
+            const albumRes = await createAlbum(albumName, albumDesc || null);
+            ({ albumId } = albumRes);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                const errEmbed = getErrorEmbed(err.message);
+                await interaction.editReply({ embeds: [errEmbed] });
+            }
+            return;
+        }
+    }
+    else {
+        albumId = selectedAlbum.albumId;
+    }
+    await uploadAttachmentsWithProgress(msg, albumId, albumName);
 };
 const commandData = {
     data,

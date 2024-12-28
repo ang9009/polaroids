@@ -8,16 +8,16 @@ import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 /**
  * Subscribes polaroids to the given channel, then sets its linked album to a
  * given existing album.
- * @param albumName the name of the album
+ * @param albumId the id of the album
  * @param channelId the id of the channel
  * @param guildId the id of the guild the channel is in
  */
-export const subscribeChannelAndSetAlbum = async (albumName, channelId, guildId) => {
+export const subscribeChannelAndSetAlbum = async (albumId, channelId, guildId) => {
     const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS);
     const data = {
         channelId,
         albumRequestType: AlbumRequestType.EXISTING,
-        albumName,
+        albumId,
         guildId,
     };
     try {

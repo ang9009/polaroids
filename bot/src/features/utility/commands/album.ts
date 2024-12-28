@@ -6,6 +6,7 @@ import {
 } from "discord.js";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
+import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { getAlbumModal } from "../../settings/helpers/getAlbumModal";
 import { getAlbumModalInputs } from "../../settings/helpers/getAlbumModalInputs";
 import { createAlbum } from "../api/createAlbum";
@@ -81,12 +82,15 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
   if (dropdownSelectionRes === undefined) {
     return;
   }
-
   const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
-  const { albumName } = selectedAlbum;
+  const { type } = selectedAlbum;
+  if (type === AlbumSelectionType.CREATE_NEW) {
+    throw Error("Create new should not be an option when deleting an album");
+  }
+  const { albumName, albumId } = selectedAlbum;
 
   try {
-    await deleteAlbum(albumName);
+    await deleteAlbum(albumId);
   } catch (err) {
     const errMsg =
       err instanceof Error ? err.message : "An unknown error occurred. Please try again.";
@@ -95,7 +99,7 @@ const handleDeleteAlbumInteraction = async (interaction: ChatInputCommandInterac
     return;
   }
 
-  await dropdownInteraction.reply(`Successfully deleted album **${albumName}**.`);
+  await dropdownInteraction.reply(`Successfully deleted album ${albumName}.`);
 };
 
 /**
@@ -134,7 +138,7 @@ const handleEditAlbumInteraction = async (interaction: ChatInputCommandInteracti
   }
   await dropdownInteraction.showModal(modal);
   const {
-    name: newAlbumName,
+    albumName: newAlbumName,
     description: newAlbumDesc,
     modalInteraction,
   } = await getAlbumModalInputs(dropdownInteraction, nameInputId, descInputId);
@@ -164,7 +168,7 @@ const handleCreateAlbumInteraction = async (interaction: ChatInputCommandInterac
   const modal = getAlbumModal("Create album", nameInputId, descInputId);
   await interaction.showModal(modal);
   const {
-    name: albumName,
+    albumName: albumName,
     description: albumDesc,
     modalInteraction,
   } = await getAlbumModalInputs(interaction, nameInputId, descInputId);

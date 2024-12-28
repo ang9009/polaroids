@@ -13,7 +13,7 @@ const data = new SlashCommandBuilder().setName("help").setDescription("List avai
 const execute = async (interaction) => {
     const settingCmds = "- `/subscribe <channel>`: ask polaroids to upload any attachments sent in a channel, or link a channel to a different album\n" +
         "- `/unsubscribe <channel>`: unsubscribe polaroids from changes in a channel\n";
-    const utilCmds = "- `/album create | edit | delete`: create, edit, or delete an album\n" +
+    const utilCmds = "- `/album create | editinfo | delete`: create, edit, or delete an album\n" +
         "- `/upload <message_id>`: upload files attached to a specified message in the current channel\n" +
         "- `/backup <channel>`: find and upload all unarchived attachments in a channel\n";
     const infoCmds = "- `/list albums | channels`: list all existing albums/subscribed channels in this guild and their associated albums\n" +

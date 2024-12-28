@@ -59,19 +59,10 @@ export const uploadFiles = async (req, res, next) => {
         }
         // Make sure that nothing goes wrong with FS upload before updating database
         const files = req.files;
-        const { albumName, filesData, throwUniqueConstraintError } = parseRes.data;
+        const { albumId, filesData, throwUniqueConstraintError } = parseRes.data;
         for (const file of files) {
             if (!(file.originalname in filesData)) {
                 const error = new UnknownException("One or many files have unmatched filesData properties");
-                return next(error);
-            }
-        }
-        try {
-            await uploadFilesToFS(files);
-        }
-        catch (err) {
-            if (err instanceof Error) {
-                const error = new UnknownException(err.message);
                 return next(error);
             }
         }
@@ -81,7 +72,7 @@ export const uploadFiles = async (req, res, next) => {
             return {
                 discordId: file.originalname,
                 fileName: fileName,
-                albumName: albumName,
+                albumId: albumId,
                 createdAt: createdAt,
                 uploaderId: uploaderId,
             };
@@ -97,6 +88,15 @@ export const uploadFiles = async (req, res, next) => {
         catch (err) {
             const error = getDbExFromPrismaErr(err);
             return next(error);
+        }
+        try {
+            await uploadFilesToFS(files);
+        }
+        catch (err) {
+            if (err instanceof Error) {
+                const error = new UnknownException(err.message);
+                return next(error);
+            }
         }
         res.status(200).send({ filesUploaded });
     });

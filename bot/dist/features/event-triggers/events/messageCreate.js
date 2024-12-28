@@ -12,14 +12,14 @@ const execute = async (message) => {
         return;
     }
     // Check if there the channel is already subscribed to
-    let linkedAlbum;
+    let linkedAlbumData;
     try {
         const subData = await getChannelSubData(message.channelId);
         if (!subData.isSubscribed) {
             return;
         }
         else {
-            linkedAlbum = subData.linkedAlbum;
+            linkedAlbumData = subData;
         }
     }
     catch (err) {
@@ -38,7 +38,8 @@ const execute = async (message) => {
         }
         return;
     }
-    await uploadAttachmentsWithProgress(message, linkedAlbum);
+    const { linkedAlbumId, linkedAlbumName } = linkedAlbumData;
+    await uploadAttachmentsWithProgress(message, linkedAlbumId, linkedAlbumName);
 };
 /**
  * Validates the given attachments against the allowed MIME types.

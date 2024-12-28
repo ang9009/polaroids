@@ -43,7 +43,7 @@ export const getAllSubbedChannels = async (
         channelId: true,
         album: {
           select: {
-            name: true,
+            albumName: true,
           },
         },
       },
@@ -75,7 +75,12 @@ export const channelIsSubscribed = async (
   const channelData = await prisma.subscribedChannel.findFirst({
     relationLoadStrategy: "join",
     select: {
-      albumName: true,
+      album: {
+        select: {
+          albumId: true,
+          albumName: true,
+        },
+      },
     },
     where: {
       channelId: channelId,
@@ -86,7 +91,8 @@ export const channelIsSubscribed = async (
   if (channelData) {
     response = {
       isSubscribed: true,
-      linkedAlbum: channelData.albumName,
+      linkedAlbumId: channelData.album.albumId,
+      linkedAlbumName: channelData.album.albumName,
     };
   } else {
     response = {
@@ -103,13 +109,21 @@ export const channelIsSubscribed = async (
  *
  * Route: POST /api/subscribed-channels
  *
- * Request Body:
+ * Request Body (for creating an album):
  * {
  *   "channelId": string,  // ID of the channel being subscribed to
  *   "guildId": string, // The guild ID that the channel is in
- *   "albumRequestType": AlbumRequestType, // Type of request: create new, or use existing
+ *   "albumRequestType": AlbumRequestType.CREATE_NEW
  *   "albumName": string, // The name of the album to be linked to the channel
- *   "albumDesc": string?, // The description of the album.
+ *   "albumDesc": string, // The description of the album.
+ * }
+ *
+ * Request Body (for linking an existing album):
+ * {
+ *   "albumId": string, // The id of the album to be linked to the channel
+ *   "channelId": string,  // ID of the channel being subscribed to
+ *   "guildId": string, // The guild ID that the channel is in
+ *   "albumRequestType": AlbumRequestType.EXISTING
  * }
  */
 export const addSubscribedChannel = async (req: Request, res: Response, next: NextFunction) => {
@@ -119,14 +133,15 @@ export const addSubscribedChannel = async (req: Request, res: Response, next: Ne
     return next(error);
   }
 
-  const { channelId, albumName, albumDesc, albumRequestType, guildId } = parseRes.data;
+  const { channelId, albumRequestType, guildId } = parseRes.data;
   try {
     if (albumRequestType === AlbumRequestType.CREATE_NEW) {
+      const { albumName, albumDesc } = parseRes.data;
       await prisma.$transaction(async (tx) => {
         // Create the album
-        await tx.album.create({
+        const album = await tx.album.create({
           data: {
-            name: albumName,
+            albumName: albumName,
             description: albumDesc!,
           },
         });
@@ -136,17 +151,18 @@ export const addSubscribedChannel = async (req: Request, res: Response, next: Ne
           data: {
             channelId: channelId,
             guildId: guildId,
-            albumName: albumName,
+            albumId: album.albumId,
           },
         });
       });
     } else {
+      const { albumId } = parseRes.data;
       // If the album already exists, just add the channel as a subscribed channel
       await prisma.subscribedChannel.create({
         data: {
           channelId: channelId,
           guildId: guildId,
-          albumName: albumName,
+          albumId: albumId,
         },
       });
     }
@@ -165,7 +181,7 @@ export const addSubscribedChannel = async (req: Request, res: Response, next: Ne
  *
  * Request Body:
  * {
- *   "albumName": string, // The name of the album to be linked to the channel
+ *   "albumId": string, // The id of the album to be linked to the channel
  * }
  */
 export const updateChannelAlbum = async (req: Request, res: Response, next: NextFunction) => {
@@ -175,7 +191,7 @@ export const updateChannelAlbum = async (req: Request, res: Response, next: Next
     return next(error);
   }
 
-  const { albumName, channelId, guildId } = parsedRequest.data;
+  const { albumId, channelId, guildId } = parsedRequest.data;
   try {
     await prisma.subscribedChannel.update({
       where: {
@@ -183,7 +199,7 @@ export const updateChannelAlbum = async (req: Request, res: Response, next: Next
         guildId: guildId,
       },
       data: {
-        albumName: albumName,
+        albumId: albumId,
       },
     });
   } catch (err) {
@@ -223,9 +239,9 @@ export const createAlbumAndLinkChannel = async (
   const { guildId, channelId, albumName, albumDesc } = parseRes.data;
   try {
     await prisma.$transaction(async (tx) => {
-      await tx.album.create({
+      const album = await tx.album.create({
         data: {
-          name: albumName,
+          albumName: albumName,
           description: albumDesc,
         },
       });
@@ -236,7 +252,7 @@ export const createAlbumAndLinkChannel = async (
           channelId: channelId,
         },
         data: {
-          albumName: albumName,
+          albumId: album.albumId,
         },
       });
     });

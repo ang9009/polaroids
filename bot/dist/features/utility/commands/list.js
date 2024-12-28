@@ -2,7 +2,7 @@ import { EmbedBuilder } from "@discordjs/builders";
 import { SlashCommandBuilder } from "discord.js";
 import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
-import { getAlbums } from "../../settings/api/getAlbumNames";
+import { getAlbums } from "../../settings/api/getAlbums";
 import { getSubbedChannelsInfo } from "../api/getSubbedChannelsInfo";
 var ListCommandArgument;
 (function (ListCommandArgument) {
@@ -56,12 +56,12 @@ const handleListChannelsInteraction = async (interaction) => {
         return;
     }
     const subbedChannelsInfoListPromises = subbedChannelsInfo.map(async (channelInfo, i) => {
-        const { channelId, album: { name }, } = channelInfo;
+        const { channelId, album: { albumName }, } = channelInfo;
         const channel = await interaction.client.channels.fetch(channelId);
         if (!channel) {
             throw Error("Could not find channel");
         }
-        return `${i + 1}. ${channel?.toString()}: linked to album **${name}**`;
+        return `${i + 1}. ${channel?.toString()}: linked to album **${albumName}**`;
     });
     const subbedChannelsInfoList = await Promise.all(subbedChannelsInfoListPromises);
     const subbedChannelsEmbedBody = subbedChannelsInfoList.join("\n");
@@ -85,7 +85,7 @@ const handleListAlbumsInteraction = async (interaction) => {
     //   Construct a list of album names and their descriptions, separated by newlines
     const albumsInfo = albums.map((album, i) => {
         const prefix = album.description ? `: ${album.description}` : "";
-        return `${i + 1}. **${album.name}**` + prefix;
+        return `${i + 1}. **${album.albumName}**` + prefix;
     });
     const albumsEmbedBody = albumsInfo.join("\n");
     const albumsEmbed = new EmbedBuilder()

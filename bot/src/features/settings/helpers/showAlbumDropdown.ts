@@ -9,7 +9,7 @@ import {
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { getAlbums } from "../api/getAlbumNames";
+import { getAlbums } from "../api/getAlbums";
 import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
 import { AlbumSelectionData } from "../data/albumSelectionData";
 import { AlbumSelectionType } from "../data/albumSelectionType";
@@ -39,6 +39,15 @@ export const showAlbumDropdown = async (
   hideCreateAlbumOption?: boolean,
 ): Promise<AlbumDropdownSelectionResult | undefined> => {
   const albums: Album[] = await getAlbums();
+  if (albums.length === 0 && hideCreateAlbumOption) {
+    const msg = "No albums found. To create an album, use the command `/album create`.";
+    if (interaction.deferred || interaction.replied) {
+      await interaction.editReply(msg);
+    } else {
+      await interaction.reply(msg);
+    }
+    return;
+  }
 
   // At the top of the menu, add an option for creating a new menu
   const createNewOptionId = Math.random().toString(); // Create a random value to avoid album name conflicts
@@ -86,20 +95,22 @@ export const showAlbumDropdown = async (
     return undefined;
   }
 
-  const albumSelection = selectInteraction.values[0];
+  const selectedAlbumName = selectInteraction.values[0];
   let selectionResult: {
     selectedAlbum: AlbumSelectionData;
     dropdownInteraction: StringSelectMenuInteraction<CacheType> | ModalSubmitInteraction<CacheType>;
   };
-  if (albumSelection === createNewOptionId) {
+  if (selectedAlbumName === createNewOptionId) {
     selectionResult = await handleAlbumDropdownSelection(
       { type: AlbumSelectionType.CREATE_NEW },
       selectInteraction,
     );
   } else {
-    const selection = {
-      albumName: albumSelection,
-      albumDesc: albums.find((album) => album.name === albumSelection)?.description || undefined,
+    const selection: AlbumDropdownSelection = {
+      albumName: selectedAlbumName,
+      albumId: albums.find((album) => album.albumName === selectedAlbumName)!.albumId,
+      albumDesc:
+        albums.find((album) => album.albumName === selectedAlbumName)?.description || undefined,
       type: AlbumSelectionType.EXISTING,
     };
     selectionResult = await handleAlbumDropdownSelection(selection, selectInteraction);
@@ -132,7 +143,7 @@ const handleAlbumDropdownSelection = async (
     await interaction.showModal(modal);
 
     const {
-      name: albumName,
+      albumName: albumName,
       description: albumDesc,
       modalInteraction,
     } = await getAlbumModalInputs(interaction, "albumNameField", "albumDescField");
@@ -144,11 +155,12 @@ const handleAlbumDropdownSelection = async (
     return { selectedAlbum: albumData, dropdownInteraction: modalInteraction };
   } else {
     // If the user wants to use an existing album
-    const { albumName, albumDesc } = selection;
+    const { albumName, albumId, albumDesc } = selection;
     const albumData: AlbumSelectionData = {
       type: AlbumSelectionType.EXISTING,
       albumName: albumName,
-      albumDesc: albumDesc,
+      albumId: albumId,
+      albumDesc: albumDesc || undefined,
     };
     return { selectedAlbum: albumData, dropdownInteraction: interaction };
   }
@@ -183,10 +195,12 @@ function getAlbumDropdownOptions(
 
   // Add the rest of the albums as options
   for (const album of albums) {
-    if (album.name === linkedAlbum) {
+    if (album.albumName === linkedAlbum) {
       continue;
     }
-    const option = new StringSelectMenuOptionBuilder().setLabel(album.name).setValue(album.name);
+    const option = new StringSelectMenuOptionBuilder()
+      .setLabel(album.albumName)
+      .setValue(album.albumName);
     if (album.description) {
       option.setDescription(album.description);
     }

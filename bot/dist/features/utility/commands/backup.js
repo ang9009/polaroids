@@ -35,9 +35,9 @@ const execute = async (interaction) => {
     // If the channel is already subscribed to, use the linked album
     const channelSubData = await getChannelSubData(channel.id);
     if (channelSubData.isSubscribed) {
-        const linkedAlbum = channelSubData.linkedAlbum;
-        await interaction.editReply(`Linked album **${linkedAlbum}** found for ${channel.toString()}.`);
-        await performBackupWithProgress(channel, linkedAlbum, interaction.user);
+        const { linkedAlbumId, linkedAlbumName } = channelSubData;
+        await interaction.editReply(`Linked album **${linkedAlbumName}** found for ${channel.toString()}.`);
+        await performBackupWithProgress(channel, linkedAlbumId, linkedAlbumName, interaction.user);
         return;
     }
     // Otherwise, ask the user to specify an album
@@ -48,9 +48,10 @@ const execute = async (interaction) => {
     }
     const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
     const { albumName, albumDesc, type } = selectedAlbum;
+    let albumId;
     if (type === AlbumSelectionType.CREATE_NEW) {
         try {
-            await createAlbum(albumName, albumDesc || null);
+            ({ albumId } = await createAlbum(albumName, albumDesc || null));
         }
         catch (err) {
             const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
@@ -59,7 +60,10 @@ const execute = async (interaction) => {
             return;
         }
     }
-    await performBackupWithProgress(channel, albumName, interaction.user);
+    else {
+        albumId = selectedAlbum.albumId;
+    }
+    await performBackupWithProgress(channel, albumId, albumName, interaction.user);
 };
 const commandData = {
     data,

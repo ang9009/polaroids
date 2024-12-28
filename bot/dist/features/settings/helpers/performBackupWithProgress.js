@@ -6,10 +6,11 @@ import { getChannelNonUploadedFiles } from "./getChannelNonUploadedFiles";
  * Backs up the contents of the given channel while keeping the user notified of
  * the progress of the backup via embeds.
  * @param channel the channel
- * @param albumName the name of the album that the files should be uploaded to
+ * @param albumId the id of the album that the files should be uploaded to
+ * @param albumName the name of the album
  * @param requester the name of the user who requested the upload
  */
-export const performBackupWithProgress = async (channel, albumName, requester) => {
+export const performBackupWithProgress = async (channel, albumId, albumName, requester) => {
     const statusEmbed = new EmbedBuilder()
         .setTitle("Channel backup request")
         .setColor(PrimaryColors.PRIMARY_WHITE)
@@ -56,7 +57,7 @@ export const performBackupWithProgress = async (channel, albumName, requester) =
     // Upload the files
     let uploadedFileCount;
     try {
-        uploadedFileCount = await uploadFiles(filesData, albumName, false);
+        uploadedFileCount = await uploadFiles(filesData, albumId, false);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
     }
     catch (err) {

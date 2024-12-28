@@ -3,16 +3,16 @@ import { UploadFilesResponseSchema } from "shared/src/responses/files/getFiles";
 /**
  * Uploads the given files to the API.
  * @param files the files to be uploaded
- * @param albumName the name of the album the file will be associated with
+ * @param albumId the id of the album the file will be associated with
  * @param throwUniqueConstraintError whether an error should be thrown if there
  *                                   is a unique constraint error
  * @returns the number of files successfully uploaded
  */
-export const uploadFiles = async (files, albumName, throwUniqueConstraintError) => {
+export const uploadFiles = async (files, albumId, throwUniqueConstraintError) => {
     const { DB_API_URL } = process.env;
     const url = `${DB_API_URL}/files`;
     const formData = new FormData();
-    formData.append("albumName", albumName);
+    formData.append("albumId", albumId);
     const filesData = {};
     for (const file of files) {
         const fileData = {

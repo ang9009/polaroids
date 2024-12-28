@@ -18,13 +18,21 @@ export declare const channelIsSubscribed: (req: Request, res: Response<IsSubscri
  *
  * Route: POST /api/subscribed-channels
  *
- * Request Body:
+ * Request Body (for creating an album):
  * {
  *   "channelId": string,  // ID of the channel being subscribed to
  *   "guildId": string, // The guild ID that the channel is in
- *   "albumRequestType": AlbumRequestType, // Type of request: create new, or use existing
+ *   "albumRequestType": AlbumRequestType.CREATE_NEW
  *   "albumName": string, // The name of the album to be linked to the channel
- *   "albumDesc": string?, // The description of the album.
+ *   "albumDesc": string, // The description of the album.
+ * }
+ *
+ * Request Body (for linking an existing album):
+ * {
+ *   "albumId": string, // The id of the album to be linked to the channel
+ *   "channelId": string,  // ID of the channel being subscribed to
+ *   "guildId": string, // The guild ID that the channel is in
+ *   "albumRequestType": AlbumRequestType.EXISTING
  * }
  */
 export declare const addSubscribedChannel: (req: Request, res: Response, next: NextFunction) => Promise<void>;
@@ -35,7 +43,7 @@ export declare const addSubscribedChannel: (req: Request, res: Response, next: N
  *
  * Request Body:
  * {
- *   "albumName": string, // The name of the album to be linked to the channel
+ *   "albumId": string, // The id of the album to be linked to the channel
  * }
  */
 export declare const updateChannelAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void>;

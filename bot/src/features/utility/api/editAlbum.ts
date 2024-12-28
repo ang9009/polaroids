@@ -5,21 +5,21 @@ import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 
 /**
  * Updates an album's name and/or description.
- * @param albumName the album's original name
+ * @param albumId the album's id
  * @param newAlbumName the album's new name
  * @param newAlbumDesc the album's new description
  */
 export const editAlbum = async (
-  albumName: string,
+  albumId: string,
   newAlbumName: string,
   newAlbumDesc: string | null,
 ) => {
   const { DB_API_URL } = process.env;
   const url = `${DB_API_URL}/albums`;
   const data: EditAlbumRequestData = {
-    albumName,
+    albumId,
     newAlbumName,
-    albumDesc: newAlbumDesc || undefined,
+    newAlbumDesc: newAlbumDesc || undefined,
   };
 
   try {
@@ -31,7 +31,7 @@ export const editAlbum = async (
         if (errorRes.dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
           throw Error(`An album with the name ${newAlbumName} already exists! Please try again.`);
         } else if (errorRes.dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND) {
-          throw Error(`The album ${albumName} no longer exists. Please try again.`);
+          throw Error(`The specified album no longer exists. Please try again.`);
         }
       }
     }

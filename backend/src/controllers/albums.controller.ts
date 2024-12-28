@@ -6,6 +6,7 @@ import { AlbumNameQueryParamSchema } from "shared/src/requests/albums/albumExist
 import { CreateAlbumRequestSchema } from "shared/src/requests/albums/createAlbum";
 import { DeleteAlbumRequestSchema } from "shared/src/requests/albums/deleteAlbum";
 import { EditAlbumRequestSchema } from "shared/src/requests/albums/editAlbum";
+import { CreateAlbumResponse } from "shared/src/responses/albums/createAlbum";
 import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
@@ -26,7 +27,7 @@ export const getAlbums = async (
   let albums: Album[];
   try {
     albums = await prisma.album.findMany({
-      orderBy: [{ name: "asc" }],
+      orderBy: [{ albumName: "asc" }],
     });
   } catch (err) {
     const error = getDbExFromPrismaErr(err);
@@ -51,7 +52,7 @@ export const albumExists = async (req: Request, res: Response, next: NextFunctio
   try {
     album = await prisma.album.findFirst({
       where: {
-        name: reqParams.data.albumName,
+        albumName: reqParams.data.albumName,
       },
     });
   } catch (err) {
@@ -77,7 +78,11 @@ export const albumExists = async (req: Request, res: Response, next: NextFunctio
  *      albumDesc: string // the album's description
  * }
  */
-export const createAlbum = async (req: Request, res: Response, next: NextFunction) => {
+export const createAlbum = async (
+  req: Request,
+  res: Response<CreateAlbumResponse>,
+  next: NextFunction
+) => {
   const parsedReqBody = CreateAlbumRequestSchema.safeParse(req.body);
   if (!parsedReqBody.success) {
     const error = new ValidationException(parsedReqBody.error);
@@ -85,10 +90,11 @@ export const createAlbum = async (req: Request, res: Response, next: NextFunctio
   }
 
   const { albumName, albumDesc } = parsedReqBody.data;
+  let album: Album;
   try {
-    await prisma.album.create({
+    album = await prisma.album.create({
       data: {
-        name: albumName,
+        albumName: albumName,
         description: albumDesc,
       },
     });
@@ -97,7 +103,7 @@ export const createAlbum = async (req: Request, res: Response, next: NextFunctio
     return next(error);
   }
 
-  return res.status(HttpStatusCode.OK).send(successJson);
+  return res.status(HttpStatusCode.OK).send({ albumId: album.albumId });
 };
 
 /**
@@ -117,15 +123,15 @@ export const editAlbum = async (req: Request, res: Response, next: NextFunction)
     return next(error);
   }
 
-  const { albumName, newAlbumName, albumDesc } = parsedReqBody.data;
+  const { albumId, newAlbumName, newAlbumDesc } = parsedReqBody.data;
   try {
     await prisma.album.update({
       data: {
-        name: newAlbumName,
-        description: albumDesc,
+        albumName: newAlbumName,
+        description: newAlbumDesc,
       },
       where: {
-        name: albumName,
+        albumId: albumId,
       },
     });
   } catch (err) {
@@ -140,7 +146,7 @@ export const editAlbum = async (req: Request, res: Response, next: NextFunction)
  * Deletes an album given its name.
  * Throws an error if the album has any associated files.
  *
- * Route: DELETE /api/albums/:albumName
+ * Route: DELETE /api/albums/:albumId
  */
 export const deleteAlbum = async (req: Request, res: Response, next: NextFunction) => {
   const parsedReqBody = DeleteAlbumRequestSchema.safeParse(req.params);
@@ -148,13 +154,13 @@ export const deleteAlbum = async (req: Request, res: Response, next: NextFunctio
     const error = new ValidationException(parsedReqBody.error);
     return next(error);
   }
-  const { albumName } = parsedReqBody.data;
+  const { albumId } = parsedReqBody.data;
 
   let filesCount: number;
   try {
     filesCount = await prisma.file.count({
       where: {
-        albumName: albumName,
+        albumId: albumId,
       },
     });
   } catch (err) {
@@ -169,7 +175,7 @@ export const deleteAlbum = async (req: Request, res: Response, next: NextFunctio
   try {
     await prisma.album.delete({
       where: {
-        name: albumName,
+        albumId: albumId,
       },
     });
   } catch (err) {

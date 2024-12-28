@@ -9,10 +9,7 @@ export const UpdateChannelAlbumRequestSchema = z.object({
     invalid_type_error: "channelId must be a string",
     required_error: "channelId is required",
   }),
-  albumName: z.string({
-    invalid_type_error: "albumName must be a string",
-    required_error: "albumName is required",
-  }),
+  albumId: z.string(),
 });
 
 export type UpdateChannelAlbumRequest = z.infer<typeof UpdateChannelAlbumRequestSchema>;

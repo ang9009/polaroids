@@ -1,6 +1,8 @@
 import axios, { isAxiosError } from "axios";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { CreateAlbumRequestBody } from "shared/src/requests/albums/createAlbum";
+import { CreateAlbumResponseSchema } from "shared/src/responses/albums/createAlbum";
+
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 
 /**
@@ -15,8 +17,9 @@ export const createAlbum = async (albumName: string, albumDesc: string | null) =
 
   const body: CreateAlbumRequestBody = { albumName, albumDesc: albumDesc || undefined };
 
+  let res;
   try {
-    await axios.post(url, body);
+    res = await axios.post(url, body);
   } catch (err) {
     if (isAxiosError(err)) {
       const errorRes = err.response?.data;
@@ -29,4 +32,10 @@ export const createAlbum = async (albumName: string, albumDesc: string | null) =
 
     throw err;
   }
+
+  const parseRes = CreateAlbumResponseSchema.safeParse(res.data);
+  if (!parseRes.success) {
+    throw Error("An unexpected error occurred. Please try again.");
+  }
+  return parseRes.data;
 };

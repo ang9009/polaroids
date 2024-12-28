@@ -1,9 +1,8 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder, TextChannel, } from "discord.js";
+import { SlashCommandBuilder, TextChannel } from "discord.js";
 import { getChannelSubData } from "../../../api/getChannelSubData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { handleAlbumSelection } from "../helpers/handleAlbumSelection";
-import { performBackupWithProgress } from "../helpers/performBackupWithProgress";
 import { showAlbumDropdown } from "../helpers/showAlbumDropdown";
 /**
  * A command used to subscribe polaroids to changes in a channel, and uploads attachments
@@ -32,7 +31,7 @@ const execute = async (interaction) => {
     }
     await interaction.deferReply();
     const channelSubData = await getChannelSubData(channel.id);
-    const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbum : undefined;
+    const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbumName : undefined;
     const isAlreadySubscribedMsg = `${channel.toString()} is currently linked to album **${linkedAlbum}**. ` +
         "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";
     const notSubscribedMsg = `Select an album to link ${channel.toString()} to.`;
@@ -60,59 +59,7 @@ const execute = async (interaction) => {
         return;
     }
     await dropdownInteraction.reply(`Successfully linked channel to album **${selectedAlbum.albumName}**.`);
-    // Ask user if they would like to back up previously uploaded attachments
-    await startBackupInteraction(channel, selectedAlbum.albumName, interaction);
 };
-/**
- * Asks the user if they would like to back up previously uploaded attachments
- * with the option to confirm or cancel.
- * @param channel the channel the interaction is taking place in
- * @param albumName the nam eof the album the channel is linked to
- * @param interaction the ongoing interaction
- */
-async function startBackupInteraction(channel, albumName, interaction) {
-    const confirmBtnId = "confirm";
-    const cancelBtnId = "cancel";
-    const confirm = new ButtonBuilder()
-        .setCustomId(confirmBtnId)
-        .setLabel("Confirm")
-        .setStyle(ButtonStyle.Primary);
-    const cancel = new ButtonBuilder()
-        .setCustomId(cancelBtnId)
-        .setLabel("Cancel")
-        .setStyle(ButtonStyle.Secondary);
-    const row = new ActionRowBuilder().addComponents(confirm, cancel);
-    const backupOptionsFollowUp = await interaction.followUp({
-        content: `Would you like me to look through ${channel.toString()}'s message history ` +
-            `and backup any unarchived files to its album **${albumName}**?`,
-        components: [row],
-    });
-    try {
-        const confirmation = await backupOptionsFollowUp.awaitMessageComponent({
-            // eslint-disable-next-line jsdoc/require-jsdoc
-            filter: (i) => i.user.id === interaction.user.id,
-            time: 60_000,
-        });
-        if (confirmation.customId === confirmBtnId) {
-            await backupOptionsFollowUp.delete();
-            await performBackupWithProgress(channel, albumName, interaction.user);
-        }
-        else if (confirmation.customId === cancelBtnId) {
-            await backupOptionsFollowUp.edit({
-                content: "Backup operation cancelled. " +
-                    "You can find and upload unarchived files using `/backup` anytime.",
-                components: [],
-            });
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    }
-    catch (e) {
-        await backupOptionsFollowUp.edit({
-            content: "Timed out. " + "You can find and upload unarchived files using `/backup` anytime.",
-            components: [],
-        });
-    }
-}
 const commandData = {
     data,
     execute,

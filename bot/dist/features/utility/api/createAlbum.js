@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from "axios";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
+import { CreateAlbumResponseSchema } from "shared/src/responses/albums/createAlbum";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 /**
  * Creates an album with the given name and description. This assumes that the
@@ -11,8 +12,9 @@ export const createAlbum = async (albumName, albumDesc) => {
     const { DB_API_URL } = process.env;
     const url = `${DB_API_URL}/albums`;
     const body = { albumName, albumDesc: albumDesc || undefined };
+    let res;
     try {
-        await axios.post(url, body);
+        res = await axios.post(url, body);
     }
     catch (err) {
         if (isAxiosError(err)) {
@@ -25,5 +27,10 @@ export const createAlbum = async (albumName, albumDesc) => {
         }
         throw err;
     }
+    const parseRes = CreateAlbumResponseSchema.safeParse(res.data);
+    if (!parseRes.success) {
+        throw Error("An unexpected error occurred. Please try again.");
+    }
+    return parseRes.data;
 };
 //# sourceMappingURL=createAlbum.js.map

@@ -10,9 +10,10 @@ import { uploadFiles } from "../api/uploadFiles";
 /**
  * Uploads the attachments in the given message to the specified album.
  * @param message the message that the attachments are associated with
- * @param albumName the name of album the attachments should be uploaded to
+ * @param albumId the id of album the attachments should be uploaded to
+ * @param albumName the name of the album the attachments should be uploaded to
  */
-export const uploadAttachmentsWithProgress = async (message, albumName) => {
+export const uploadAttachmentsWithProgress = async (message, albumId, albumName) => {
     const { attachments, author: uploader } = message;
     const attachmentsList = [...attachments.values()];
     const attachmentFiles = await getFileDataFromAttachments(attachmentsList, message.createdAt, uploader);
@@ -27,7 +28,7 @@ export const uploadAttachmentsWithProgress = async (message, albumName) => {
         .setThumbnail(attachmentsList[0].proxyURL);
     const initialMessage = await message.reply({ embeds: [uploadStatusEmbed] });
     try {
-        await uploadFiles(attachmentFiles, albumName, true);
+        await uploadFiles(attachmentFiles, albumId, true);
     }
     catch (err) {
         let errMsg = "Something went wrong while uploading your media. Please try again.";

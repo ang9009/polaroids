@@ -1,5 +1,5 @@
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, } from "discord.js";
-import { getAlbums } from "../api/getAlbumNames";
+import { getAlbums } from "../api/getAlbums";
 import { AlbumSelectionType } from "../data/albumSelectionType";
 import { getAlbumModal } from "./getAlbumModal";
 import { getAlbumModalInputs } from "./getAlbumModalInputs";
@@ -16,6 +16,16 @@ import { getAlbumModalInputs } from "./getAlbumModalInputs";
  */
 export const showAlbumDropdown = async (msg, interaction, linkedAlbum, hideCreateAlbumOption) => {
     const albums = await getAlbums();
+    if (albums.length === 0 && hideCreateAlbumOption) {
+        const msg = "No albums found. To create an album, use the command `/album create`.";
+        if (interaction.deferred || interaction.replied) {
+            await interaction.editReply(msg);
+        }
+        else {
+            await interaction.reply(msg);
+        }
+        return;
+    }
     // At the top of the menu, add an option for creating a new menu
     const createNewOptionId = Math.random().toString(); // Create a random value to avoid album name conflicts
     const menuAlbumOptions = getAlbumDropdownOptions(createNewOptionId, albums, linkedAlbum, hideCreateAlbumOption);
@@ -52,15 +62,16 @@ export const showAlbumDropdown = async (msg, interaction, linkedAlbum, hideCreat
         });
         return undefined;
     }
-    const albumSelection = selectInteraction.values[0];
+    const selectedAlbumName = selectInteraction.values[0];
     let selectionResult;
-    if (albumSelection === createNewOptionId) {
+    if (selectedAlbumName === createNewOptionId) {
         selectionResult = await handleAlbumDropdownSelection({ type: AlbumSelectionType.CREATE_NEW }, selectInteraction);
     }
     else {
         const selection = {
-            albumName: albumSelection,
-            albumDesc: albums.find((album) => album.name === albumSelection)?.description || undefined,
+            albumName: selectedAlbumName,
+            albumId: albums.find((album) => album.albumName === selectedAlbumName).albumId,
+            albumDesc: albums.find((album) => album.albumName === selectedAlbumName)?.description || undefined,
             type: AlbumSelectionType.EXISTING,
         };
         selectionResult = await handleAlbumDropdownSelection(selection, selectInteraction);
@@ -84,7 +95,7 @@ const handleAlbumDropdownSelection = async (selection, interaction) => {
         const title = "Create & Link Album";
         const modal = getAlbumModal(title, "albumNameField", "albumDescField");
         await interaction.showModal(modal);
-        const { name: albumName, description: albumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, "albumNameField", "albumDescField");
+        const { albumName: albumName, description: albumDesc, modalInteraction, } = await getAlbumModalInputs(interaction, "albumNameField", "albumDescField");
         const albumData = {
             type: AlbumSelectionType.CREATE_NEW,
             albumName,
@@ -94,11 +105,12 @@ const handleAlbumDropdownSelection = async (selection, interaction) => {
     }
     else {
         // If the user wants to use an existing album
-        const { albumName, albumDesc } = selection;
+        const { albumName, albumId, albumDesc } = selection;
         const albumData = {
             type: AlbumSelectionType.EXISTING,
             albumName: albumName,
-            albumDesc: albumDesc,
+            albumId: albumId,
+            albumDesc: albumDesc || undefined,
         };
         return { selectedAlbum: albumData, dropdownInteraction: interaction };
     }
@@ -124,10 +136,12 @@ function getAlbumDropdownOptions(createNewOptionId, albums, linkedAlbum, hideCre
     }
     // Add the rest of the albums as options
     for (const album of albums) {
-        if (album.name === linkedAlbum) {
+        if (album.albumName === linkedAlbum) {
             continue;
         }
-        const option = new StringSelectMenuOptionBuilder().setLabel(album.name).setValue(album.name);
+        const option = new StringSelectMenuOptionBuilder()
+            .setLabel(album.albumName)
+            .setValue(album.albumName);
         if (album.description) {
             option.setDescription(album.description);
         }

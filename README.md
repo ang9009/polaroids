@@ -70,7 +70,9 @@ docker-compose build
 docker-compose up
 ```
 
-Refer to the docker compose file for port information.
+Refer to the docker compose file for port information. If you are running this
+on a Mac with a Silicon chip, you may have to turn on "use Rosetta for x86/amd64
+emulation on Apple Silicon" on Docker Desktop.
 
 ## Folder structure
 

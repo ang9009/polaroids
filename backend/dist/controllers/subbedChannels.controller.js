@@ -60,6 +60,7 @@ export const channelIsSubscribed = async (req, res, next) => {
         select: {
             album: {
                 select: {
+                    albumId: true,
                     albumName: true,
                 },
             },
@@ -72,7 +73,8 @@ export const channelIsSubscribed = async (req, res, next) => {
     if (channelData) {
         response = {
             isSubscribed: true,
-            linkedAlbum: channelData.album.albumName,
+            linkedAlbumId: channelData.album.albumId,
+            linkedAlbumName: channelData.album.albumName,
         };
     }
     else {

@@ -52,7 +52,12 @@ export class FileStationCredentials {
     const url = `${FS_API_URL}/webman/index.cgi`;
 
     // Create headless browser and login
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      defaultViewport: null,
+      executablePath: "/usr/bin/google-chrome",
+      args: ["--no-sandbox"],
+    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
 

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { CreateAlbumResponse } from "shared/src/responses/albums/createAlbum";
 import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
 /**
  * Gets the name of all the albums in the database.
@@ -20,7 +21,9 @@ export declare const albumExists: (req: Request, res: Response, next: NextFuncti
  *      albumDesc: string // the album's description
  * }
  */
-export declare const createAlbum: (req: Request, res: Response, next: NextFunction) => Promise<void | Response<any, Record<string, any>>>;
+export declare const createAlbum: (req: Request, res: Response<CreateAlbumResponse>, next: NextFunction) => Promise<void | Response<{
+    albumId: string;
+}, Record<string, any>>>;
 /**
  * Changes the name/description of an existing album.
  * Route: PATCH /api/albums

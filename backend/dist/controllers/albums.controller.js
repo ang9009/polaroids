@@ -72,8 +72,9 @@ export const createAlbum = async (req, res, next) => {
         return next(error);
     }
     const { albumName, albumDesc } = parsedReqBody.data;
+    let album;
     try {
-        await prisma.album.create({
+        album = await prisma.album.create({
             data: {
                 albumName: albumName,
                 description: albumDesc,
@@ -84,7 +85,7 @@ export const createAlbum = async (req, res, next) => {
         const error = getDbExFromPrismaErr(err);
         return next(error);
     }
-    return res.status(HttpStatusCode.OK).send(successJson);
+    return res.status(HttpStatusCode.OK).send({ albumId: album.albumId });
 };
 /**
  * Changes the name/description of an existing album.

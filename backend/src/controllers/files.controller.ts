@@ -88,23 +88,27 @@ export const uploadFiles = async (
 
     let filesUploaded: number = 0;
     try {
-      const uploadRes = await prisma.file.createMany({
-        data: fileObjects,
-        skipDuplicates: !throwUniqueConstraintError,
-      });
-      filesUploaded = uploadRes.count;
-    } catch (err) {
-      const error = getDbExFromPrismaErr(err);
-      return next(error);
-    }
+      await prisma.$transaction(
+        async (tx) => {
+          const { count } = await tx.file.createMany({
+            data: fileObjects,
+            skipDuplicates: !throwUniqueConstraintError,
+          });
+          filesUploaded = count;
 
-    try {
-      await uploadFilesToFS(files);
+          await uploadFilesToFS(files);
+        },
+        {
+          timeout: 120_000, // Two minutes YOLO
+        }
+      );
     } catch (err) {
       if (err instanceof Error) {
         const error = new UnknownException(err.message);
         return next(error);
       }
+      const error = getDbExFromPrismaErr(err);
+      return next(error);
     }
 
     res.status(200).send({ filesUploaded });

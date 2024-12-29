@@ -1,7 +1,7 @@
 /**
  * Represents all the possible database-related error codes.
  */
-var DbErrorCode;
+export var DbErrorCode;
 (function (DbErrorCode) {
     DbErrorCode["AUTHENTICATION_FAILED"] = "AUTHENTICATION_FAILED";
     DbErrorCode["CONNECTION_REFUSED"] = "CONNECTION_REFUSED";
@@ -54,5 +54,4 @@ var DbErrorCode;
     DbErrorCode["TOO_MANY_CONNECTIONS"] = "TOO_MANY_CONNECTIONS";
     DbErrorCode["UNKNOWN"] = "UNKNOWN";
 })(DbErrorCode || (DbErrorCode = {}));
-export default DbErrorCode;
-//# sourceMappingURL=DbErrorCode.js.map
+//# sourceMappingURL=dbErrorCode.js.map

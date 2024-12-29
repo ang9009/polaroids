@@ -1,5 +1,5 @@
+import { AlbumSchema } from "backend/prisma/generated/zod";
 import { z } from "zod";
-import { AlbumSchema } from "../../../../backend/prisma/generated/zod";
 
 const GetAlbumsResponseSchema = z.array(AlbumSchema);
 

@@ -90,7 +90,12 @@ FileStationCredentials.getFSCredentials = async () => {
     const { FS_API_URL } = process.env;
     const url = `${FS_API_URL}/webman/index.cgi`;
     // Create headless browser and login
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        defaultViewport: null,
+        executablePath: "/usr/bin/google-chrome",
+        args: ["--no-sandbox"],
+    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
     // Submit login form and get syno token and session id

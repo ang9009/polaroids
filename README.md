@@ -3,6 +3,8 @@
 A photos/videos organization system consisting of a Discord bot that automatically uploads
 media to my Synology FileStation, and a website that displays this media.
 
+![Commands overview](commands.png)
+
 ## Setup
 
 I'm not sure if anyone would actually be interested in this (this is moreso for
@@ -109,11 +111,3 @@ folder to update the bot:
 ```
 npm run deploycommands
 ```
-
-## Types overview
-
-### Result
-
-The `Result` type used in the `bot` folder is primarily used for API calls. This
-is especially useful when you need to return a warning message based on some API
-exception, which can't really be classified as an error.

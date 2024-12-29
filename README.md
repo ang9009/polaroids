@@ -7,10 +7,6 @@ media to my Synology FileStation, and a website that displays this media.
 
 ## Setup
 
-I'm not sure if anyone would actually be interested in this (this is moreso for
-my own reference), but if for some reason you are, here's how you can
-set polaroids up for yourself:
-
 ### Prerequisites
 
 - Docker and Docker Compose installed on your machine.

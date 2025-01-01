@@ -1,40 +1,40 @@
 version: "3.8"
 
 services:
-  bot:
-    build:
-      context: ./
-      dockerfile: ./bot/Dockerfile
-    volumes:
-      - type: bind
-        source: ./bot/.env
-        target: /app/bot/.env
-    environment:
-      - DB_API_URL=http://backend:8080/api
-    depends_on:
-      backend:
-        condition: service_started
-      db:
-        condition: service_healthy
-        restart: true
+  # bot:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./bot/Dockerfile
+  #   volumes:
+  #     - type: bind
+  #       source: ./bot/.env
+  #       target: /app/bot/.env
+  #   environment:
+  #     - DB_API_URL=http://backend:8080/api
+  #   depends_on:
+  #     backend:
+  #       condition: service_started
+  #     db:
+  #       condition: service_healthy
+  #       restart: true
 
-  backend:
-    platform: "linux/amd64"
-    build:
-      context: ./
-      dockerfile: ./backend/Dockerfile
-    ports:
-      - 8080:8080
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-    volumes:
-      - type: bind
-        source: ./backend/.env
-        target: /app/backend/.env
-    depends_on:
-      db:
-        condition: service_healthy
-        restart: true
+  # backend:
+  #   platform: "linux/amd64"
+  #   build:
+  #     context: ./
+  #     dockerfile: ./backend/Dockerfile
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #   volumes:
+  #     - type: bind
+  #       source: ./backend/.env
+  #       target: /app/backend/.env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #       restart: true
 
   db:
     image: postgres

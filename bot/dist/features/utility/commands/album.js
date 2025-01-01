@@ -80,7 +80,7 @@ const handleDeleteAlbumInteraction = async (interaction) => {
         await dropdownInteraction.reply({ embeds: [errEmbed] });
         return;
     }
-    await dropdownInteraction.reply(`Successfully deleted album ${albumName}.`);
+    await dropdownInteraction.reply(`Successfully deleted album **${albumName}**.`);
 };
 /**
  * Handles the "edit album" subcommand interaction. This provides the user with
@@ -95,7 +95,10 @@ const handleEditAlbumInteraction = async (interaction) => {
         return;
     }
     const { selectedAlbum, dropdownInteraction } = dropdownSelectionRes;
-    const { albumName: originalAlbumName, albumDesc } = selectedAlbum;
+    if (selectedAlbum.type === AlbumSelectionType.CREATE_NEW) {
+        throw Error("Edit album dropdown should not provide a create new option");
+    }
+    const { albumName: originalAlbumName, albumDesc, albumId } = selectedAlbum;
     const nameInputId = "albumNameInput";
     const descInputId = "albumDescInput";
     const modal = getAlbumModal("Edit album info", nameInputId, descInputId, originalAlbumName, albumDesc);
@@ -105,7 +108,7 @@ const handleEditAlbumInteraction = async (interaction) => {
     await dropdownInteraction.showModal(modal);
     const { albumName: newAlbumName, description: newAlbumDesc, modalInteraction, } = await getAlbumModalInputs(dropdownInteraction, nameInputId, descInputId);
     try {
-        await editAlbum(originalAlbumName, newAlbumName, newAlbumDesc);
+        await editAlbum(albumId, newAlbumName, newAlbumDesc);
     }
     catch (err) {
         const errMsg = err instanceof Error ? err.message : "Something went wrong. Please try again.";

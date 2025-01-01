@@ -34,6 +34,9 @@ export const subscribeChannelAndSetAlbum = async (albumId, channelId, guildId) =
                 else if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
                     throw Error(`polraoids is already subscribed to this channel.`);
                 }
+                else if (dbErrorCode === DbErrorCode.FOREIGN_KEY_CONSTRAINT_VIOLATION) {
+                    throw Error("The specified album no longer exists. Please try again.");
+                }
             }
         }
         throw err;

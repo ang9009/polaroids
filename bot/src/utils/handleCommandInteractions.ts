@@ -1,4 +1,5 @@
 import { Interaction } from "discord.js";
+import { getErrorEmbed } from "./getErrorEmbed";
 
 /**
  * Handles interactions/commands executed by users.
@@ -15,5 +16,11 @@ export const handleCommandInteractions = async (interaction: Interaction) => {
     return;
   }
 
-  await command.execute(interaction);
+  try {
+    await command.execute(interaction);
+  } catch (err) {
+    console.log(err);
+    const errEmbed = getErrorEmbed("An unknown error occurred.");
+    await interaction.reply({ embeds: [errEmbed] });
+  }
 };

@@ -68,7 +68,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
       errMsg = err.message;
     }
     const errEmbed = getErrorEmbed(errMsg);
-    dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
+    await dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
     return;
   }
   await dropdownInteraction.reply(

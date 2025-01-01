@@ -55,7 +55,7 @@ const execute = async (interaction) => {
             errMsg = err.message;
         }
         const errEmbed = getErrorEmbed(errMsg);
-        dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
+        await dropdownInteraction.reply({ content: "", embeds: [errEmbed] });
         return;
     }
     await dropdownInteraction.reply(`Successfully linked channel to album **${selectedAlbum.albumName}**.`);

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import "dotenv/config";
 import express, { Router } from "express";
+import session from "express-session";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -11,14 +12,17 @@ import subscribedChannels from "./routes/subbedChannels.routes";
 
 dotenv.config();
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 const app = express();
 
-// Body parser middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// Logger middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET!,
+  })
+);
 app.use(logger);
 
 // Routes

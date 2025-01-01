@@ -25,6 +25,9 @@ export const setChannelAlbum = async (albumId, channelId, guildId) => {
                 if (dbErrorCode === DbErrorCode.DEPENDENCY_RECORD_NOT_FOUND) {
                     throw Error(`polaroids is no longer subscribed to this channel. Please try again.`);
                 }
+                else if (dbErrorCode === DbErrorCode.FOREIGN_KEY_CONSTRAINT_VIOLATION) {
+                    throw Error("The specified album no longer exists. Please try again.");
+                }
             }
         }
         throw err;

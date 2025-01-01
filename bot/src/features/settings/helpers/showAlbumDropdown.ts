@@ -4,6 +4,7 @@ import {
   CacheType,
   ChatInputCommandInteraction,
   Interaction,
+  InteractionReplyOptions,
   ModalSubmitInteraction,
   StringSelectMenuBuilder,
   StringSelectMenuInteraction,
@@ -63,15 +64,14 @@ export const showAlbumDropdown = async (
     .setPlaceholder("Select an album...")
     .addOptions(menuAlbumOptions);
   const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(dropdown);
+  const responseOptions: InteractionReplyOptions = {
+    ephemeral: true,
+    content: msg,
+    components: [row],
+  };
   const response = interaction.deferred
-    ? await interaction.editReply({
-        content: msg,
-        components: [row],
-      })
-    : await interaction.reply({
-        content: msg,
-        components: [row],
-      });
+    ? await interaction.followUp(responseOptions)
+    : await interaction.reply(responseOptions);
 
   // Handle the album selection
   // eslint-disable-next-line jsdoc/require-jsdoc

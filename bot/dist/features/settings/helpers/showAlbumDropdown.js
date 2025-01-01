@@ -34,15 +34,14 @@ export const showAlbumDropdown = async (msg, interaction, linkedAlbum, hideCreat
         .setPlaceholder("Select an album...")
         .addOptions(menuAlbumOptions);
     const row = new ActionRowBuilder().addComponents(dropdown);
+    const responseOptions = {
+        ephemeral: true,
+        content: msg,
+        components: [row],
+    };
     const response = interaction.deferred
-        ? await interaction.editReply({
-            content: msg,
-            components: [row],
-        })
-        : await interaction.reply({
-            content: msg,
-            components: [row],
-        });
+        ? await interaction.followUp(responseOptions)
+        : await interaction.reply(responseOptions);
     // Handle the album selection
     // eslint-disable-next-line jsdoc/require-jsdoc
     const collectorFilter = (i) => i.user.id === interaction.user.id && i instanceof StringSelectMenuInteraction;

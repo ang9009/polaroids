@@ -1,3 +1,4 @@
+import { getErrorEmbed } from "./getErrorEmbed";
 /**
  * Handles interactions/commands executed by users.
  * @param interaction the interaction in question
@@ -11,6 +12,13 @@ export const handleCommandInteractions = async (interaction) => {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
     }
-    await command.execute(interaction);
+    try {
+        await command.execute(interaction);
+    }
+    catch (err) {
+        console.log(err);
+        const errEmbed = getErrorEmbed("An unknown error occurred.");
+        await interaction.reply({ embeds: [errEmbed] });
+    }
 };
 //# sourceMappingURL=handleCommandInteractions.js.map

@@ -38,6 +38,8 @@ export const subscribeChannelAndSetAlbum = async (
           throw Error(`polaroids is no longer subscribed to this channel. Please try again.`);
         } else if (dbErrorCode === DbErrorCode.UNIQUE_CONSTRAINT_VIOLATION) {
           throw Error(`polraoids is already subscribed to this channel.`);
+        } else if (dbErrorCode === DbErrorCode.FOREIGN_KEY_CONSTRAINT_VIOLATION) {
+          throw Error("The specified album no longer exists. Please try again.");
         }
       }
     }

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpException } from "../types/error/httpException";
+import HttpStatusCode from "../data/httpStatusCode";
+import { HttpExceptionSchema } from "../types/error/httpException";
 
 /**
  * Universal error handler middleware.
@@ -8,12 +9,17 @@ import { HttpException } from "../types/error/httpException";
  * @param res response
  * @param next the next function
  */
-export const errorHandler = (
-  err: HttpException,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  console.log(err.getResponse());
-  res.status(err.status).json(err.getResponse());
+export const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
+  const parseErr = HttpExceptionSchema.safeParse(err);
+  if (parseErr.success) {
+    const { status, getResponse } = parseErr.data;
+    res.status(status).json(getResponse());
+    return;
+  } else if (err instanceof Error) {
+    res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err.message);
+    return;
+  }
+
+  console.error(err);
+  res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send("An unknown error occurred.");
 };

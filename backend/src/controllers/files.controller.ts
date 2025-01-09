@@ -63,7 +63,7 @@ export const uploadFiles = async (
       const error = new UnknownException("No files were provided");
       return next(error);
     }
-    // Make sure that nothing goes wrong with FS upload before updating database
+
     const files = req.files as Express.Multer.File[];
     const { albumId, filesData, throwUniqueConstraintError } = parseRes.data!;
     for (const file of files) {

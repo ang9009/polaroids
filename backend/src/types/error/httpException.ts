@@ -1,3 +1,4 @@
+import { z } from "zod";
 import HttpStatusCode from "../../data/statusCodes";
 
 /**
@@ -7,5 +8,10 @@ interface HttpException extends Error {
   readonly status: HttpStatusCode;
   getResponse(): unknown;
 }
+
+export const HttpExceptionSchema = z.object({
+  status: z.nativeEnum(HttpStatusCode),
+  getResponse: z.function(),
+});
 
 export { HttpException };

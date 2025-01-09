@@ -22,6 +22,8 @@ export const SubscribedChannelScalarFieldEnumSchema = z.enum(['channelId','creat
 
 export const FileScalarFieldEnumSchema = z.enum(['discordId','uploaderId','fileName','description','createdAt','albumId']);
 
+export const SessionScalarFieldEnumSchema = z.enum(['id','sid','data','expiresAt']);
+
 export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
@@ -141,6 +143,22 @@ export const FileSchema = z.object({
 export type File = z.infer<typeof FileSchema>
 
 /////////////////////////////////////////
+// SESSION SCHEMA
+/////////////////////////////////////////
+
+/**
+ * Session objects
+ */
+export const SessionSchema = z.object({
+  id: z.string(),
+  sid: z.string(),
+  data: z.string(),
+  expiresAt: z.coerce.date(),
+})
+
+export type Session = z.infer<typeof SessionSchema>
+
+/////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
 
@@ -247,6 +265,16 @@ export const FileSelectSchema: z.ZodType<Prisma.FileSelect> = z.object({
   createdAt: z.boolean().optional(),
   albumId: z.boolean().optional(),
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
+}).strict()
+
+// SESSION
+//------------------------------------------------------
+
+export const SessionSelectSchema: z.ZodType<Prisma.SessionSelect> = z.object({
+  id: z.boolean().optional(),
+  sid: z.boolean().optional(),
+  data: z.boolean().optional(),
+  expiresAt: z.boolean().optional(),
 }).strict()
 
 
@@ -481,6 +509,65 @@ export const FileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FileScal
   albumId: z.union([ z.lazy(() => UuidWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const SessionWhereInputSchema: z.ZodType<Prisma.SessionWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => SessionWhereInputSchema),z.lazy(() => SessionWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => SessionWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => SessionWhereInputSchema),z.lazy(() => SessionWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  sid: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  data: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  expiresAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+}).strict();
+
+export const SessionOrderByWithRelationInputSchema: z.ZodType<Prisma.SessionOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  sid: z.lazy(() => SortOrderSchema).optional(),
+  data: z.lazy(() => SortOrderSchema).optional(),
+  expiresAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const SessionWhereUniqueInputSchema: z.ZodType<Prisma.SessionWhereUniqueInput> = z.union([
+  z.object({
+    id: z.string(),
+    sid: z.string()
+  }),
+  z.object({
+    id: z.string(),
+  }),
+  z.object({
+    sid: z.string(),
+  }),
+])
+.and(z.object({
+  id: z.string().optional(),
+  sid: z.string().optional(),
+  AND: z.union([ z.lazy(() => SessionWhereInputSchema),z.lazy(() => SessionWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => SessionWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => SessionWhereInputSchema),z.lazy(() => SessionWhereInputSchema).array() ]).optional(),
+  data: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  expiresAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+}).strict());
+
+export const SessionOrderByWithAggregationInputSchema: z.ZodType<Prisma.SessionOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  sid: z.lazy(() => SortOrderSchema).optional(),
+  data: z.lazy(() => SortOrderSchema).optional(),
+  expiresAt: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => SessionCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => SessionMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => SessionMinOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const SessionScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.SessionScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => SessionScalarWhereWithAggregatesInputSchema),z.lazy(() => SessionScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => SessionScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => SessionScalarWhereWithAggregatesInputSchema),z.lazy(() => SessionScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  sid: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  data: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  expiresAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+}).strict();
+
 export const GuildCreateInputSchema: z.ZodType<Prisma.GuildCreateInput> = z.object({
   guildId: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -684,6 +771,55 @@ export const FileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FileUncheckedU
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   albumId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const SessionCreateInputSchema: z.ZodType<Prisma.SessionCreateInput> = z.object({
+  id: z.string(),
+  sid: z.string(),
+  data: z.string(),
+  expiresAt: z.coerce.date()
+}).strict();
+
+export const SessionUncheckedCreateInputSchema: z.ZodType<Prisma.SessionUncheckedCreateInput> = z.object({
+  id: z.string(),
+  sid: z.string(),
+  data: z.string(),
+  expiresAt: z.coerce.date()
+}).strict();
+
+export const SessionUpdateInputSchema: z.ZodType<Prisma.SessionUpdateInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  sid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  data: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  expiresAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const SessionUncheckedUpdateInputSchema: z.ZodType<Prisma.SessionUncheckedUpdateInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  sid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  data: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  expiresAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const SessionCreateManyInputSchema: z.ZodType<Prisma.SessionCreateManyInput> = z.object({
+  id: z.string(),
+  sid: z.string(),
+  data: z.string(),
+  expiresAt: z.coerce.date()
+}).strict();
+
+export const SessionUpdateManyMutationInputSchema: z.ZodType<Prisma.SessionUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  sid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  data: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  expiresAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const SessionUncheckedUpdateManyInputSchema: z.ZodType<Prisma.SessionUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  sid: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  data: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  expiresAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
@@ -921,6 +1057,27 @@ export const FileMinOrderByAggregateInputSchema: z.ZodType<Prisma.FileMinOrderBy
   description: z.lazy(() => SortOrderSchema).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   albumId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const SessionCountOrderByAggregateInputSchema: z.ZodType<Prisma.SessionCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  sid: z.lazy(() => SortOrderSchema).optional(),
+  data: z.lazy(() => SortOrderSchema).optional(),
+  expiresAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const SessionMaxOrderByAggregateInputSchema: z.ZodType<Prisma.SessionMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  sid: z.lazy(() => SortOrderSchema).optional(),
+  data: z.lazy(() => SortOrderSchema).optional(),
+  expiresAt: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const SessionMinOrderByAggregateInputSchema: z.ZodType<Prisma.SessionMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  sid: z.lazy(() => SortOrderSchema).optional(),
+  data: z.lazy(() => SortOrderSchema).optional(),
+  expiresAt: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
 export const SubscribedChannelCreateNestedManyWithoutGuildInputSchema: z.ZodType<Prisma.SubscribedChannelCreateNestedManyWithoutGuildInput> = z.object({
@@ -1861,6 +2018,68 @@ export const FileFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FileFindUniqueOrT
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
+export const SessionFindFirstArgsSchema: z.ZodType<Prisma.SessionFindFirstArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereInputSchema.optional(),
+  orderBy: z.union([ SessionOrderByWithRelationInputSchema.array(),SessionOrderByWithRelationInputSchema ]).optional(),
+  cursor: SessionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ SessionScalarFieldEnumSchema,SessionScalarFieldEnumSchema.array() ]).optional(),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionFindFirstOrThrowArgsSchema: z.ZodType<Prisma.SessionFindFirstOrThrowArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereInputSchema.optional(),
+  orderBy: z.union([ SessionOrderByWithRelationInputSchema.array(),SessionOrderByWithRelationInputSchema ]).optional(),
+  cursor: SessionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ SessionScalarFieldEnumSchema,SessionScalarFieldEnumSchema.array() ]).optional(),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionFindManyArgsSchema: z.ZodType<Prisma.SessionFindManyArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereInputSchema.optional(),
+  orderBy: z.union([ SessionOrderByWithRelationInputSchema.array(),SessionOrderByWithRelationInputSchema ]).optional(),
+  cursor: SessionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ SessionScalarFieldEnumSchema,SessionScalarFieldEnumSchema.array() ]).optional(),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionAggregateArgsSchema: z.ZodType<Prisma.SessionAggregateArgs> = z.object({
+  where: SessionWhereInputSchema.optional(),
+  orderBy: z.union([ SessionOrderByWithRelationInputSchema.array(),SessionOrderByWithRelationInputSchema ]).optional(),
+  cursor: SessionWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const SessionGroupByArgsSchema: z.ZodType<Prisma.SessionGroupByArgs> = z.object({
+  where: SessionWhereInputSchema.optional(),
+  orderBy: z.union([ SessionOrderByWithAggregationInputSchema.array(),SessionOrderByWithAggregationInputSchema ]).optional(),
+  by: SessionScalarFieldEnumSchema.array(),
+  having: SessionScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const SessionFindUniqueArgsSchema: z.ZodType<Prisma.SessionFindUniqueArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.SessionFindUniqueOrThrowArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
 export const GuildCreateArgsSchema: z.ZodType<Prisma.GuildCreateArgs> = z.object({
   select: GuildSelectSchema.optional(),
   include: GuildIncludeSchema.optional(),
@@ -2059,4 +2278,50 @@ export const FileUpdateManyArgsSchema: z.ZodType<Prisma.FileUpdateManyArgs> = z.
 
 export const FileDeleteManyArgsSchema: z.ZodType<Prisma.FileDeleteManyArgs> = z.object({
   where: FileWhereInputSchema.optional(),
+}).strict() ;
+
+export const SessionCreateArgsSchema: z.ZodType<Prisma.SessionCreateArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  data: z.union([ SessionCreateInputSchema,SessionUncheckedCreateInputSchema ]),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionUpsertArgsSchema: z.ZodType<Prisma.SessionUpsertArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereUniqueInputSchema,
+  create: z.union([ SessionCreateInputSchema,SessionUncheckedCreateInputSchema ]),
+  update: z.union([ SessionUpdateInputSchema,SessionUncheckedUpdateInputSchema ]),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionCreateManyArgsSchema: z.ZodType<Prisma.SessionCreateManyArgs> = z.object({
+  data: z.union([ SessionCreateManyInputSchema,SessionCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const SessionCreateManyAndReturnArgsSchema: z.ZodType<Prisma.SessionCreateManyAndReturnArgs> = z.object({
+  data: z.union([ SessionCreateManyInputSchema,SessionCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const SessionDeleteArgsSchema: z.ZodType<Prisma.SessionDeleteArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  where: SessionWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionUpdateArgsSchema: z.ZodType<Prisma.SessionUpdateArgs> = z.object({
+  select: SessionSelectSchema.optional(),
+  data: z.union([ SessionUpdateInputSchema,SessionUncheckedUpdateInputSchema ]),
+  where: SessionWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const SessionUpdateManyArgsSchema: z.ZodType<Prisma.SessionUpdateManyArgs> = z.object({
+  data: z.union([ SessionUpdateManyMutationInputSchema,SessionUncheckedUpdateManyInputSchema ]),
+  where: SessionWhereInputSchema.optional(),
+}).strict() ;
+
+export const SessionDeleteManyArgsSchema: z.ZodType<Prisma.SessionDeleteManyArgs> = z.object({
+  where: SessionWhereInputSchema.optional(),
 }).strict() ;

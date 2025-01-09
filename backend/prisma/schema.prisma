@@ -53,3 +53,11 @@ model File {
   albumId String @db.Uuid /// The id of the album the photo/video is in
   album   Album  @relation(fields: [albumId], references: [albumId], onDelete: Cascade)
 }
+
+/// Session objects 
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}

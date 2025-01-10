@@ -22,12 +22,11 @@ dotenv.config();
 const port = process.env.PORT;
 const app = express();
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 
-// Express session setup
+// Express session and passport middleware
 const sessionStore = new PrismaSessionStore(new PrismaClient(), {
   checkPeriod: 2 * 60 * 1000,
   dbRecordIdIsSessionId: true,
@@ -36,18 +35,19 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET!,
     resave: false,
-    saveUninitialized: true,
     store: sessionStore,
+    saveUninitialized: false,
     cookie: {
-      secure: true,
       maxAge: 1000 * 60 * 60 * 24,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     },
   })
 );
-
-// Passport setup
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Passport js setup
 const discordStrategy = new DiscordStrategy(
   {
     clientID: process.env.DISCORD_CLIENT_ID!,

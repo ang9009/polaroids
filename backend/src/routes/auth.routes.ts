@@ -1,27 +1,32 @@
 import express from "express";
 import passport from "passport";
-import { getInfo } from "../controllers/auth.controller";
+import { discordLogout, getInfo } from "../controllers/auth.controller";
 import { discordScopes } from "../data/discordScopes";
 import { checkAuth } from "../middleware/checkAuth";
 
 const router = express.Router();
 
-// ! Should probably remove all the /discord references and add another router here
-router.get(
-  "/discord/callback",
+// Discord authentication routes
+const discordRouter = express.Router();
+
+// Callback route used as the OAuth redirect URI
+discordRouter.get(
+  "/callback",
   passport.authenticate("discord", {
+    // ! This should redirect to the frontend.
     failureRedirect: "/api/auth/discord/login?error=auth_failed",
     successRedirect: "/api/auth/discord/info",
   })
 );
 
-router.get(
-  "/discord/login",
-  passport.authenticate("discord", { scope: discordScopes, prompt: "Please login" })
-);
+// Used to login via Discord OAuth 2.0
+discordRouter.get("/login", passport.authenticate("discord", { scope: discordScopes }));
 
-router.get("/discord/info", checkAuth, getInfo);
+// Logs the user out if they were previously logged in with Discord
+discordRouter.get("/logout", checkAuth, discordLogout);
 
-// ! Need logout route. Look at the example
+// Gets information about the currently logged in user (logged in via Discord)
+discordRouter.get("/info", checkAuth, getInfo);
 
+router.use("/discord", discordRouter);
 export default router;

@@ -42,7 +42,6 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   await interaction.deferReply();
   const channelSubData: IsSubscribedResponse = await getChannelSubData(channel.id);
   const linkedAlbum = channelSubData.isSubscribed ? channelSubData.linkedAlbumName : undefined;
-  serv;
   const isAlreadySubscribedMsg =
     `${channel.toString()} is currently linked to album **${linkedAlbum}**. ` +
     "Select a new album from the dropdown below to change this, or unsubscribe using `/unsubscribe`\n";

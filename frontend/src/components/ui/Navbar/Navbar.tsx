@@ -1,10 +1,14 @@
+import polaroidsIcon from "../../../public/polaroids_icon.png";
 import NavbarCSS from "./Navbar.module.css";
 
 const Navbar = () => {
   return (
-    <nav className={NavbarCSS["navbar"]}>
-      <h1>polaroids</h1>
-    </nav>
+    <div className={NavbarCSS["navbar"]}>
+      <div className={NavbarCSS["logo"]}>
+        <img src={polaroidsIcon} alt="" />
+        <h1>polaroids</h1>
+      </div>
+    </div>
   );
 };
 

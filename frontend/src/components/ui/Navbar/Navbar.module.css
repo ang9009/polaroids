@@ -3,4 +3,20 @@
   padding: 15px 40px;
   display: flex;
   align-items: center;
+  border-bottom: 1px solid "{colors.border.value}";
+}
+
+.logo {
+  display: flex;
+  font-weight: 600;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.logo > img {
+  width: 2.5rem;
+  aspect-ratio: 1 / 1;
+  border-radius: 1rem;
+  margin-right: 0.7rem;
 }

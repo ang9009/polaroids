@@ -1,8 +1,8 @@
-import { createAlbumAndLinkChannel } from "../api/createAlbumAndLinkChannel";
-import { setChannelAlbum } from "../api/setChannelAlbum";
-import { subscribeChannelAndSetAlbum } from "../api/subscribeChannelAndSetAlbum";
-import { subscribeChannelWithNewAlbum } from "../api/subscribeChannelWithNewAlbum.ts";
 import { AlbumSelectionType } from "../data/albumSelectionType";
+import { createAlbumAndLinkChannel } from "../services/createAlbumAndLinkChannel";
+import { setChannelAlbum } from "../services/setChannelAlbum";
+import { subscribeChannelAndSetAlbum } from "../services/subscribeChannelAndSetAlbum";
+import { subscribeChannelWithNewAlbum } from "../services/subscribeChannelWithNewAlbum.ts";
 /**
  * A helper function that handles the user's album selection: if the user wants
  * to create a new album, then this should do so using the given name and

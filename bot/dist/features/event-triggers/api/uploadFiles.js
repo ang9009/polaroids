@@ -1,5 +1,5 @@
-import axios from "axios";
 import { UploadFilesResponseSchema } from "shared/src/responses/files/getFiles";
+import { apiClient } from "../../../lib/axios";
 /**
  * Uploads the given files to the API.
  * @param files the files to be uploaded
@@ -25,7 +25,7 @@ export const uploadFiles = async (files, albumId, throwUniqueConstraintError) =>
     }
     formData.append("filesData", JSON.stringify(filesData));
     formData.append("throwUniqueConstraintError", throwUniqueConstraintError);
-    const res = await axios.post(url, formData);
+    const res = await apiClient.post(url, formData);
     const parsedRes = UploadFilesResponseSchema.parse(res.data);
     return parsedRes.filesUploaded;
 };

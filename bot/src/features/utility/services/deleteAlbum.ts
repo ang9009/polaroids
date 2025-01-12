@@ -1,7 +1,8 @@
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { ApiErrorType } from "shared/src/error-codes/apiErrorType";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { ApiErrorResponseSchema } from "shared/src/responses/error/apiErrorResponse";
+import { apiClient } from "../../../lib/axios";
 
 /**
  * Deletes an album, provided that it has no associated files.
@@ -12,7 +13,7 @@ export const deleteAlbum = async (albumId: string) => {
   const url = `${DB_API_URL}/albums/${albumId}`;
 
   try {
-    await axios.delete(url);
+    await apiClient.delete(url);
   } catch (err) {
     if (isAxiosError(err)) {
       const parsedRes = ApiErrorResponseSchema.safeParse(err.response?.data);

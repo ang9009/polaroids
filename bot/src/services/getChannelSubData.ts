@@ -1,9 +1,9 @@
-import axios from "axios";
 import {
   IsSubscribedResponse,
   IsSubscribedResponseSchema,
 } from "shared/src/responses/subscribed-channels/isSubscribed";
 import { DbApiRoutes } from "../data/dbApiRoutes";
+import { apiClient } from "../lib/axios";
 import { getDbApiUrl } from "../utils/getDbApiUrl";
 
 /**
@@ -17,7 +17,7 @@ export const getChannelSubData = async (channelId: string): Promise<IsSubscribed
   const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "is-subscribed", channelId);
   let res;
   try {
-    res = await axios.get(url);
+    res = await apiClient.get(url);
   } catch (err) {
     throw Error("channelIsSubscribed Axios request failed: " + err);
   }

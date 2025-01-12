@@ -1,7 +1,7 @@
-import axios from "axios";
 import { Album } from "backend/node_modules/.prisma/client";
 import { GetAlbumsResponseSchema } from "shared/src/responses/albums/getAlbums";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { apiClient } from "../../../lib/axios";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
 /**
@@ -12,7 +12,7 @@ export const getAlbums = async (): Promise<Album[]> => {
   const url = getDbApiUrl(DbApiRoutes.ALBUMS);
   let res;
   try {
-    res = await axios.get(url);
+    res = await apiClient.get(url);
   } catch (err) {
     throw Error("getAlbumNames Axios request failed: " + err);
   }

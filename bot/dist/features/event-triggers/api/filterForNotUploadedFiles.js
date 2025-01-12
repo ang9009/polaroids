@@ -1,5 +1,5 @@
-import axios from "axios";
 import { FilterExistingFileIdsResponseSchema } from "shared/src/responses/files/filterExistingFileIds";
+import { apiClient } from "../../../lib/axios";
 /**
  * Filters a given list of files for files that have not already been uploaded.
  * @param files the files in question
@@ -12,7 +12,7 @@ export const filterForNotUploadedFiles = async (files) => {
     const params = {
         fileIds: ids,
     };
-    const res = await axios.get(url, { params });
+    const res = await apiClient.get(url, { params });
     const parseRes = FilterExistingFileIdsResponseSchema.parse(res.data);
     const filteredIds = new Set(parseRes.filteredIds);
     const filteredFiles = files.filter((file) => filteredIds.has(file.discordId));

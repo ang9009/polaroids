@@ -10,10 +10,10 @@ import {
   StringSelectMenuInteraction,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { getAlbums } from "../api/getAlbums";
 import { AlbumDropdownSelection } from "../data/albumDropdownSelection";
 import { AlbumSelectionData } from "../data/albumSelectionData";
 import { AlbumSelectionType } from "../data/albumSelectionType";
+import { getAlbums } from "../services/getAlbums";
 import { getAlbumModal } from "./getAlbumModal";
 import { getAlbumModalInputs } from "./getAlbumModalInputs";
 

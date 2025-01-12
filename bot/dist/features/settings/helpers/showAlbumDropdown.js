@@ -1,6 +1,6 @@
 import { ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, } from "discord.js";
-import { getAlbums } from "../api/getAlbums";
 import { AlbumSelectionType } from "../data/albumSelectionType";
+import { getAlbums } from "../services/getAlbums";
 import { getAlbumModal } from "./getAlbumModal";
 import { getAlbumModalInputs } from "./getAlbumModalInputs";
 /**

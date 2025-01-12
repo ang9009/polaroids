@@ -1,5 +1,6 @@
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { SlashCommandBuilder } from "discord.js";
+import { apiClient } from "../../../lib/axios";
 import { getChannelSubData } from "../../../services/getChannelSubData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 const data = new SlashCommandBuilder()
@@ -36,7 +37,7 @@ const execute = async (interaction) => {
     const { DB_API_URL } = process.env;
     const url = `${DB_API_URL}/subscribed-channels/${channel.id}`;
     try {
-        await axios.delete(url);
+        await apiClient.delete(url);
     }
     catch (err) {
         if (isAxiosError(err)) {

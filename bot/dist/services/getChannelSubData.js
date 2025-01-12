@@ -1,6 +1,6 @@
-import axios from "axios";
 import { IsSubscribedResponseSchema, } from "shared/src/responses/subscribed-channels/isSubscribed";
 import { DbApiRoutes } from "../data/dbApiRoutes";
+import { apiClient } from "../lib/axios";
 import { getDbApiUrl } from "../utils/getDbApiUrl";
 /**
  * Checks if polaroids has subscribed to a given channel. If it has, this
@@ -13,7 +13,7 @@ export const getChannelSubData = async (channelId) => {
     const url = getDbApiUrl(DbApiRoutes.SUBSCRIBED_CHANNELS, "is-subscribed", channelId);
     let res;
     try {
-        res = await axios.get(url);
+        res = await apiClient.get(url);
     }
     catch (err) {
         throw Error("channelIsSubscribed Axios request failed: " + err);

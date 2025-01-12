@@ -1,10 +1,11 @@
-import axios from "axios";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { UpdateChannelAlbumRequest } from "shared/src/requests/subscribed-channels/updateChannelAlbum";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { isAxiosErrorResponse } from "../../../utils/ensureAxiosErrorResponse";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
+import { apiClient } from "../../../lib/axios";
+
 /**
  * Links a channel to a new existing album. Includes the option of creating a channel.
  * @param albumId the id of the new album
@@ -17,7 +18,7 @@ export const setChannelAlbum = async (albumId: string, channelId: string, guildI
   const data: UpdateChannelAlbumRequest = { guildId, channelId, albumId };
 
   try {
-    await axios.patch(url, data);
+    await apiClient.patch(url, data);
   } catch (err) {
     if (isAxiosErrorResponse(err)) {
       const errorRes = err.response?.data;

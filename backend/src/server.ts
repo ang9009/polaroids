@@ -64,6 +64,8 @@ const apiKeyStrategy = new HeaderAPIKeyStrategy(
   { header: "Authorization", prefix: "Api-Key " },
   false,
   (apiKey, done) => {
+    // Probably not the best way to do it, but this only has one client (the bot) so this is
+    // fine for now
     if (apiKey === process.env.BOT_API_KEY) {
       return done(null, {});
     }

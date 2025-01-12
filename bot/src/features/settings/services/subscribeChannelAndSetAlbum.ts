@@ -1,4 +1,3 @@
-import axios from "axios";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { AddSubbedChannelRequest } from "shared/src/requests/subscribed-channels/addSubbedChannel";
 import { AlbumRequestType } from "shared/src/requests/subscribed-channels/types/albumRequestType";
@@ -6,6 +5,7 @@ import { DbApiRoutes } from "../../../data/dbApiRoutes";
 import { isAxiosErrorResponse } from "../../../utils/ensureAxiosErrorResponse";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
+import { apiClient } from "../../../lib/axios";
 
 /**
  * Subscribes polaroids to the given channel, then sets its linked album to a
@@ -28,7 +28,7 @@ export const subscribeChannelAndSetAlbum = async (
   };
 
   try {
-    await axios.post(url, data);
+    await apiClient.post(url, data);
   } catch (err) {
     if (isAxiosErrorResponse(err)) {
       const errorRes = err.response?.data;

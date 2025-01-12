@@ -6,7 +6,7 @@ import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { performBackupWithProgress } from "../../settings/helpers/performBackupWithProgress";
 import { showAlbumDropdown } from "../../settings/helpers/showAlbumDropdown";
-import { createAlbum } from "../api/createAlbum";
+import { createAlbum } from "../services/createAlbum";
 
 /**
  * A command that backs up all the images/videos in the current channel that have not

@@ -1,5 +1,6 @@
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { apiClient } from "../../../lib/axios";
 import { getChannelSubData } from "../../../services/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
@@ -44,7 +45,7 @@ const execute = async (interaction: ChatInputCommandInteraction) => {
   const { DB_API_URL } = process.env;
   const url = `${DB_API_URL}/subscribed-channels/${channel.id}`;
   try {
-    await axios.delete(url);
+    await apiClient.delete(url);
   } catch (err) {
     if (isAxiosError(err)) {
       console.error("Failed to unsubscribe: " + err.message);

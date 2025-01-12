@@ -4,7 +4,7 @@ import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { uploadAttachmentsWithProgress } from "../../event-triggers/helpers/uploadFilesWithProgress";
 import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { showAlbumDropdown } from "../../settings/helpers/showAlbumDropdown";
-import { createAlbum } from "../api/createAlbum";
+import { createAlbum } from "../services/createAlbum";
 
 /**
  * Uploads files attached to a specified message (using its message id).

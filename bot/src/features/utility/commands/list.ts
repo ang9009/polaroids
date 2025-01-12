@@ -4,8 +4,8 @@ import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
-import { getAlbums } from "../../settings/api/getAlbums";
-import { getSubbedChannelsInfo } from "../api/getSubbedChannelsInfo";
+import { getAlbums } from "../../settings/services/getAlbums";
+import { getSubbedChannelsInfo } from "../services/getSubbedChannelsInfo";
 
 enum ListCommandArgument {
   ALBUMS = "albums",

@@ -1,6 +1,6 @@
-import axios from "axios";
 import "dotenv/config";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { apiClient } from "../../../lib/axios";
 import { isAxiosErrorResponse } from "../../../utils/ensureAxiosErrorResponse";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
@@ -12,7 +12,7 @@ import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 export const addGuildToDb = async (guildId) => {
     const url = getDbApiUrl(DbApiRoutes.GUILDS);
     try {
-        await axios.post(url, { guildId });
+        await apiClient.post(url, { guildId });
     }
     catch (err) {
         if (!isAxiosErrorResponse(err)) {

@@ -1,5 +1,5 @@
-import axios from "axios";
 import { FilterExistingFileIdsResponseSchema } from "shared/src/responses/files/filterExistingFileIds";
+import { apiClient } from "../../../lib/axios";
 import { FileData } from "../types/fileData";
 
 /**
@@ -14,7 +14,7 @@ export const filterForNotUploadedFiles = async (files: FileData[]): Promise<File
   const params = {
     fileIds: ids,
   };
-  const res = await axios.get(url, { params });
+  const res = await apiClient.get(url, { params });
   const parseRes = FilterExistingFileIdsResponseSchema.parse(res.data);
   const filteredIds = new Set(parseRes.filteredIds);
 

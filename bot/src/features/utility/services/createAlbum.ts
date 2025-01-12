@@ -1,8 +1,8 @@
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { CreateAlbumRequestBody } from "shared/src/requests/albums/createAlbum";
 import { CreateAlbumResponseSchema } from "shared/src/responses/albums/createAlbum";
-
+import { apiClient } from "../../../lib/axios";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
 
 /**
@@ -19,7 +19,7 @@ export const createAlbum = async (albumName: string, albumDesc: string | null) =
 
   let res;
   try {
-    res = await axios.post(url, body);
+    res = await apiClient.post(url, body);
   } catch (err) {
     if (isAxiosError(err)) {
       const errorRes = err.response?.data;

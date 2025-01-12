@@ -1,5 +1,5 @@
-import axios from "axios";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { apiClient } from "../../../lib/axios";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
 /**
@@ -10,7 +10,7 @@ export const deleteGuildFromDb = async (guildId: string) => {
   const url = getDbApiUrl(DbApiRoutes.GUILDS);
 
   try {
-    await axios.delete(`${url}/${guildId}`);
+    await apiClient.delete(`${url}/${guildId}`);
   } catch (err) {
     console.error("Failed to delete guildId: " + err);
   }

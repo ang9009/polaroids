@@ -9,9 +9,9 @@ import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { AlbumSelectionType } from "../../settings/data/albumSelectionType";
 import { getAlbumModal } from "../../settings/helpers/getAlbumModal";
 import { getAlbumModalInputs } from "../../settings/helpers/getAlbumModalInputs";
-import { createAlbum } from "../api/createAlbum";
-import { deleteAlbum } from "../api/deleteAlbum";
-import { editAlbum } from "../api/editAlbum";
+import { createAlbum } from "../services/createAlbum";
+import { deleteAlbum } from "../services/deleteAlbum";
+import { editAlbum } from "../services/editAlbum";
 import { showAlbumDropdown } from "./../../settings/helpers/showAlbumDropdown";
 
 enum SubCommand {

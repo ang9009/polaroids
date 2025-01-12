@@ -1,7 +1,8 @@
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { DbErrorCode } from "shared/src/error-codes/dbErrorCode";
 import { EditAlbumRequestData } from "shared/src/requests/albums/editAlbum";
 import { isDbExceptionResponse } from "../../../utils/isDbExceptionResponse";
+import { apiClient } from "../../../lib/axios";
 
 /**
  * Updates an album's name and/or description.
@@ -23,7 +24,7 @@ export const editAlbum = async (
   };
 
   try {
-    await axios.patch(url, data);
+    await apiClient.patch(url, data);
   } catch (err) {
     if (isAxiosError(err)) {
       const errorRes = err.response?.data;

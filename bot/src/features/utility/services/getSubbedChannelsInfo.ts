@@ -1,9 +1,10 @@
-import axios from "axios";
 import { GetAllSubbedChannelsRequestBody } from "shared/src/requests/subscribed-channels/getAllSubbedChannels";
 import {
   GetSubbedChannelsResponse,
   GetSubbedChannelsResponseSchema,
 } from "shared/src/responses/subscribed-channels/getSubbedChannels";
+import { apiClient } from "../../../lib/axios";
+
 /**
  * Retrieves information about all the channels that polaroids is subscribed to
  * in a specified guild.
@@ -20,7 +21,7 @@ export const getSubbedChannelsInfo = async (
     guildId: guildId,
   };
 
-  const res = await axios.get(url, { data: data });
+  const res = await apiClient.get(url, { data: data });
   const parseRes = GetSubbedChannelsResponseSchema.parse(res.data);
 
   return parseRes;

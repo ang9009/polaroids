@@ -1,5 +1,6 @@
-import axios, { isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { DbApiRoutes } from "../../../data/dbApiRoutes";
+import { apiClient } from "../../../lib/axios";
 import { getDbApiUrl } from "../../../utils/getDbApiUrl";
 
 /**
@@ -9,8 +10,11 @@ import { getDbApiUrl } from "../../../utils/getDbApiUrl";
  */
 export const checkAlbumExists = async (albumName: string): Promise<boolean> => {
   const url = getDbApiUrl(DbApiRoutes.ALBUMS, "album-exists", `${albumName}`);
+  const headers = {
+    Authorization: `ApiKey ${process.env.BOT_API_KEY}`,
+  };
   try {
-    await axios.head(url);
+    await apiClient.head(url, { headers });
   } catch (err) {
     if (isAxiosError(err) && err.status === 404) {
       return false;

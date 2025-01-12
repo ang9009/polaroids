@@ -19,6 +19,16 @@ export const getInfo = (req: Request, res: Response, next: NextFunction) => {
  */
 export const discordLogout = (req: Request, res: Response, next: NextFunction) => {
   req.logout(() => {
-    res.redirect("/");
+    res.json({ message: "Successfully logged out" });
   });
+};
+
+/**
+ * Verifies if the user is whitelisted. If not, this logs the user out.
+ */
+export const discordLogin = (req: Request, res: Response, next: NextFunction) => {
+  // ! Check if the user is whitelisted
+  // req.logout(() => {
+  //   res.json({ message: "Successfully logged out" });
+  // });
 };

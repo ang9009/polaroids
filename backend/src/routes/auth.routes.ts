@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import { discordLogout, getInfo } from "../controllers/auth.controller";
+import { discordLogin, discordLogout, getInfo } from "../controllers/auth.controller";
 import { discordScopes } from "../data/discordScopes";
 import { checkAuth } from "../middleware/checkAuth";
 
@@ -20,10 +20,14 @@ discordRouter.get(
 );
 
 // Used to login via Discord OAuth 2.0
-discordRouter.get("/login", passport.authenticate("discord", { scope: discordScopes }));
+discordRouter.post(
+  "/login",
+  passport.authenticate("discord", { scope: discordScopes }),
+  discordLogin
+);
 
 // Logs the user out if they were previously logged in with Discord
-discordRouter.get("/logout", checkAuth, discordLogout);
+discordRouter.post("/logout", checkAuth, discordLogout);
 
 // Gets information about the currently logged in user (logged in via Discord)
 discordRouter.get("/info", checkAuth, getInfo);

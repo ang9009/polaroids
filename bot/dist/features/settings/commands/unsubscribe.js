@@ -1,6 +1,6 @@
 import axios, { isAxiosError } from "axios";
 import { SlashCommandBuilder } from "discord.js";
-import { getChannelSubData } from "../../../api/getChannelSubData";
+import { getChannelSubData } from "../../../services/getChannelSubData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 const data = new SlashCommandBuilder()
     .setName("unsubscribe")

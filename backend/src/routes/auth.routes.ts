@@ -29,4 +29,5 @@ discordRouter.get("/logout", checkAuth, discordLogout);
 discordRouter.get("/info", checkAuth, getInfo);
 
 router.use("/discord", discordRouter);
+
 export default router;

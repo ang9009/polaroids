@@ -1,6 +1,6 @@
 import axios, { isAxiosError } from "axios";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { getChannelSubData } from "../../../api/getChannelSubData";
+import { getChannelSubData } from "../../../services/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 

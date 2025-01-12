@@ -1,4 +1,5 @@
 import { Button } from "@chakra-ui/react";
+import DiscordIcon from "../../public/discord-icon.svg?react";
 import LoginCSS from "./Login.module.css";
 
 const Login = () => {
@@ -7,10 +8,11 @@ const Login = () => {
       <div className={LoginCSS["card-container"]}>
         <h1>Welcome back</h1>
         <p>Sign in to your account</p>
-        <Button colorPalette={"cyan"} variant={"surface"} size={"xl"}>
+        <Button colorPalette={"purple"} variant={"surface"} size={"xl"}>
+          <DiscordIcon className={LoginCSS["discord-icon"]} />
           Sign in with Discord
         </Button>
-        <p>This instance of polaroids is restricted to whitelisted users</p>
+        <p>This instance of polaroids is restricted to whitelisted users.</p>
       </div>
     </div>
   );

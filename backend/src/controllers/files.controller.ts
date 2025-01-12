@@ -7,7 +7,7 @@ import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/fi
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
 import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
-import { uploadFilesToFS } from "../api/uploadFilesToFS";
+import { uploadFilesToFS } from "../services/uploadFilesToFS";
 import prisma from "../lib/prisma";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";

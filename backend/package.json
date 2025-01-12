@@ -26,6 +26,7 @@
     "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-discord": "^0.1.4",
+    "passport-headerapikey": "^1.2.2",
     "puppeteer": "^23.10.1",
     "uuid": "^11.0.3",
     "zod-prisma-types": "^3.2.1"

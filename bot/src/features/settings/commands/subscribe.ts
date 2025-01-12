@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
 import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/isSubscribed";
-import { getChannelSubData } from "../../../api/getChannelSubData";
+import { getChannelSubData } from "../../../services/getChannelSubData";
 import { CommandData } from "../../../types/commandData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";

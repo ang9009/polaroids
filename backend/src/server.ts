@@ -6,6 +6,7 @@ import express, { Router } from "express";
 import session from "express-session";
 import passport from "passport";
 import DiscordStrategy from "passport-discord";
+import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 import { discordScopes } from "./data/discordScopes";
 import { checkAuth } from "./middleware/checkAuth";
 import { errorHandler } from "./middleware/errorHandler";
@@ -47,7 +48,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Passport js setup
+// Passport strategies
 const discordStrategy = new DiscordStrategy(
   {
     clientID: process.env.DISCORD_CLIENT_ID!,
@@ -59,7 +60,18 @@ const discordStrategy = new DiscordStrategy(
     process.nextTick(() => cb(null, profile));
   }
 );
+const apiKeyStrategy = new HeaderAPIKeyStrategy(
+  { header: "Authorization", prefix: "Api-Key " },
+  false,
+  (apiKey, done) => {
+    if (apiKey === process.env.BOT_API_KEY) {
+      return done(null, {});
+    }
+    done(null, false);
+  }
+);
 passport.use(discordStrategy);
+passport.use(apiKeyStrategy);
 passport.serializeUser(function (user, done) {
   done(null, user);
 });
@@ -80,7 +92,6 @@ unprotectedRoutes.use("/auth", auth);
 app.use("/api", unprotectedRoutes);
 app.use("/api", checkAuth, protectedRoutes);
 
-// Error handlers
 app.use(errorHandler);
 app.use(notFound);
 

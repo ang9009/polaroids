@@ -1,6 +1,6 @@
 import { Attachment, Events, Message } from "discord.js";
 import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
-import { getChannelSubData } from "../../../api/getChannelSubData";
+import { getChannelSubData } from "../../../services/getChannelSubData";
 import { EventData } from "../../../types/eventData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { uploadAttachmentsWithProgress } from "../helpers/uploadFilesWithProgress";

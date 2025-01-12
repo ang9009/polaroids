@@ -2,6 +2,7 @@ import { EmbedBuilder } from "@discordjs/builders";
 import { SlashCommandBuilder } from "discord.js";
 import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
+import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { getAlbums } from "../../settings/api/getAlbums";
 import { getSubbedChannelsInfo } from "../api/getSubbedChannelsInfo";
 var ListCommandArgument;
@@ -77,7 +78,17 @@ const handleListChannelsInteraction = async (interaction) => {
  * @param interaction the ongoing interaction
  */
 const handleListAlbumsInteraction = async (interaction) => {
-    const albums = await getAlbums();
+    let albums;
+    try {
+        albums = await getAlbums();
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            const errEmbed = getErrorEmbed(err.message);
+            await interaction.editReply({ embeds: [errEmbed] });
+        }
+        return;
+    }
     if (albums.length === 0) {
         await interaction.editReply("No albums found. To create an album, use the command `/album create`.");
         return;

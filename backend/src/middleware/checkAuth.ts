@@ -1,4 +1,6 @@
+/* eslint-disable jsdoc/require-returns */
 import { NextFunction, Request, Response } from "express";
+import passport from "passport";
 import HttpStatusCode from "../data/httpStatusCode";
 
 /**
@@ -8,6 +10,12 @@ import HttpStatusCode from "../data/httpStatusCode";
  * @param next the next function
  */
 export const checkAuth = (req: Request, res: Response, next: NextFunction) => {
+  if (req.headers.authorization) {
+    return passport.authenticate("headerapikey", {
+      session: false,
+    })(req, res, next);
+  }
+
   if (req.isAuthenticated()) {
     return next();
   }

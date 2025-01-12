@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, TextChannel } from "discord.js";
-import { getChannelSubData } from "../../../api/getChannelSubData";
+import { getChannelSubData } from "../../../services/getChannelSubData";
 import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { handleAlbumSelection } from "../helpers/handleAlbumSelection";

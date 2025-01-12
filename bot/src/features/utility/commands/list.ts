@@ -3,6 +3,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { footerCredits } from "../../../data/constants";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { CommandData } from "../../../types/commandData";
+import { getErrorEmbed } from "../../../utils/getErrorEmbed";
 import { getAlbums } from "../../settings/api/getAlbums";
 import { getSubbedChannelsInfo } from "../api/getSubbedChannelsInfo";
 
@@ -95,7 +96,16 @@ const handleListChannelsInteraction = async (interaction: ChatInputCommandIntera
  * @param interaction the ongoing interaction
  */
 const handleListAlbumsInteraction = async (interaction: ChatInputCommandInteraction) => {
-  const albums = await getAlbums();
+  let albums;
+  try {
+    albums = await getAlbums();
+  } catch (err) {
+    if (err instanceof Error) {
+      const errEmbed = getErrorEmbed(err.message);
+      await interaction.editReply({ embeds: [errEmbed] });
+    }
+    return;
+  }
   if (albums.length === 0) {
     await interaction.editReply(
       "No albums found. To create an album, use the command `/album create`.",

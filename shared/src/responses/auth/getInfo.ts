@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const GetInfoResponseSchema = z.object({
+export const GetUserInfoResponseSchema = z.object({
   avatar: z.string(),
   username: z.string(),
 });
 
-export type GetInfoResponse = z.infer<typeof GetInfoResponseSchema>;
+export type GetUserInfoResponse = z.infer<typeof GetUserInfoResponseSchema>;

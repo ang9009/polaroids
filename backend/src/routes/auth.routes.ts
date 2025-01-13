@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import { discordLogin, discordLogout, getInfo } from "../controllers/auth.controller";
+import { discordLogout, getInfo } from "../controllers/auth.controller";
 import { discordScopes } from "../data/discordScopes";
 import { checkAuth } from "../middleware/checkAuth";
 
@@ -13,18 +13,13 @@ const discordRouter = express.Router();
 discordRouter.get(
   "/callback",
   passport.authenticate("discord", {
-    // ! This should redirect to the frontend.
-    failureRedirect: "/api/auth/discord/login?error=auth_failed",
-    successRedirect: "/api/auth/discord/info",
+    failureRedirect: `${process.env.WEBSITE_LOGIN_URL}?error=auth_failed`,
+    successRedirect: process.env.WEBSITE_URL,
   })
 );
 
 // Used to login via Discord OAuth 2.0
-discordRouter.post(
-  "/login",
-  passport.authenticate("discord", { scope: discordScopes }),
-  discordLogin
-);
+discordRouter.post("/login", passport.authenticate("discord", { scope: discordScopes }));
 
 // Logs the user out if they were previously logged in with Discord
 discordRouter.post("/logout", checkAuth, discordLogout);

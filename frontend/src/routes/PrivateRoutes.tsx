@@ -1,11 +1,13 @@
-import { useContext } from "react";
 import { Navigate, Outlet } from "react-router";
-import { UserContext } from "../context/user/UserContext";
+import { useUser } from "../hooks/useUser";
 
+/**
+ * Redirects users to the login page unless authenticated.
+ */
 const PrivateRoutes = () => {
-  const user = useContext(UserContext);
+  const { isPending, data: user } = useUser();
 
-  return user ? <Outlet /> : <Navigate to="/login" />;
+  return isPending ? <></> : user ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default PrivateRoutes;

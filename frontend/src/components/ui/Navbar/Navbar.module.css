@@ -3,9 +3,11 @@
   padding: 15px 40px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid "{colors.border.value}";
+  justify-content: space-between;
+  border-bottom: 1px solid;
 }
 
+/* Logo */
 .logo {
   display: flex;
   align-items: center;

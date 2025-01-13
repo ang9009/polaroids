@@ -10,7 +10,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "chakra": "npx @chakra-ui/cli typegen ./src/data/chakraConfig.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.3.1",
@@ -22,6 +23,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.4.0",
+    "react-loading-skeleton": "^3.5.0",
     "react-query": "^3.39.3",
     "react-router": "^7.1.1",
     "zod": "^3.24.1"

@@ -9,7 +9,7 @@ const config = defineConfig({
         border: { value: "#18181b" },
       },
       borders: {
-        darkGray: { value: "1px solid #18181b" },
+        primary: { value: "1px solid #27272a" },
       },
       sizes: {
         navbarHeight: { value: "10vh" },

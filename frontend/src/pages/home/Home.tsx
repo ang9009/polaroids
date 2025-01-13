@@ -1,9 +1,8 @@
+/**
+ * The homepage. Displays a gallery of all photos.
+ */
 const Home = () => {
-  return (
-    <div>
-      <h1>Test</h1>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default Home;

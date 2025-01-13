@@ -4,6 +4,8 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import App from "./App.tsx";
 import { Provider } from "./components/ui/provider.tsx";
+import { Toaster } from "./components/ui/toaster.tsx";
+import UserProvider from "./context/user/UserProvider.tsx";
 import system from "./data/chakraConfig.ts";
 import "./index.css";
 
@@ -12,7 +14,10 @@ createRoot(document.getElementById("root")!).render(
     <Provider>
       <BrowserRouter>
         <ChakraProvider value={system}>
-          <App />
+          <UserProvider>
+            <App />
+          </UserProvider>
+          <Toaster />
         </ChakraProvider>
       </BrowserRouter>
     </Provider>

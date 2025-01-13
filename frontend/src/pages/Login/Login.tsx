@@ -1,6 +1,8 @@
 import { Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
 import { Button } from "../../components/ui/button";
+import { toaster } from "../../components/ui/toaster";
 import { ApiRoutes } from "../../data/apiRoutes";
 import DiscordIcon from "../../public/discord_icon.svg?react";
 import LoginCSS from "./Login.module.css";
@@ -8,6 +10,20 @@ import LoginCSS from "./Login.module.css";
 const Login = () => {
   const { VITE_API_URL } = import.meta.env;
   const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const error = searchParams.get("error");
+
+  useEffect(() => {
+    if (error) {
+      toaster.create({
+        title: "Login failed",
+        description: "Please try again",
+        type: "error",
+        duration: 3000,
+        action: { label: "Dismiss", onClick: () => {} },
+      });
+    }
+  }, [error]);
 
   return (
     <div className={LoginCSS["page-container"]}>

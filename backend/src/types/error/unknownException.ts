@@ -22,7 +22,7 @@ class UnknownException implements HttpException {
 
   // eslint-disable-next-line jsdoc/require-jsdoc
   getResponse(): unknown {
-    return { errorType: ApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
+    return { errorType: ApiErrorType.UNKNOWN_EXCEPTION, message: this?.message };
   }
 }
 

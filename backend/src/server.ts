@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import cors from "cors";
 import dotenv from "dotenv";
 import "dotenv/config";
 import express, { Router } from "express";
@@ -23,6 +24,11 @@ dotenv.config();
 const port = process.env.PORT;
 const app = express();
 
+app.use(
+  cors({
+    origin: process.env.WEBSITE_URL,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger);

@@ -27,6 +27,7 @@ export const discordLogout = (req: Request, res: Response, next: NextFunction) =
  * Verifies if the user is whitelisted. If not, this logs the user out.
  */
 export const discordLogin = (req: Request, res: Response, next: NextFunction) => {
+  res.redirect();
   // ! Check if the user is whitelisted
   // req.logout(() => {
   //   res.json({ message: "Successfully logged out" });

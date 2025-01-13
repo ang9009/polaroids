@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import HttpStatusCode from "../data/httpStatusCode";
-import { HttpExceptionSchema } from "../types/error/httpException";
+import { HttpException, HttpExceptionSchema } from "../types/error/httpException";
 
 /**
  * Universal error handler middleware.
@@ -12,11 +12,13 @@ import { HttpExceptionSchema } from "../types/error/httpException";
 export const errorHandler = (err: unknown, req: Request, res: Response, next: NextFunction) => {
   const parseErr = HttpExceptionSchema.safeParse(err);
   if (parseErr.success) {
-    const { status, getResponse } = parseErr.data;
-    res.status(status).json(getResponse());
+    const httpException = err as HttpException;
+    res.status(httpException.status).json(httpException.getResponse());
+    console.log(httpException.getResponse());
     return;
   } else if (err instanceof Error) {
     res.status(HttpStatusCode.INTERNAL_SERVER_ERROR).send(err.message);
+    console.log(err.message);
     return;
   }
 

@@ -1,4 +1,5 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Icon, IconButton } from "@chakra-ui/react";
+import { AiFillGithub } from "react-icons/ai";
 import { useNavigate } from "react-router";
 import { SkeletonText } from "../../../components/ui/skeleton";
 import { useUser } from "../../../hooks/useUser";
@@ -7,7 +8,7 @@ import { UserWidget } from "./../UserWidget/UserWidget";
 import NavbarCSS from "./Navbar.module.css";
 
 /**
- * A navbar that displays the logo.
+ * A navbar that displays the logo and a user widget.
  */
 const Navbar = () => {
   const navigate = useNavigate();
@@ -24,7 +25,17 @@ const Navbar = () => {
         <img src={polaroidsIcon} alt="" />
         <h1>polaroids</h1>
       </div>
-      <div>
+      <div className={NavbarCSS["nav-right"]}>
+        <IconButton
+          variant="surface"
+          onClick={() => {
+            window.open("https://github.com/ang9009/polaroids", "_blank");
+          }}
+        >
+          <Icon size="md">
+            <AiFillGithub />
+          </Icon>
+        </IconButton>
         {isPending ? (
           <SkeletonText noOfLines={2} width="40" />
         ) : (

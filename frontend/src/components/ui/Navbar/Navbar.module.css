@@ -26,3 +26,15 @@
   border-radius: 1rem;
   margin-right: 0.7rem;
 }
+
+/* Nav right */
+/* User widget */
+.nav-right {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav-right > *:not(:last-child) {
+  margin-right: 1rem;
+}

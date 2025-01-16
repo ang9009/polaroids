@@ -4,11 +4,13 @@ import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
+import { GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
 import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
 import prisma from "../lib/prisma";
-import { uploadFilesToFS } from "../services/uploadFilesToFS";
+import { getFileData } from "../services/db/getFileData";
+import { uploadFilesToFS } from "../services/filestation/uploadFilesToFS";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
@@ -161,4 +163,28 @@ export const filterExistingFileIds = async (
   }
 
   res.status(HttpStatusCode.Ok).send({ filteredIds });
+};
+
+/**
+ * Retrieves files paginated via cursor-based pagination.
+ *
+ * Route: GET /api/files
+ *
+ */
+export const getFiles = async (req: Request, res: Response, next: NextFunction) => {
+  const parseParams = GetFilesRequestSchema.safeParse(req.query);
+  if (!parseParams.success) {
+    const error = new ValidationException(parseParams.error);
+    return next(error);
+  }
+
+  let fileData: { discordId: string }[];
+  try {
+    fileData = await getFileData(parseParams.data);
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+
+  const fileStationQuery = fileData.map((file) => file.discordId).join(",");
 };

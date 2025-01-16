@@ -5,11 +5,11 @@ import dotenv from "dotenv";
 import "dotenv/config";
 import express, { Router } from "express";
 import session from "express-session";
+import helmet from "helmet";
 import passport from "passport";
 import DiscordStrategy from "passport-discord";
 import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 import { discordScopes } from "./data/discordScopes";
-import { checkAuth } from "./middleware/checkAuth";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -24,6 +24,7 @@ dotenv.config();
 const port = process.env.PORT;
 const app = express();
 
+app.use(helmet());
 app.use(
   cors({
     credentials: true,
@@ -31,7 +32,7 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 
 // Express session and passport middleware
@@ -99,7 +100,7 @@ const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);
 
 app.use("/api", unprotectedRoutes);
-app.use("/api", checkAuth, protectedRoutes);
+app.use("/api", protectedRoutes);
 
 app.use(errorHandler);
 app.use(notFound);

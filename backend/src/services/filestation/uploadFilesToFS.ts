@@ -3,7 +3,7 @@ import "dotenv/config";
 import {
   FSWebUploadResponse,
   FSWebUploadResponseSchema,
-} from "../types/filestation/FSWebUploadResponse";
+} from "../../types/filestation/FSWebUploadResponse";
 import { FileStationCredentials } from "./fileStationCredentials";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 

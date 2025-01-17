@@ -185,6 +185,4 @@ export const getFiles = async (req: Request, res: Response, next: NextFunction) 
     const error = getDbExFromPrismaErr(err);
     return next(error);
   }
-
-  const fileStationQuery = fileData.map((file) => file.discordId).join(",");
 };

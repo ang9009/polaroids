@@ -20,7 +20,7 @@ const Sidebar = () => {
       width={"20rem"}
       height={"calc(100vh - {sizes.navbarHeight})"}
     >
-      <Tabs.Root variant={"subtle"} orientation={"vertical"}>
+      <Tabs.Root variant={"subtle"} orientation={"vertical"} defaultValue={"media"}>
         <Tabs.List width={"100%"}>
           <Tabs.Trigger value="media">
             <IoIosImages />

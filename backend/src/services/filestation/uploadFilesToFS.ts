@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from "axios";
 import "dotenv/config";
+import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
 import {
   FSWebUploadResponse,
   FSWebUploadResponseSchema,
@@ -45,7 +46,9 @@ async function uploadFile(file: Express.Multer.File): Promise<FSWebUploadRespons
   const blob = new Blob([file.buffer], { type: file.mimetype });
   form.append("overwrite", "false");
   form.append("path", FS_FOLDER_PATH!);
-  form.append("file", blob, file.originalname);
+  const discordId = file.originalname;
+  const extension = getExtensionFromMimeType(file.mimetype);
+  form.append("file", blob, `${discordId}.${extension}`);
 
   const res = await axios.post(url, form, { headers: headers });
   const parsedRes = FSWebUploadResponseSchema.safeParse(res.data);

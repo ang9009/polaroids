@@ -1,5 +1,5 @@
 import { Attachment } from "discord.js";
-import { getExtensionFromMimeType } from "../helpers/mimeToExtension";
+import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
 import { FileData } from "../types/fileData";
 
 /**

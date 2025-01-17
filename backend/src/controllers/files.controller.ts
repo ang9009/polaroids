@@ -20,7 +20,8 @@ import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 
 /**
- * Uploads the given files to FileStation, and tracks each photo/video in the database.
+ * Uploads the given files to FileStation, and tracks each photo/video in the
+ * database. Note that each file will be saved as discordId.fileExtension in FileStation.
  *
  * Route: POST /api/files
  *

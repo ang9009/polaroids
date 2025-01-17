@@ -1,4 +1,4 @@
-import { getExtensionFromMimeType } from "../helpers/mimeToExtension";
+import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
 /**
  * Returns the blob and its name fetched from the given url.
  * @param attachment the attachment in question

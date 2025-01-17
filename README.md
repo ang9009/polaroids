@@ -107,3 +107,10 @@ folder to update the bot:
 ```
 npm run deploycommands
 ```
+
+### File storage
+
+The discord attachment id is used as the file id. On FileStation, each file is
+saved under the name "discordId.fileExtension". For example, if the file saved
+is a .png image and the discordId is 1234, the name of the file on FileStation
+would be 1234.png. Please keep this in mind when fetching media from FileStation.

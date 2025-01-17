@@ -16,7 +16,7 @@ class UnknownException {
     }
     // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
-        return { errorType: ApiErrorType.UNKNOWN_EXCEPTION, message: this.message };
+        return { errorType: ApiErrorType.UNKNOWN_EXCEPTION, message: this === null || this === void 0 ? void 0 : this.message };
     }
 }
 export default UnknownException;

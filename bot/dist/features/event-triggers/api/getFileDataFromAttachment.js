@@ -1,3 +1,4 @@
+import { getExtensionFromMimeType } from "../helpers/mimeToExtension";
 /**
  * Returns the blob and its name fetched from the given url.
  * @param attachment the attachment in question
@@ -10,6 +11,7 @@ export const getFileDataFromAttachment = async (attachment, createdAt, uploaderI
     const res = await fetch(url);
     const blob = await res.blob();
     return {
+        extension: getExtensionFromMimeType(attachment.contentType),
         blob: blob,
         fileName: name,
         discordId: id,

@@ -5,7 +5,7 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins", "fullTextSearchPostgres"]
+  previewFeatures = ["relationJoins"]
 }
 
 generator zod {
@@ -46,6 +46,7 @@ model SubscribedChannel {
 model File {
   discordId   String   @id @db.VarChar(255) /// The file's Discord attachment id
   uploaderId  String   @db.VarChar(255) /// The Discord user id of the person who sent this file
+  extension   String   @db.VarChar(255) /// The file's extension
   fileName    String   @db.VarChar(255) /// The file's name
   description String?  @db.VarChar(255) /// A description of the photo/video
   createdAt   DateTime @default(now()) /// When the file was uploaded

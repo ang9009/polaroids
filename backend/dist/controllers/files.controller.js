@@ -1,11 +1,11 @@
-/* eslint-disable jsdoc/require-returns */
-/* eslint-disable jsdoc/require-param */
 import { HttpStatusCode } from "axios";
 import multer from "multer";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
+import { GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
-import { uploadFilesToFS } from "../api/uploadFilesToFS";
 import prisma from "../lib/prisma";
+import { getFileData } from "../services/db/getFileData";
+import { uploadFilesToFS } from "../services/filestation/uploadFilesToFS";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
@@ -28,6 +28,8 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  *        fileName: string, // The name of the file
  *        createdAt: DateTime? // When the file was uploaded. If undefined, this
  *                                 will default to now
+ *        uploaderId: string, // The discord id of the uploader (user)
+ *        fileExtension: string // The file's extension
  *      }
  *      ...
  *    }
@@ -57,7 +59,6 @@ export const uploadFiles = async (req, res, next) => {
             const error = new UnknownException("No files were provided");
             return next(error);
         }
-        // Make sure that nothing goes wrong with FS upload before updating database
         const files = req.files;
         const { albumId, filesData, throwUniqueConstraintError } = parseRes.data;
         for (const file of files) {
@@ -68,35 +69,38 @@ export const uploadFiles = async (req, res, next) => {
         }
         const fileObjects = files.map((file) => {
             const fileData = filesData[file.originalname];
-            const { createdAt, fileName, uploaderId } = fileData;
-            return {
+            const { createdAt, fileName, uploaderId, fileExtension } = fileData;
+            const data = {
                 discordId: file.originalname,
                 fileName: fileName,
                 albumId: albumId,
                 createdAt: createdAt,
                 uploaderId: uploaderId,
+                extension: fileExtension,
+                description: null,
             };
+            return data;
         });
         let filesUploaded = 0;
         try {
-            const uploadRes = await prisma.file.createMany({
-                data: fileObjects,
-                skipDuplicates: !throwUniqueConstraintError,
+            await prisma.$transaction(async (tx) => {
+                const { count } = await tx.file.createMany({
+                    data: fileObjects,
+                    skipDuplicates: !throwUniqueConstraintError,
+                });
+                filesUploaded = count;
+                await uploadFilesToFS(files);
+            }, {
+                timeout: 600000, // 10 minutes YOLO
             });
-            filesUploaded = uploadRes.count;
-        }
-        catch (err) {
-            const error = getDbExFromPrismaErr(err);
-            return next(error);
-        }
-        try {
-            await uploadFilesToFS(files);
         }
         catch (err) {
             if (err instanceof Error) {
                 const error = new UnknownException(err.message);
                 return next(error);
             }
+            const error = getDbExFromPrismaErr(err);
+            return next(error);
         }
         res.status(200).send({ filesUploaded });
     });
@@ -142,4 +146,26 @@ export const filterExistingFileIds = async (req, res, next) => {
         }
     }
     res.status(HttpStatusCode.Ok).send({ filteredIds });
+};
+/**
+ * Retrieves files paginated via cursor-based pagination.
+ *
+ * Route: GET /api/files
+ *
+ */
+export const getFiles = async (req, res, next) => {
+    const parseParams = GetFilesRequestSchema.safeParse(req.query);
+    if (!parseParams.success) {
+        const error = new ValidationException(parseParams.error);
+        return next(error);
+    }
+    let fileData;
+    try {
+        fileData = await getFileData(parseParams.data);
+    }
+    catch (err) {
+        const error = getDbExFromPrismaErr(err);
+        return next(error);
+    }
+    res.json({ fileData }).status(HttpStatusCode.OK);
 };

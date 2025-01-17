@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
+import { File } from "@prisma/client";
 import { HttpStatusCode } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
@@ -35,6 +36,8 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  *        fileName: string, // The name of the file
  *        createdAt: DateTime? // When the file was uploaded. If undefined, this
  *                                 will default to now
+ *        uploaderId: string, // The discord id of the uploader (user)
+ *        fileExtension: string // The file's extension
  *      }
  *      ...
  *    }
@@ -77,15 +80,18 @@ export const uploadFiles = async (
 
     const fileObjects = files.map((file) => {
       const fileData = filesData[file.originalname];
-      const { createdAt, fileName, uploaderId } = fileData;
-
-      return {
+      const { createdAt, fileName, uploaderId, fileExtension } = fileData;
+      const data: File = {
         discordId: file.originalname,
         fileName: fileName,
         albumId: albumId,
         createdAt: createdAt,
         uploaderId: uploaderId,
+        extension: fileExtension,
+        description: null,
       };
+
+      return data;
     });
 
     let filesUploaded: number = 0;
@@ -185,4 +191,6 @@ export const getFiles = async (req: Request, res: Response, next: NextFunction) 
     const error = getDbExFromPrismaErr(err);
     return next(error);
   }
+
+  res.json({ fileData }).status(HttpStatusCode.OK);
 };

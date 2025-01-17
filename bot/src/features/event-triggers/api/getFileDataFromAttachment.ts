@@ -1,4 +1,5 @@
 import { Attachment } from "discord.js";
+import { getExtensionFromMimeType } from "../helpers/mimeToExtension";
 import { FileData } from "../types/fileData";
 
 /**
@@ -17,6 +18,7 @@ export const getFileDataFromAttachment = async (
   const res = await fetch(url);
   const blob = await res.blob();
   return {
+    extension: getExtensionFromMimeType(attachment.contentType!),
     blob: blob,
     fileName: name,
     discordId: id,

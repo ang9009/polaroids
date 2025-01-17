@@ -18,6 +18,8 @@ import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
  *        fileName: string, // The name of the file
  *        createdAt: DateTime? // When the file was uploaded. If undefined, this
  *                                 will default to now
+ *        uploaderId: string, // The discord id of the uploader (user)
+ *        fileExtension: string // The file's extension
  *      }
  *      ...
  *    }
@@ -46,3 +48,10 @@ export declare const uploadFiles: (req: Request, res: Response<UploadFilesRespon
  * }
  */
 export declare const filterExistingFileIds: (req: Request, res: Response<FilterExistingFileIdsResponse>, next: NextFunction) => Promise<void>;
+/**
+ * Retrieves files paginated via cursor-based pagination.
+ *
+ * Route: GET /api/files
+ *
+ */
+export declare const getFiles: (req: Request, res: Response, next: NextFunction) => Promise<void>;

@@ -1,10 +1,11 @@
 import { z } from "zod";
-import zu from "zod_utilz";
+import { stringToJSON } from "../../schemas/stringToJSON";
 
 export const FilesDataSchema = z.record(
   z.string(),
   z.object({
     fileName: z.string(),
+    fileExtension: z.string(),
     uploaderId: z.string(),
     createdAt: z
       .string()
@@ -13,7 +14,7 @@ export const FilesDataSchema = z.record(
   })
 );
 
-const stringToJSONSchema = zu.stringToJSON();
+const stringToJSONSchema = stringToJSON();
 
 export const UploadFilesRequestBodySchema = z.object({
   throwUniqueConstraintError: z.preprocess((val) => val === "true", z.boolean()).default(false),

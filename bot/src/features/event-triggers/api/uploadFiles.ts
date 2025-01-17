@@ -1,7 +1,7 @@
 import { FilesUploadData } from "shared/src/requests/files/uploadFiles";
 import { UploadFilesResponseSchema } from "shared/src/responses/files/getFiles";
-import { FileData } from "../types/fileData";
 import { apiClient } from "../../../lib/axios";
+import { FileData } from "../types/fileData";
 
 /**
  * Uploads the given files to the API.
@@ -27,6 +27,7 @@ export const uploadFiles = async (
       fileName: file.fileName,
       uploaderId: file.uploaderId,
       createdAt: file.createdAt,
+      fileExtension: file.extension,
     };
     filesData[file.discordId] = fileData;
     formData.append("files", file.blob, file.discordId);

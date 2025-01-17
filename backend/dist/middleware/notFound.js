@@ -6,6 +6,6 @@ import HttpStatusCode from "../data/statusCodes";
  * @param next next function
  */
 export const notFound = (req, res, next) => {
-    console.log("404 error");
+    console.log("Route not found");
     res.status(HttpStatusCode.NOT_FOUND).json({ message: "Route could not be found" });
 };

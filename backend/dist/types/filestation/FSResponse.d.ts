@@ -3,11 +3,11 @@ export declare const FSResponseSchema: z.ZodDiscriminatedUnion<"success", [z.Zod
     success: z.ZodLiteral<true>;
     data: z.ZodAny;
 }, "strip", z.ZodTypeAny, {
-    success: true;
     data?: any;
+    success: true;
 }, {
-    success: true;
     data?: any;
+    success: true;
 }>, z.ZodObject<{
     success: z.ZodLiteral<false>;
     error: z.ZodObject<{

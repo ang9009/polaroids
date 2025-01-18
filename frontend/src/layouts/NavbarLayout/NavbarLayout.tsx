@@ -1,9 +1,10 @@
+/* eslint-disable jsdoc/require-returns */
 import { Outlet } from "react-router";
-import Navbar from "../../components/ui/navbar/Navbar";
+import Navbar from "../../components/Navbar/Navbar";
 import NavbarLayoutCSS from "./NavbarLayout.module.css";
 
 /**
- *Used for all pages that have a navbar
+ * Used for all pages that have a navbar.
  */
 const NavbarLayout = () => {
   return (

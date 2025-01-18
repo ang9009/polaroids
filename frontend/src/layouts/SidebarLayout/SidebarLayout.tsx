@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import Sidebar from "../../components/ui/sidebar/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 
 /**
  * Used for all pages that have a sidebar.

@@ -21,6 +21,5 @@ export const checkAuth = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  console.log("no");
   res.status(HttpStatusCode.FORBIDDEN).json({ message: "User is not logged in" });
 };

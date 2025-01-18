@@ -4,7 +4,9 @@ import { ApiRoutes } from "../data/apiRoutes";
 import { getAxios } from "../lib/axios";
 
 /**
- *
+ * Fetches data about the current user.
+ * @returns {GetUserInfoResponse | null} a representation of the current user,
+ * or null if the user is not logged in.
  */
 export const getUserInfo = async (): Promise<GetUserInfoResponse | null> => {
   const { VITE_API_URL } = import.meta.env;

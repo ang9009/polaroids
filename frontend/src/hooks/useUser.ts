@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns */
 import { useQuery } from "@tanstack/react-query";
 import { userQueryKey } from "../data/constants";
 import { getUserInfo } from "../services/getUserInfo";

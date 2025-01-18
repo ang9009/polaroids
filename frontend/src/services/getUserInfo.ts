@@ -3,6 +3,9 @@ import { GetUserInfoResponse, GetUserInfoResponseSchema } from "shared/src/respo
 import { ApiRoutes } from "../data/apiRoutes";
 import { getAxios } from "../lib/axios";
 
+/**
+ *
+ */
 export const getUserInfo = async (): Promise<GetUserInfoResponse | null> => {
   const { VITE_API_URL } = import.meta.env;
   let userInfo;
@@ -17,7 +20,7 @@ export const getUserInfo = async (): Promise<GetUserInfoResponse | null> => {
     throw err;
   }
 
-  const parseUserInfo = GetUserInfoResponseSchema.safeParse(userInfo.data);
+  const parseUserInfo = GetUserInfoResponseSchema.safeParse(userInfo);
   if (!parseUserInfo.success) {
     throw Error("Failed to fetch user data");
   }

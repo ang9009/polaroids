@@ -1,10 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import "dotenv/config";
 import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
-import {
-  FSWebUploadResponse,
-  FSWebUploadResponseSchema,
-} from "../../types/filestation/FSWebUploadResponse";
+import { FSResponse, FSResponseSchema } from "../../types/filestation/FSResponse";
 import { FileStationCredentials } from "./fileStationCredentials";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 
@@ -30,7 +27,7 @@ export const uploadFilesToFS = async (files: Express.Multer.File[]) => {
  * @param file the file to be uploaded
  * @returns the parsed response from FileStation
  */
-async function uploadFile(file: Express.Multer.File): Promise<FSWebUploadResponse> {
+async function uploadFile(file: Express.Multer.File): Promise<FSResponse> {
   const { FS_API_URL, FS_FOLDER_PATH } = process.env;
   const { sessionId, synoToken } = await FileStationCredentials.getInstance();
 
@@ -51,7 +48,7 @@ async function uploadFile(file: Express.Multer.File): Promise<FSWebUploadRespons
   form.append("file", blob, `${discordId}.${extension}`);
 
   const res = await axios.post(url, form, { headers: headers });
-  const parsedRes = FSWebUploadResponseSchema.safeParse(res.data);
+  const parsedRes = FSResponseSchema.safeParse(res.data);
   if (!parsedRes.success) {
     throw Error("Got unexpected response from file upload: " + JSON.stringify(res.data));
   }

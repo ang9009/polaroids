@@ -1,4 +1,4 @@
-import { FSWebUploadResponse } from "../../types/filestation/FSWebUploadResponse";
+import { FSResponse } from "../../types/filestation/FSResponse";
 import { FileStationCredentials } from "./fileStationCredentials";
 
 /**
@@ -6,13 +6,19 @@ import { FileStationCredentials } from "./fileStationCredentials";
  * @param fsRequest the FileStation request function
  * @returns the result of the request
  */
+
+// ! Use generic here.. specify return type (don't have catch all FSResponse)
+/**
+ *
+ * @param fsRequest
+ */
 export const refetchIfInvalidFSCredentials = async (
-  fsRequest: () => Promise<FSWebUploadResponse>
-): Promise<FSWebUploadResponse> => {
+  fsRequest: () => Promise<FSResponse>
+): Promise<FSResponse> => {
   for (let retries = 0; retries < 3; retries++) {
     const res = await fsRequest();
 
-    if (res.success) {
+    if (res instanceof File || res.success) {
       return res;
     } else if (res.errno.key === "error_noprivilege") {
       await FileStationCredentials.getInstance();

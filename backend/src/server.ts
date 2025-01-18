@@ -18,6 +18,7 @@ import auth from "./routes/auth.routes";
 import files from "./routes/files.routes";
 import guilds from "./routes/guilds.routes";
 import subscribedChannels from "./routes/subbedChannels.routes";
+import { FileStationCredentials } from "./services/filestation/fileStationCredentials";
 
 dotenv.config();
 
@@ -105,4 +106,5 @@ app.use("/api", protectedRoutes);
 app.use(errorHandler);
 app.use(notFound);
 
+await FileStationCredentials.getInstance();
 app.listen(port, () => console.log(`Server running on port ${port}`));

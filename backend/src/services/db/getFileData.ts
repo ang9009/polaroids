@@ -32,6 +32,7 @@ export const getFileData = async ({ cursor, pageSize, searchQuery }: GetFilesReq
     select: {
       discordId: true,
       fileName: true,
+      extension: true,
     },
     orderBy: [{ createdAt: "desc" }, { discordId: "asc" }],
   });

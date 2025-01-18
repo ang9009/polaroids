@@ -14,9 +14,9 @@ import LoginCSS from "./Login.module.css";
 const Login = () => {
   const { VITE_API_URL } = import.meta.env;
   const [isLoading, setIsLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const error = searchParams.get("error");
-  const { data: user, isPending } = useUser();
+  const { data: user } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {

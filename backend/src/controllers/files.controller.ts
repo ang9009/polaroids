@@ -11,11 +11,14 @@ import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filter
 import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
 import prisma from "../lib/prisma";
 import { getFileData } from "../services/db/getFileData";
+import { getFileFromFS } from "../services/filestation/getFileFromFS";
+import { refetchIfInvalidFSCredentials } from "../services/filestation/refetchIfInvalidFSCredentials";
 import { uploadFilesToFS } from "../services/filestation/uploadFilesToFS";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
+import { getFSFileName } from "../utils/getFSFileName";
 
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 
@@ -185,13 +188,22 @@ export const getFiles = async (req: Request, res: Response, next: NextFunction) 
     return next(error);
   }
 
-  let fileData: { discordId: string }[];
+  let fileData: { discordId: string; extension: string }[];
   try {
     fileData = await getFileData(parseParams.data);
   } catch (err) {
     const error = getDbExFromPrismaErr(err);
     return next(error);
   }
+
+  let files: File;
+  try {
+    const filePromises = fileData.map((file) => {
+      const fileName = getFSFileName(file.discordId, file.extension);
+      return refetchIfInvalidFSCredentials(() => getFileFromFS(fileName));
+    });
+    const files = await Promise.all(filePromises);
+  } catch (err) {}
 
   res.json({ fileData }).status(HttpStatusCode.OK);
 };

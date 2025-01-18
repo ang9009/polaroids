@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { userQueryKey } from "../data/constants";
 import { getUserInfo } from "../services/getUserInfo";
 
 /**
@@ -6,4 +7,9 @@ import { getUserInfo } from "../services/getUserInfo";
  * logged in, the current user object will be null.
  */
 export const useUser = () =>
-  useQuery({ queryKey: ["user"], queryFn: getUserInfo, retry: 0, staleTime: 1000 * 60 * 60 * 10 });
+  useQuery({
+    queryKey: [userQueryKey],
+    queryFn: getUserInfo,
+    retry: 0,
+    staleTime: 1000 * 60 * 60 * 10,
+  });

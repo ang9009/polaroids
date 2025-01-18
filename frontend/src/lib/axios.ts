@@ -1,5 +1,7 @@
 import axios from "axios";
 
+export const apiClient = axios.create({ withCredentials: true });
+
 /**
  * Sends a POST request via Axios.
  * @param {string} url the url the request should be made to
@@ -7,7 +9,7 @@ import axios from "axios";
  * @returns {Promise<unknown>} the response object
  */
 export const postAxios = async (url: string, data?: unknown): Promise<unknown> => {
-  const res = await axios.post(url, data);
+  const res = await apiClient.post(url, data);
   return res.data;
 };
 
@@ -21,6 +23,6 @@ export const getAxios = async (
   url: string,
   params: URLSearchParams = new URLSearchParams(),
 ): Promise<unknown> => {
-  const res = await axios.get(url + params, { withCredentials: true });
+  const res = await apiClient.get(url + params);
   return res.data;
 };

@@ -1,4 +1,9 @@
+/* eslint-disable jsdoc/require-returns */
+/* eslint-disable jsdoc/require-param */
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 import { GetUserInfoResponse } from "shared/src/responses/auth/getInfo";
+import { userQueryKey } from "../../../data/constants";
 import { logout } from "../../../services/logout";
 import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../menu";
 import { toaster } from "../toaster";
@@ -12,6 +17,9 @@ interface UserWidgetProps {
  * The user widget. Allows the user to modify their user settings and logout.
  */
 export function UserWidget({ user }: UserWidgetProps) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   return (
     <MenuRoot positioning={{ placement: "bottom-end" }} size="md">
       <MenuTrigger asChild>
@@ -29,6 +37,8 @@ export function UserWidget({ user }: UserWidgetProps) {
           onClick={async () => {
             try {
               await logout();
+              await queryClient.invalidateQueries({ queryKey: [userQueryKey] });
+              navigate("/login");
             } catch (err) {
               toaster.create({
                 title: "An error occurred",

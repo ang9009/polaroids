@@ -1,7 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import "dotenv/config";
 import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
-import { FSResponse, FSResponseSchema } from "../../types/filestation/FSResponse";
+import { FSUploadResponse, FSUploadResponseSchema } from "../../types/filestation/FSUploadResponse";
 import { FileStationCredentials } from "./fileStationCredentials";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 
@@ -12,7 +12,13 @@ import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 export const uploadFilesToFS = async (files: Express.Multer.File[]) => {
   try {
     for (const file of files) {
-      await refetchIfInvalidFSCredentials(() => uploadFile(file));
+      await refetchIfInvalidFSCredentials(
+        () => uploadFile(file),
+        (res) => {
+          const parseRes = FSUploadResponseSchema.safeParse(res);
+          return parseRes.success && parseRes.data.success;
+        }
+      );
     }
   } catch (err) {
     if (isAxiosError(err)) {
@@ -27,7 +33,7 @@ export const uploadFilesToFS = async (files: Express.Multer.File[]) => {
  * @param file the file to be uploaded
  * @returns the parsed response from FileStation
  */
-async function uploadFile(file: Express.Multer.File): Promise<FSResponse> {
+async function uploadFile(file: Express.Multer.File): Promise<FSUploadResponse> {
   const { FS_API_URL, FS_FOLDER_PATH } = process.env;
   const { sessionId, synoToken } = await FileStationCredentials.getInstance();
 
@@ -48,7 +54,7 @@ async function uploadFile(file: Express.Multer.File): Promise<FSResponse> {
   form.append("file", blob, `${discordId}.${extension}`);
 
   const res = await axios.post(url, form, { headers: headers });
-  const parsedRes = FSResponseSchema.safeParse(res.data);
+  const parsedRes = FSUploadResponseSchema.safeParse(res.data);
   if (!parsedRes.success) {
     throw Error("Got unexpected response from file upload: " + JSON.stringify(res.data));
   }

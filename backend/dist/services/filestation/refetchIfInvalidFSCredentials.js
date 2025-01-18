@@ -1,21 +1,18 @@
 import { FileStationCredentials } from "./fileStationCredentials";
 /**
- * Runs a given FileStation-related request again if the session id/syno token is invalid.
- * @param fsRequest the FileStation request function
+ * Attempts to refresh the currently saved FileStation credentials if a given
+ * FileStation request fails, then re-attempts the request.
+ * @param fsRequest the request in question
+ * @param validate a function that validates the result of the request
  * @returns the result of the request
  */
-export const refetchIfInvalidFSCredentials = async (fsRequest) => {
+export const refetchIfInvalidFSCredentials = async (fsRequest, validate) => {
     for (let retries = 0; retries < 3; retries++) {
         const res = await fsRequest();
-        if (res.success) {
+        if (validate(res)) {
             return res;
         }
-        else if (res.errno.key === "error_noprivilege") {
-            await FileStationCredentials.getInstance();
-        }
-        else {
-            throw new Error("An unknown FileStation error occurred: " + res.errno.key);
-        }
+        await FileStationCredentials.getInstance();
     }
     throw new Error("Failed to fetch valid session id");
 };

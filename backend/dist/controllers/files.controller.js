@@ -3,16 +3,21 @@ import multer from "multer";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
+import { z } from "zod";
 import prisma from "../lib/prisma";
 import { getFileData } from "../services/db/getFileData";
+import { getFileFromFS } from "../services/filestation/getFileFromFS";
+import { refetchIfInvalidFSCredentials } from "../services/filestation/refetchIfInvalidFSCredentials";
 import { uploadFilesToFS } from "../services/filestation/uploadFilesToFS";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
+import { getFSFileName } from "../utils/getFSFileName";
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 /**
- * Uploads the given files to FileStation, and tracks each photo/video in the database.
+ * Uploads the given files to FileStation, and tracks each photo/video in the
+ * database. Note that each file will be saved as discordId.fileExtension in FileStation.
  *
  * Route: POST /api/files
  *
@@ -84,7 +89,7 @@ export const uploadFiles = async (req, res, next) => {
         let filesUploaded = 0;
         try {
             await prisma.$transaction(async (tx) => {
-                const { count } = await tx.file.createMany({
+                const { count } = await tx.mediaFile.createMany({
                     data: fileObjects,
                     skipDuplicates: !throwUniqueConstraintError,
                 });
@@ -131,7 +136,7 @@ export const filterExistingFileIds = async (req, res, next) => {
     const filteredIds = [];
     for (const fileId of fileIds) {
         try {
-            const count = await prisma.file.count({
+            const count = await prisma.mediaFile.count({
                 where: {
                     discordId: fileId,
                 },
@@ -167,5 +172,21 @@ export const getFiles = async (req, res, next) => {
         const error = getDbExFromPrismaErr(err);
         return next(error);
     }
+    let files;
+    try {
+        const filePromises = fileData.map(async (fileData) => {
+            const fileName = getFSFileName(fileData.discordId, fileData.extension);
+            return await refetchIfInvalidFSCredentials(() => getFileFromFS(fileName), (res) => {
+                const parseRes = z.instanceof(File).safeParse(res);
+                return parseRes.success;
+            });
+        });
+        files = await Promise.all(filePromises);
+    }
+    catch (err) {
+        const error = new UnknownException("An unknown exception occurred: " + err);
+        return next(error);
+    }
+    console.log(files);
     res.json({ fileData }).status(HttpStatusCode.OK);
 };

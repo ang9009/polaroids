@@ -1,31 +1,26 @@
-import { FSResponse } from "../../types/filestation/FSResponse";
+import { isAxiosError } from "axios";
 import { FileStationCredentials } from "./fileStationCredentials";
 
 /**
- * Runs a given FileStation-related request again if the session id/syno token is invalid.
- * @param fsRequest the FileStation request function
+ * Attempts to refresh the currently saved FileStation credentials if a given
+ * FileStation request fails (throws an error), then re-attempts the request.
+ * @param fsRequest the request in question
  * @returns the result of the request
  */
+export const refetchIfInvalidFSCredentials = async <T>(fsRequest: () => Promise<T>): Promise<T> => {
+  let error;
 
-// ! Use generic here.. specify return type (don't have catch all FSResponse)
-/**
- *
- * @param fsRequest
- */
-export const refetchIfInvalidFSCredentials = async (
-  fsRequest: () => Promise<FSResponse>
-): Promise<FSResponse> => {
   for (let retries = 0; retries < 3; retries++) {
-    const res = await fsRequest();
-
-    if (res instanceof File || res.success) {
-      return res;
-    } else if (res.errno.key === "error_noprivilege") {
+    try {
+      return await fsRequest();
+    } catch (err) {
+      error = err;
       await FileStationCredentials.getInstance();
-    } else {
-      throw new Error("An unknown FileStation error occurred: " + res.errno.key);
     }
   }
 
-  throw new Error("Failed to fetch valid session id");
+  if (isAxiosError(error)) {
+    throw error;
+  }
+  throw new Error("Request failed: " + error);
 };

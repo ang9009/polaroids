@@ -136,7 +136,7 @@ export const deleteAlbum = async (req, res, next) => {
     const { albumId } = parsedReqBody.data;
     let filesCount;
     try {
-        filesCount = await prisma.file.count({
+        filesCount = await prisma.mediaFile.count({
             where: {
                 albumId: albumId,
             },

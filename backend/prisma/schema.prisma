@@ -26,7 +26,7 @@ model Album {
   description String?  @db.VarChar(255) /// The album's description
   createdAt   DateTime @default(now()) /// When the file was uploaded
 
-  files    File[] /// The files in this album
+  files    MediaFile[] /// The files in this album
   channels SubscribedChannel[] /// The channels this album is associated with
 }
 
@@ -43,7 +43,7 @@ model SubscribedChannel {
 }
 
 /// Corresponds to images/videos saved to FileStation
-model File {
+model MediaFile {
   discordId   String   @id @db.VarChar(255) /// The file's Discord attachment id
   uploaderId  String   @db.VarChar(255) /// The Discord user id of the person who sent this file
   extension   String   @db.VarChar(255) /// The file's extension

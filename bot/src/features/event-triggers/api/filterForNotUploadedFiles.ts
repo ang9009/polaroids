@@ -1,13 +1,15 @@
 import { FilterExistingFileIdsResponseSchema } from "shared/src/responses/files/filterExistingFileIds";
 import { apiClient } from "../../../lib/axios";
-import { FileData } from "../types/fileData";
+import { MediaFileData } from "../types/fileData";
 
 /**
  * Filters a given list of files for files that have not already been uploaded.
  * @param files the files in question
  * @returns the filtered list of files.
  */
-export const filterForNotUploadedFiles = async (files: FileData[]): Promise<FileData[]> => {
+export const filterForNotUploadedFiles = async (
+  files: MediaFileData[],
+): Promise<MediaFileData[]> => {
   const { DB_API_URL } = process.env;
   const url = `${DB_API_URL}/files/filter-existing-ids`;
   const ids = files.map((file) => file.discordId).join(",");

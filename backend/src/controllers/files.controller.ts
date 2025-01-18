@@ -1,14 +1,18 @@
+import { DownloadFileRequestSchema } from "shared/src/requests/files/downloadFile";
+import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
-import { File } from "@prisma/client";
-import { HttpStatusCode } from "axios";
+import { MediaFile } from "@prisma/client";
+import { isAxiosError } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
+import { extensionToMime } from "shared/src/helpers/getExtensionFromMimeType";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
-import { UploadFilesResponse } from "shared/src/responses/files/getFiles";
+import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
+import HttpStatusCode from "../data/httpStatusCode";
 import prisma from "../lib/prisma";
 import { getFileData } from "../services/db/getFileData";
 import { getFileFromFS } from "../services/filestation/getFileFromFS";
@@ -85,7 +89,7 @@ export const uploadFiles = async (
     const fileObjects = files.map((file) => {
       const fileData = filesData[file.originalname];
       const { createdAt, fileName, uploaderId, fileExtension } = fileData;
-      const data: File = {
+      const data: MediaFile = {
         discordId: file.originalname,
         fileName: fileName,
         albumId: albumId,
@@ -102,7 +106,7 @@ export const uploadFiles = async (
     try {
       await prisma.$transaction(
         async (tx) => {
-          const { count } = await tx.file.createMany({
+          const { count } = await tx.mediaFile.createMany({
             data: fileObjects,
             skipDuplicates: !throwUniqueConstraintError,
           });
@@ -158,7 +162,7 @@ export const filterExistingFileIds = async (
   const filteredIds: string[] = [];
   for (const fileId of fileIds) {
     try {
-      const count = await prisma.file.count({
+      const count = await prisma.mediaFile.count({
         where: {
           discordId: fileId,
         },
@@ -172,23 +176,27 @@ export const filterExistingFileIds = async (
     }
   }
 
-  res.status(HttpStatusCode.Ok).send({ filteredIds });
+  res.status(HttpStatusCode.OK).send({ filteredIds });
 };
 
 /**
- * Retrieves files paginated via cursor-based pagination.
+ * Retrieves file data paginated via cursor-based pagination.
  *
- * Route: GET /api/files
+ * Route: GET /api/files/search-files-data
  *
  */
-export const getFiles = async (req: Request, res: Response, next: NextFunction) => {
+export const getFilesData = async (
+  req: Request,
+  res: Response<GetFilesDataResponse>,
+  next: NextFunction
+) => {
   const parseParams = GetFilesRequestSchema.safeParse(req.query);
   if (!parseParams.success) {
     const error = new ValidationException(parseParams.error);
     return next(error);
   }
 
-  let fileData: { discordId: string; extension: string }[];
+  let fileData;
   try {
     fileData = await getFileData(parseParams.data);
   } catch (err) {
@@ -196,14 +204,36 @@ export const getFiles = async (req: Request, res: Response, next: NextFunction) 
     return next(error);
   }
 
-  let files: File;
-  try {
-    const filePromises = fileData.map((file) => {
-      const fileName = getFSFileName(file.discordId, file.extension);
-      return refetchIfInvalidFSCredentials(() => getFileFromFS(fileName));
-    });
-    const files = await Promise.all(filePromises);
-  } catch (err) {}
+  res.json({ data: fileData }).status(HttpStatusCode.OK);
+};
 
-  res.json({ fileData }).status(HttpStatusCode.OK);
+/**
+ *
+ */
+export const downloadFile = async (req: Request, res: Response, next: NextFunction) => {
+  const parseParams = DownloadFileRequestSchema.safeParse(req.query);
+  if (!parseParams.success) {
+    const error = new ValidationException(parseParams.error);
+    return next(error);
+  }
+
+  const { discordId, extension } = parseParams.data;
+
+  let fileData: Buffer;
+  try {
+    const fileName = getFSFileName(discordId, extension);
+    fileData = await refetchIfInvalidFSCredentials<Buffer>(() => getFileFromFS(fileName));
+  } catch (err) {
+    if (isAxiosError(err)) {
+      if (err.status === 404) {
+        return res.status(HttpStatusCode.NOT_FOUND).send({ message: "Could not find image" });
+      }
+    }
+    const error = new UnknownException("An unknown exception occurred: " + err);
+    return next(error);
+  }
+  const mimeType = extensionToMime[extension];
+
+  res.contentType(mimeType);
+  return res.send(fileData);
 };

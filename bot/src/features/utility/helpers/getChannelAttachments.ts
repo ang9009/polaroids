@@ -1,6 +1,6 @@
 import { Collection, Message, TextBasedChannel } from "discord.js";
 import { getFileDataFromAttachment } from "../../event-triggers/api/getFileDataFromAttachment";
-import { FileData } from "../../event-triggers/types/fileData";
+import { MediaFileData } from "../../event-triggers/types/fileData";
 
 /**
  * Retrieves data about all of the attachments sent in a channel.
@@ -11,8 +11,8 @@ import { FileData } from "../../event-triggers/types/fileData";
 export async function getChannelFilesData(
   latestMsg: Message<boolean>,
   channel: TextBasedChannel,
-): Promise<FileData[]> {
-  const files: FileData[] = [];
+): Promise<MediaFileData[]> {
+  const files: MediaFileData[] = [];
   let currMsgPointer: Message | undefined = latestMsg;
 
   while (currMsgPointer) {

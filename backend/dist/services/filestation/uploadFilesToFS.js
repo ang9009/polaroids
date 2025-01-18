@@ -1,6 +1,7 @@
 import axios, { isAxiosError } from "axios";
 import "dotenv/config";
-import { FSWebUploadResponseSchema, } from "../../types/filestation/FSWebUploadResponse";
+import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
+import { FSUploadResponseSchema } from "../../types/filestation/FSUploadResponse";
 import { FileStationCredentials } from "./fileStationCredentials";
 import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 /**
@@ -10,7 +11,10 @@ import { refetchIfInvalidFSCredentials } from "./refetchIfInvalidFSCredentials";
 export const uploadFilesToFS = async (files) => {
     try {
         for (const file of files) {
-            await refetchIfInvalidFSCredentials(() => uploadFile(file));
+            await refetchIfInvalidFSCredentials(() => uploadFile(file), (res) => {
+                const parseRes = FSUploadResponseSchema.safeParse(res);
+                return parseRes.success && parseRes.data.success;
+            });
         }
     }
     catch (err) {
@@ -39,9 +43,11 @@ async function uploadFile(file) {
     const blob = new Blob([file.buffer], { type: file.mimetype });
     form.append("overwrite", "false");
     form.append("path", FS_FOLDER_PATH);
-    form.append("file", blob, file.originalname);
+    const discordId = file.originalname;
+    const extension = getExtensionFromMimeType(file.mimetype);
+    form.append("file", blob, `${discordId}.${extension}`);
     const res = await axios.post(url, form, { headers: headers });
-    const parsedRes = FSWebUploadResponseSchema.safeParse(res.data);
+    const parsedRes = FSUploadResponseSchema.safeParse(res.data);
     if (!parsedRes.success) {
         throw Error("Got unexpected response from file upload: " + JSON.stringify(res.data));
     }

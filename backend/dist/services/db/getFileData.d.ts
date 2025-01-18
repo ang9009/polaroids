@@ -9,5 +9,6 @@ import { GetFilesRequest } from "shared/src/requests/files/getFiles";
  */
 export declare const getFileData: ({ cursor, pageSize, searchQuery }: GetFilesRequest) => Promise<{
     discordId: string;
+    extension: string;
     fileName: string;
 }[]>;

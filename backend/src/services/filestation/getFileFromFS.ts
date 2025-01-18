@@ -1,5 +1,5 @@
 import axios from "axios";
-import { FSResponse, FSResponseSchema } from "../../types/filestation/FSResponse";
+import { z } from "zod";
 import { FileStationCredentials } from "./fileStationCredentials";
 
 /**
@@ -8,7 +8,7 @@ import { FileStationCredentials } from "./fileStationCredentials";
  * @param fileName the name of the file
  * @returns the desired file
  */
-export const getFileFromFS = async (fileName: string): Promise<FSResponse> => {
+export const getFileFromFS = async (fileName: string): Promise<Buffer> => {
   const { FS_API_URL } = process.env;
   const { sessionId, synoToken } = await FileStationCredentials.getInstance();
   const url =
@@ -19,8 +19,8 @@ export const getFileFromFS = async (fileName: string): Promise<FSResponse> => {
     "X-SYNO-TOKEN": synoToken,
   };
 
-  const res = await axios.get(url, { headers });
-  const parseRes = FSResponseSchema.safeParse(res.data);
+  const res = await axios.get(url, { headers, responseType: "arraybuffer" });
+  const parseRes = z.instanceof(Buffer).safeParse(res.data);
   if (!parseRes.success) {
     throw Error("Unexpected response from FileStation: " + res.data);
   }

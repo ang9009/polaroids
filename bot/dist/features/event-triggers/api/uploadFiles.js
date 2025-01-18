@@ -1,4 +1,4 @@
-import { UploadFilesResponseSchema } from "shared/src/responses/files/getFiles";
+import { UploadFilesResponseSchema } from "shared/src/responses/files/uploadFiles";
 import { apiClient } from "../../../lib/axios";
 /**
  * Uploads the given files to the API.

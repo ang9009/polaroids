@@ -1,6 +1,6 @@
 import { Attachment } from "discord.js";
 import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
-import { FileData } from "../types/fileData";
+import { MediaFileData } from "../types/fileData";
 
 /**
  * Returns the blob and its name fetched from the given url.
@@ -13,7 +13,7 @@ export const getFileDataFromAttachment = async (
   attachment: Attachment,
   createdAt: Date,
   uploaderId: string,
-): Promise<FileData> => {
+): Promise<MediaFileData> => {
   const { name, id, url } = attachment;
   const res = await fetch(url);
   const blob = await res.blob();

@@ -1,6 +1,6 @@
-import { File } from "backend/prisma/generated/zod/index";
-type FileWithBlob = File & {
+import { MediaFile } from "backend/prisma/generated/zod/index";
+type MediaFileWithBlob = MediaFile & {
   blob: Blob;
 };
 
-export type FileData = Omit<FileWithBlob, "albumId">;
+export type MediaFileData = Omit<MediaFileWithBlob, "albumId">;

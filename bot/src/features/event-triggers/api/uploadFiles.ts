@@ -1,7 +1,7 @@
 import { FilesUploadData } from "shared/src/requests/files/uploadFiles";
-import { UploadFilesResponseSchema } from "shared/src/responses/files/getFiles";
+import { UploadFilesResponseSchema } from "shared/src/responses/files/uploadFiles";
 import { apiClient } from "../../../lib/axios";
-import { FileData } from "../types/fileData";
+import { MediaFileData } from "../types/fileData";
 
 /**
  * Uploads the given files to the API.
@@ -12,7 +12,7 @@ import { FileData } from "../types/fileData";
  * @returns the number of files successfully uploaded
  */
 export const uploadFiles = async (
-  files: FileData[],
+  files: MediaFileData[],
   albumId: string,
   throwUniqueConstraintError: boolean,
 ): Promise<number> => {

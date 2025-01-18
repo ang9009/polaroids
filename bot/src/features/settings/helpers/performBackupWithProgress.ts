@@ -1,7 +1,7 @@
 import { EmbedBuilder, TextChannel, User } from "discord.js";
 import { PrimaryColors } from "../../../data/primaryColors";
 import { uploadFiles } from "../../event-triggers/api/uploadFiles";
-import { FileData } from "../../event-triggers/types/fileData";
+import { MediaFileData } from "../../event-triggers/types/fileData";
 import { getChannelNonUploadedFiles } from "./getChannelNonUploadedFiles";
 
 /**
@@ -30,7 +30,7 @@ export const performBackupWithProgress = async (
   const processingMsg = await channel.send({ embeds: [statusEmbed] });
 
   // Get all the files in the channel that have not been uploaded
-  let filesData: FileData[];
+  let filesData: MediaFileData[];
   try {
     filesData = await getChannelNonUploadedFiles(channel);
   } catch (err) {

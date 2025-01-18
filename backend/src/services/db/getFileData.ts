@@ -12,7 +12,7 @@ import prisma from "../../lib/prisma";
  * @returns the related file data
  */
 export const getFileData = async ({ cursor, pageSize, searchQuery }: GetFilesRequest) => {
-  return await prisma.file.findMany({
+  return await prisma.mediaFile.findMany({
     take: pageSize,
     ...(cursor && {
       skip: 1,

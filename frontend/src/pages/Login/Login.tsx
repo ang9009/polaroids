@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns */
 import { Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
@@ -37,7 +38,7 @@ const Login = () => {
         },
       });
     }
-  }, [error, user]);
+  }, [error, user, navigate]);
 
   return (
     <div className={LoginCSS["page-container"]}>

@@ -1,5 +1,10 @@
 import express from "express";
-import { filterExistingFileIds, getFiles, uploadFiles } from "../controllers/files.controller";
+import {
+  downloadFile,
+  filterExistingFileIds,
+  getFilesData,
+  uploadFiles,
+} from "../controllers/files.controller";
 
 const router = express.Router();
 
@@ -10,6 +15,9 @@ router.post("/", uploadFiles);
 router.get("/filter-existing-ids", filterExistingFileIds);
 
 // Retrieves files paginated via cursor-based pagination
-router.get("/", getFiles);
+router.get("/search-file-data", getFilesData);
+
+// Downloads the specified media file
+router.get("/download-file", downloadFile);
 
 export default router;

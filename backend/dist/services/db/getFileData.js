@@ -8,7 +8,7 @@ import prisma from "../../lib/prisma";
  * @returns the related file data
  */
 export const getFileData = async ({ cursor, pageSize, searchQuery }) => {
-    return await prisma.file.findMany(Object.assign(Object.assign(Object.assign({ take: pageSize }, (cursor && {
+    return await prisma.mediaFile.findMany(Object.assign(Object.assign(Object.assign({ take: pageSize }, (cursor && {
         skip: 1,
         cursor: {
             discordId: cursor.discordId,
@@ -24,5 +24,6 @@ export const getFileData = async ({ cursor, pageSize, searchQuery }) => {
     })), { select: {
             discordId: true,
             fileName: true,
+            extension: true,
         }, orderBy: [{ createdAt: "desc" }, { discordId: "asc" }] }));
 };

@@ -1,6 +1,6 @@
 import { Attachment, User } from "discord.js";
 import { getFileDataFromAttachment } from "../../event-triggers/api/getFileDataFromAttachment";
-import { FileData } from "../../event-triggers/types/fileData";
+import { MediaFileData } from "../../event-triggers/types/fileData";
 
 /**
  * Retrieves file data for a given list of attachments.
@@ -13,7 +13,7 @@ export const getFileDataFromAttachments = async (
   attachments: Attachment[],
   sentAt: Date,
   uploader: User,
-): Promise<FileData[]> => {
+): Promise<MediaFileData[]> => {
   const attachmentFilePromises = attachments.map((attachment) => {
     return getFileDataFromAttachment(attachment, sentAt, uploader.id);
   });

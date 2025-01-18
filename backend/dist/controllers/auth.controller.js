@@ -15,6 +15,6 @@ export const getInfo = (req, res, next) => {
  */
 export const discordLogout = (req, res, next) => {
     req.logout(() => {
-        res.redirect(process.env.WEBSITE_LOGIN_URL);
+        res.json({ message: "Successfully logged out" });
     });
 };

@@ -19,7 +19,7 @@
   "dependencies": {
     "@quixo3/prisma-session-store": "^3.1.13",
     "@types/multer": "^1.4.12",
-    "axios": "^1.7.8",
+    "axios": "^1.7.9",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",

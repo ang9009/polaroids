@@ -1,4 +1,4 @@
-import { FSResponseSchema } from "../types/filestation/FSResponse";
+import { FSUploadResponseSchema } from "../types/filestation/FSUploadResponse";
 /**
  * Validates a response from FileStation, and returns the data from the request
  * @param response the response object
@@ -8,7 +8,7 @@ import { FSResponseSchema } from "../types/filestation/FSResponse";
  *         the response data property's shape is invalid
  */
 export const validateFSResponse = (response, schema) => {
-    const fsParsedResponse = FSResponseSchema.safeParse(response.data);
+    const fsParsedResponse = FSUploadResponseSchema.safeParse(response.data);
     if (!fsParsedResponse.success) {
         throw Error("Got unexpected response from FileStation: " + JSON.stringify(response.data));
     }

@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns */
 import { Route, Routes } from "react-router";
 import NavbarLayout from "./layouts/NavbarLayout/NavbarLayout.tsx";
 import SidebarLayout from "./layouts/SidebarLayout/SidebarLayout.tsx";

@@ -1,5 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect } from "react";
 import { fetchPaginatedMedia } from "../services/fetchPaginatedMedia";
 
 /**
@@ -25,8 +26,9 @@ export const useGetMedia = (
   albumId?: string,
 ) => {
   const { isPending, error, data } = useQuery({
-    queryKey: ["media", { cursor }],
+    queryKey: ["media", { cursor, query }],
     retry: false,
+    staleTime: 1000 * 60 * 60,
     // eslint-disable-next-line jsdoc/require-jsdoc
     queryFn: ({ queryKey, signal }) => {
       const CancelToken = axios.CancelToken;
@@ -37,7 +39,7 @@ export const useGetMedia = (
       if (typeof contents === "string") {
         res = fetchPaginatedMedia(pageSize, source.token, undefined, query, albumId);
       } else {
-        const { cursor } = contents;
+        const { cursor, query } = contents;
         res = fetchPaginatedMedia(pageSize, source.token, cursor, query, albumId);
       }
 
@@ -48,6 +50,11 @@ export const useGetMedia = (
       return res;
     },
   });
+
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["media", { cursor, query }] });
+  }, [query, cursor, queryClient]);
 
   return { isPending, error, data };
 };

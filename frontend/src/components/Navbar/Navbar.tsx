@@ -13,7 +13,7 @@ import NavbarCSS from "./Navbar.module.css";
  */
 const Navbar = () => {
   const navigate = useNavigate();
-  const { data: user, isPending } = useUser();
+  const { data: user, isPending, error } = useUser();
 
   return (
     <Box className={NavbarCSS["navbar"]} border={"primary"}>

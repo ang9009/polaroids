@@ -15,9 +15,9 @@ router.post("/", uploadFiles);
 router.get("/filter-existing-ids", filterExistingFileIds);
 
 // Retrieves files paginated via cursor-based pagination
-router.get("/search-file-data", getFilesData);
+router.get("/data", getFilesData);
 
 // Downloads the specified media file
-router.get("/download-file", downloadFile);
+router.get("/download", downloadFile);
 
 export default router;

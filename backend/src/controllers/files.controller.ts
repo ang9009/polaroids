@@ -182,7 +182,7 @@ export const filterExistingFileIds = async (
 /**
  * Retrieves file data paginated via cursor-based pagination.
  *
- * Route: GET /api/files/search-files-data
+ * Route: GET /api/files/data
  *
  * Query parameters: see GetFilesRequest
  */
@@ -234,7 +234,7 @@ export const getFilesData = async (
 /**
  * Retrieves media from FileStation.
  *
- * Route: GET /api/files/download-file
+ * Route: GET /api/files/download
  */
 export const downloadFile = async (req: Request, res: Response, next: NextFunction) => {
   const parseParams = DownloadFileRequestSchema.safeParse(req.query);

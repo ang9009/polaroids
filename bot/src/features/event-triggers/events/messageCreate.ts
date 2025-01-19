@@ -1,5 +1,5 @@
 import { Attachment, Events, Message } from "discord.js";
-import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
+import { mimeToExtension } from "shared/src/helpers/getExtensionFromMimeType";
 import { getChannelSubData } from "../../../services/getChannelSubData";
 import { EventData } from "../../../types/eventData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
@@ -41,7 +41,14 @@ const execute = async (message: Message) => {
   }
 
   const { linkedAlbumId, linkedAlbumName } = linkedAlbumData;
-  await uploadAttachmentsWithProgress(message, linkedAlbumId, linkedAlbumName);
+  try {
+    await uploadAttachmentsWithProgress(message, linkedAlbumId, linkedAlbumName);
+  } catch (err) {
+    if (err instanceof Error) {
+      replyWithErrorEmbed(message, err.message);
+    }
+    return;
+  }
 };
 
 /**
@@ -54,7 +61,7 @@ const validateAttachmentTypes = (attachments: Attachment[]) => {
     if (!attachment.contentType) {
       errMsg = `Could not check the content type of ${attachment.name}. Please try again.`;
       throw Error(errMsg);
-    } else if (!allowedMimeTypes.has(attachment.contentType)) {
+    } else if (!mimeToExtension[attachment.contentType]) {
       errMsg = `${attachment.name} is not of a recognized photo/video type. Please try again.`;
       throw Error(errMsg);
     }

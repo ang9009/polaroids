@@ -11,6 +11,7 @@ export const mimeToExtension: Record<string, string> = {
   "video/mp4": "mp4",
   "video/webm": "webm",
   "video/x-msvideo": "avi",
+  "video/quicktime": "mov",
 };
 
 export const extensionToMime: Record<string, string> = Object.entries(mimeToExtension).reduce(

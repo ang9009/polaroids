@@ -17,7 +17,7 @@ const Sidebar = () => {
   return (
     <Box
       className={SidebarCSS["sidebar-container"]}
-      width={"20rem"}
+      width={"{sizes.sidebarWidth}"}
       height={"calc(100vh - {sizes.navbarHeight})"}
     >
       <Tabs.Root variant={"subtle"} orientation={"vertical"} defaultValue={"media"}>

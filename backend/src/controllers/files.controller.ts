@@ -251,8 +251,9 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
     fileData = await refetchIfInvalidFSCredentials<Buffer>(() => getFileFromFS(fileName));
   } catch (err) {
     if (isAxiosError(err)) {
+      // ! Should create a new error and let it be logged by the error handler
       if (err.status === 404) {
-        return res.status(HttpStatusCode.NOT_FOUND).send({ message: "Could not find image" });
+        return res.status(HttpStatusCode.NOT_FOUND).send({ message: "Could not find file" });
       }
     }
     const error = new UnknownException("An unknown exception occurred: " + err);

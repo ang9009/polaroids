@@ -1,6 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect } from "react";
 import { fetchPaginatedMedia } from "../services/fetchPaginatedMedia";
 
 /**
@@ -25,6 +24,7 @@ export const useGetMedia = (
   query?: string,
   albumId?: string,
 ) => {
+  // !Use infinite query
   const { isPending, error, data } = useQuery({
     queryKey: ["media", { cursor, query }],
     retry: false,
@@ -50,11 +50,6 @@ export const useGetMedia = (
       return res;
     },
   });
-
-  const queryClient = useQueryClient();
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["media", { cursor, query }] });
-  }, [query, cursor, queryClient]);
 
   return { isPending, error, data };
 };

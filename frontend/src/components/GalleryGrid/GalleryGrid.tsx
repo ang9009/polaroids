@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useGetMedia } from "../../hooks/useGetMedia";
 import GalleryGridCSS from "./GalleryGrid.module.css";
 
@@ -8,7 +9,10 @@ import GalleryGridCSS from "./GalleryGrid.module.css";
  */
 const GalleryGrid = () => {
   const pageSize = 9;
-  const { isPending, data: files } = useGetMedia(pageSize);
+  const { isPending, data: files, error } = useGetMedia(pageSize);
+  useEffect(() => {
+    console.log(error, files);
+  }, [error, files]);
 
   return (
     <Box
@@ -18,7 +22,7 @@ const GalleryGrid = () => {
       className={GalleryGridCSS["grid-container"]}
     >
       {isPending
-        ? [...Array(10).keys()].map((i) => <Skeleton key={i} />)
+        ? [...Array(pageSize).keys()].map((i) => <Skeleton key={i} />)
         : files?.map((file) => {
             const url = URL.createObjectURL(file);
             return <img src={url} alt="" className={GalleryGridCSS["file-item"]} key={url} />;

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMediaFiles } from "../services/getMedia";
+import { fetchPaginatedMedia } from "../services/getMedia";
 
 /**
  * Represents the cursor object used for pagination.
@@ -25,10 +25,10 @@ export const useGetMedia = (cursor: FetchMediaCursor, query?: string) => {
     queryFn: ({ queryKey }) => {
       const [contents] = queryKey;
       if (typeof contents === "string") {
-        return getMediaFiles(cursor, query);
+        return fetchPaginatedMedia(cursor, query);
       } else {
         const { query, cursor } = contents;
-        return getMediaFiles(cursor, query);
+        return fetchPaginatedMedia(cursor, query);
       }
     },
   });

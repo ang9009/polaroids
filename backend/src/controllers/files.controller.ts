@@ -8,7 +8,7 @@ import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { extensionToMime } from "shared/src/helpers/getExtensionFromMimeType";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
-import { GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
+import { GetFilesRequest, GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
 import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
@@ -184,9 +184,10 @@ export const filterExistingFileIds = async (
  *
  * Route: GET /api/files/search-files-data
  *
+ * Query parameters: see GetFilesRequest
  */
 export const getFilesData = async (
-  req: Request,
+  req: Request<GetFilesRequest>,
   res: Response<GetFilesDataResponse>,
   next: NextFunction
 ) => {
@@ -196,19 +197,44 @@ export const getFilesData = async (
     return next(error);
   }
 
+  const { cursor, albumId } = parseParams.data;
+  if (cursor) {
+    const { discordId, createdAt } = cursor;
+    const cursorFile = await prisma.mediaFile.findFirst({ where: { discordId, createdAt } });
+    if (!cursorFile) {
+      const error = new UnknownException(
+        `Could not find provided cursor with discordId ${discordId} and createdAt ${createdAt}`
+      );
+      return next(error);
+    }
+  }
+  if (albumId) {
+    const album = await prisma.album.findFirst({ where: { albumId } });
+    if (!album) {
+      const error = new UnknownException(`Could not find album with albumId ${albumId}`);
+      return next(error);
+    }
+  }
+
   let fileData;
+  const { searchQuery, pageSize } = parseParams.data;
   try {
-    fileData = await getFileData(parseParams.data);
+    fileData = await getFileData(pageSize, cursor, searchQuery, albumId);
   } catch (err) {
     const error = getDbExFromPrismaErr(err);
     return next(error);
   }
+  fileData = fileData.map((file) => {
+    return { ...file, createdAt: file.createdAt.toISOString() };
+  });
 
   res.json({ data: fileData }).status(HttpStatusCode.OK);
 };
 
 /**
+ * Retrieves media from FileStation.
  *
+ * Route: GET /api/files/download-file
  */
 export const downloadFile = async (req: Request, res: Response, next: NextFunction) => {
   const parseParams = DownloadFileRequestSchema.safeParse(req.query);

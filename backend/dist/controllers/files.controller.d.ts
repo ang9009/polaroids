@@ -1,4 +1,6 @@
+import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 import { NextFunction, Request, Response } from "express";
+import { GetFilesRequest } from "shared/src/requests/files/getFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
 import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
 /**
@@ -31,11 +33,7 @@ import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
  *     filesUploaded: number // The number of files that were successfully uploaded
  * }
  */
-export declare const uploadFiles: (
-  req: Request,
-  res: Response<UploadFilesResponse>,
-  next: NextFunction
-) => Promise<void>;
+export declare const uploadFiles: (req: Request, res: Response<UploadFilesResponse>, next: NextFunction) => Promise<void>;
 /**
  * Filters a given list of file ids for ids corresponding to files that have not
  * already been uploaded.
@@ -52,15 +50,18 @@ export declare const uploadFiles: (
  *    filteredIds: string[], // The list of filtered ids
  * }
  */
-export declare const filterExistingFileIds: (
-  req: Request,
-  res: Response<FilterExistingFileIdsResponse>,
-  next: NextFunction
-) => Promise<void>;
+export declare const filterExistingFileIds: (req: Request, res: Response<FilterExistingFileIdsResponse>, next: NextFunction) => Promise<void>;
 /**
- * Retrieves files paginated via cursor-based pagination.
+ * Retrieves file data paginated via cursor-based pagination.
  *
- * Route: GET /api/files
+ * Route: GET /api/files/data
  *
+ * Query parameters: see GetFilesRequest
  */
-export declare const getFiles: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export declare const getFilesData: (req: Request<GetFilesRequest>, res: Response<GetFilesDataResponse>, next: NextFunction) => Promise<void>;
+/**
+ * Retrieves media from FileStation.
+ *
+ * Route: GET /api/files/download
+ */
+export declare const downloadFile: (req: Request, res: Response, next: NextFunction) => Promise<void | Response<any, Record<string, any>>>;

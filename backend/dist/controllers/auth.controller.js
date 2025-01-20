@@ -15,6 +15,6 @@ export const getInfo = (req, res, next) => {
  */
 export const discordLogout = (req, res, next) => {
     req.logout(() => {
-        res.json({ message: "Successfully logged out" });
+        res.status(HttpStatusCode.OK).json({ message: "Successfully logged out" });
     });
 };

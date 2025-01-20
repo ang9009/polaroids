@@ -82,6 +82,7 @@ protectedRoutes.use("/files", files);
 const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);
 app.use("/api", unprotectedRoutes);
+// ! Add checkAuth back as middleware later
 app.use("/api", protectedRoutes);
 app.use(errorHandler);
 app.use(notFound);

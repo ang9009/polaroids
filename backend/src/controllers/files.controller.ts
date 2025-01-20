@@ -110,7 +110,7 @@ export const uploadFiles = async (
           });
           filesUploaded = count;
 
-          await FileStation.uploadFilesToFS(files);
+          await FileStation.uploadFilesToFS(files, "/polaroids/media");
         },
         {
           timeout: 600_000, // 10 minutes YOLO
@@ -246,7 +246,7 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
   let fileData: Buffer;
   try {
     const fileName = getFSFileName(discordId, extension);
-    fileData = await FileStation.getFileFromFS(fileName);
+    fileData = await FileStation.getFileFromFS(fileName, "/polaroids/media");
   } catch (err) {
     if (isAxiosError(err)) {
       // ! Should create a new error and let it be logged by the error handler

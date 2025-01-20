@@ -16,11 +16,13 @@ export class FileStation {
   /**
    * Uploads the given files to FileStation.
    * @param files the files to be uploaded
+   * @param rootFolderPath the path to the folder where the file should be uploaded
+   * from the root
    */
-  public static uploadFilesToFS = async (files: Express.Multer.File[]) => {
+  public static uploadFilesToFS = async (files: Express.Multer.File[], rootFolderPath: string) => {
     for (const file of files) {
       await FileStation.refetchIfInvalidFSCredentials(async () => {
-        const res = await this.uploadFile(file);
+        const res = await this.uploadFile(file, rootFolderPath);
         if (!res.success) {
           throw Error("Failed to upload file to FileStation: " + res);
         }
@@ -31,10 +33,15 @@ export class FileStation {
   /**
    * Uploads a singular file to FileStation.
    * @param file the file to be uploaded
+   * @param rootFolderPath the path to the folder where the file should be uploaded
+   * from the root
    * @returns FileStation's response to the upload
    */
-  private static async uploadFile(file: Express.Multer.File): Promise<FSUploadResponse> {
-    const { FS_API_URL, FS_FOLDER_PATH } = process.env;
+  private static async uploadFile(
+    file: Express.Multer.File,
+    rootFolderPath: string
+  ): Promise<FSUploadResponse> {
+    const { FS_API_URL } = process.env;
     const { sessionId, synoToken } = await FileStationCredentials.getInstance();
 
     // Set up url and headers
@@ -48,7 +55,7 @@ export class FileStation {
     const form = new FormData();
     const blob = new Blob([file.buffer], { type: file.mimetype });
     form.append("overwrite", "false");
-    form.append("path", FS_FOLDER_PATH!);
+    form.append("path", rootFolderPath);
     const discordId = file.originalname;
     const extension = getExtensionFromMimeType(file.mimetype);
     form.append("file", blob, `${discordId}.${extension}`);
@@ -66,12 +73,17 @@ export class FileStation {
    * Retrieves a file from FileStation. The name of the file must follow the
    * format discordId.extension.
    * @param fileName the name of the file
+   * @param rootFolderPath the path to the folder where the file should be uploaded
+   * from the root. This path must be formatted like so: /folder/subfolder.
    * @returns the desired file
    */
-  public static getFileFromFS = async (fileName: string): Promise<Buffer> => {
+  public static getFileFromFS = async (
+    fileName: string,
+    rootFolderPath: string
+  ): Promise<Buffer> => {
     const apiClient = await getApiClient();
 
-    const url = await FileStation.getFSFileSharingLink(fileName);
+    const url = await FileStation.getFSFileSharingLink(fileName, rootFolderPath);
     const res = await FileStation.refetchIfInvalidFSCredentials<Buffer>(async () => {
       const res = await apiClient.get(url, { responseType: "arraybuffer" });
       const parseRes = z.instanceof(Buffer).safeParse(res.data);
@@ -88,13 +100,15 @@ export class FileStation {
    * Retrieves a temporary file sharing link for the file with the given name
    * from FileStation.
    * @param fileName the name of the file (must follow the format discordId.extension.)
+   * @param rootFolderPath the path to the folder where the file should be uploaded
+   * from the root. This path must be formatted like so: /folder/subfolder.
    * @returns the file sharing link for the specified file
    */
-  private static getFSFileSharingLink = async (fileName: string) => {
+  private static getFSFileSharingLink = async (fileName: string, rootFolderPath: string) => {
     const { FS_API_URL } = process.env;
     const url = `${FS_API_URL}/webapi/FileStation/file_sharing.cgi`;
     const data = new URLSearchParams({
-      path: `/polaroids/${fileName}`,
+      path: `${rootFolderPath}/${fileName}`,
       api: "SYNO.FileStation.Sharing",
       method: "create",
       version: "1",

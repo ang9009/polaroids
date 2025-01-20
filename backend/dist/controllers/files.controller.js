@@ -1,14 +1,14 @@
-import { HttpStatusCode } from "axios";
+import { DownloadFileRequestSchema } from "shared/src/requests/files/downloadFile";
+import { isAxiosError } from "axios";
 import multer from "multer";
+import { extensionToMime } from "shared/src/helpers/getExtensionFromMimeType";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
-import { z } from "zod";
+import HttpStatusCode from "../data/httpStatusCode";
 import prisma from "../lib/prisma";
 import { getFileData } from "../services/db/getFileData";
-import { getFileFromFS } from "../services/filestation/getFileFromFS";
-import { refetchIfInvalidFSCredentials } from "../services/filestation/refetchIfInvalidFSCredentials";
-import { uploadFilesToFS } from "../services/filestation/uploadFilesToFS";
+import { FileStation } from "../services/filestation/fileStation";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
@@ -94,7 +94,7 @@ export const uploadFiles = async (req, res, next) => {
                     skipDuplicates: !throwUniqueConstraintError,
                 });
                 filesUploaded = count;
-                await uploadFilesToFS(files);
+                await FileStation.uploadFilesToFS(files);
             }, {
                 timeout: 600000, // 10 minutes YOLO
             });
@@ -150,43 +150,79 @@ export const filterExistingFileIds = async (req, res, next) => {
             return next(error);
         }
     }
-    res.status(HttpStatusCode.Ok).send({ filteredIds });
+    res.status(HttpStatusCode.OK).send({ filteredIds });
 };
 /**
- * Retrieves files paginated via cursor-based pagination.
+ * Retrieves file data paginated via cursor-based pagination.
  *
- * Route: GET /api/files
+ * Route: GET /api/files/data
  *
+ * Query parameters: see GetFilesRequest
  */
-export const getFiles = async (req, res, next) => {
+export const getFilesData = async (req, res, next) => {
     const parseParams = GetFilesRequestSchema.safeParse(req.query);
     if (!parseParams.success) {
         const error = new ValidationException(parseParams.error);
         return next(error);
     }
+    const { cursor, albumId } = parseParams.data;
+    if (cursor) {
+        const { discordId, createdAt } = cursor;
+        const cursorFile = await prisma.mediaFile.findFirst({ where: { discordId, createdAt } });
+        if (!cursorFile) {
+            const error = new UnknownException(`Could not find provided cursor with discordId ${discordId} and createdAt ${createdAt}`);
+            return next(error);
+        }
+    }
+    if (albumId) {
+        const album = await prisma.album.findFirst({ where: { albumId } });
+        if (!album) {
+            const error = new UnknownException(`Could not find album with albumId ${albumId}`);
+            return next(error);
+        }
+    }
     let fileData;
+    const { searchQuery, pageSize } = parseParams.data;
     try {
-        fileData = await getFileData(parseParams.data);
+        fileData = await getFileData(pageSize, cursor, searchQuery, albumId);
     }
     catch (err) {
         const error = getDbExFromPrismaErr(err);
         return next(error);
     }
-    let files;
+    fileData = fileData.map((file) => {
+        return Object.assign(Object.assign({}, file), { createdAt: file.createdAt.toISOString() });
+    });
+    res.json({ data: fileData }).status(HttpStatusCode.OK);
+};
+/**
+ * Retrieves media from FileStation.
+ *
+ * Route: GET /api/files/download
+ */
+export const downloadFile = async (req, res, next) => {
+    const parseParams = DownloadFileRequestSchema.safeParse(req.query);
+    if (!parseParams.success) {
+        const error = new ValidationException(parseParams.error);
+        return next(error);
+    }
+    const { discordId, extension } = parseParams.data;
+    let fileData;
     try {
-        const filePromises = fileData.map(async (fileData) => {
-            const fileName = getFSFileName(fileData.discordId, fileData.extension);
-            return await refetchIfInvalidFSCredentials(() => getFileFromFS(fileName), (res) => {
-                const parseRes = z.instanceof(File).safeParse(res);
-                return parseRes.success;
-            });
-        });
-        files = await Promise.all(filePromises);
+        const fileName = getFSFileName(discordId, extension);
+        fileData = await FileStation.getFileFromFS(fileName);
     }
     catch (err) {
+        if (isAxiosError(err)) {
+            // ! Should create a new error and let it be logged by the error handler
+            if (err.status === 404) {
+                return res.status(HttpStatusCode.NOT_FOUND).send({ message: "Could not find file" });
+            }
+        }
         const error = new UnknownException("An unknown exception occurred: " + err);
         return next(error);
     }
-    console.log(files);
-    res.json({ fileData }).status(HttpStatusCode.OK);
+    const mimeType = extensionToMime[extension];
+    res.contentType(mimeType);
+    return res.send(fileData);
 };

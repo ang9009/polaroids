@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns */
 import GalleryGrid from "../../components/GalleryGrid/GalleryGrid";
 
 /**
@@ -6,7 +7,7 @@ import GalleryGrid from "../../components/GalleryGrid/GalleryGrid";
 const Home = () => {
   return (
     <div>
-      <GalleryGrid />
+      <GalleryGrid pageSize={9} />
     </div>
   );
 };

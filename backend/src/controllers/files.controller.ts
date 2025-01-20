@@ -15,9 +15,7 @@ import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
 import HttpStatusCode from "../data/httpStatusCode";
 import prisma from "../lib/prisma";
 import { getFileData } from "../services/db/getFileData";
-import { getFileFromFS } from "../services/filestation/getFileFromFS";
-import { refetchIfInvalidFSCredentials } from "../services/filestation/refetchIfInvalidFSCredentials";
-import { uploadFilesToFS } from "../services/filestation/uploadFilesToFS";
+import { FileStation } from "../services/filestation/fileStation";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
@@ -112,7 +110,7 @@ export const uploadFiles = async (
           });
           filesUploaded = count;
 
-          await uploadFilesToFS(files);
+          await FileStation.uploadFilesToFS(files);
         },
         {
           timeout: 600_000, // 10 minutes YOLO
@@ -248,7 +246,7 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
   let fileData: Buffer;
   try {
     const fileName = getFSFileName(discordId, extension);
-    fileData = await refetchIfInvalidFSCredentials<Buffer>(() => getFileFromFS(fileName));
+    fileData = await FileStation.getFileFromFS(fileName);
   } catch (err) {
     if (isAxiosError(err)) {
       // ! Should create a new error and let it be logged by the error handler

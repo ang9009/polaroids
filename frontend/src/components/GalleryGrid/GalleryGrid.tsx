@@ -1,14 +1,18 @@
+/* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useGetMedia } from "../../hooks/useGetMedia";
 import GalleryGridCSS from "./GalleryGrid.module.css";
 
+interface GalleryGridProps {
+  pageSize: number;
+}
+
 /**
  * Displays a grid gallery of files.
  */
-const GalleryGrid = () => {
-  const pageSize = 9;
+const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
   const { isPending, data: files, error } = useGetMedia(pageSize);
   useEffect(() => {
     console.log(error, files);

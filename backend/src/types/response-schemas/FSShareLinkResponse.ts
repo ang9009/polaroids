@@ -10,3 +10,5 @@ export const FSShareLinkResponseSchema = z.object({
     ),
   }),
 });
+
+export type FSShareLinkResponse = z.infer<typeof FSShareLinkResponseSchema>;

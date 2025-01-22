@@ -1,9 +1,11 @@
 import { z } from "zod";
-import { mimeToExtension } from "../../helpers/getExtensionFromMimeType";
+import { mimetypeToExtension } from "../../data/mimetypeToExtension";
 
 export const DownloadFileRequestSchema = z.object({
   discordId: z.string(),
-  extension: z.string().refine((extension) => Object.values(mimeToExtension).includes(extension)),
+  extension: z
+    .string()
+    .refine((extension) => Object.values(mimetypeToExtension).includes(extension)),
 });
 
 export type DownloadFileRequest = z.infer<typeof DownloadFileRequestSchema>;

@@ -2,6 +2,7 @@ import axios, { isAxiosError } from "axios";
 import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
 import { z } from "zod";
 import { getApiClient } from "../../lib/axios";
+import { BufferFile } from "../../types/data/bufferFile";
 import { FSUploadResponse, FSUploadResponseSchema } from "../../types/filestation/FSUploadResponse";
 import {
   FSShareLinkResponse,
@@ -19,7 +20,7 @@ export class FileStation {
    * @param rootFolderPath the path to the folder where the file should be uploaded
    * from the root
    */
-  public static uploadFilesToFS = async (files: Express.Multer.File[], rootFolderPath: string) => {
+  public static uploadFilesToFS = async (files: BufferFile[], rootFolderPath: string) => {
     for (const file of files) {
       await FileStation.refetchIfInvalidFSCredentials(async () => {
         const res = await this.uploadFile(file, rootFolderPath);
@@ -38,7 +39,7 @@ export class FileStation {
    * @returns FileStation's response to the upload
    */
   private static async uploadFile(
-    file: Express.Multer.File,
+    file: BufferFile,
     rootFolderPath: string
   ): Promise<FSUploadResponse> {
     const { FS_API_URL } = process.env;
@@ -56,9 +57,8 @@ export class FileStation {
     const blob = new Blob([file.buffer], { type: file.mimetype });
     form.append("overwrite", "false");
     form.append("path", rootFolderPath);
-    const discordId = file.originalname;
     const extension = getExtensionFromMimeType(file.mimetype);
-    form.append("file", blob, `${discordId}.${extension}`);
+    form.append("file", blob, `${file.discordId}.${extension}`);
 
     const res = await axios.post(url, form, { headers: headers });
     const parsedRes = FSUploadResponseSchema.safeParse(res.data);
@@ -146,7 +146,10 @@ export class FileStation {
       try {
         return await fsRequest();
       } catch (err) {
-        error = err;
+        if (isAxiosError(err) || err instanceof Error) {
+          console.log(err.message);
+        }
+
         await FileStationCredentials.updateFSCredentials();
       }
     }

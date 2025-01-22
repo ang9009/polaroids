@@ -4,4 +4,6 @@ import { FSWebUploadResponse } from "../types/filestation/FSWebUploadResponse";
  * @param fsRequest the FileStation request function
  * @returns the result of the request
  */
-export declare const refetchIfInvalidFSCredentials: (fsRequest: () => Promise<FSWebUploadResponse>) => Promise<FSWebUploadResponse>;
+export declare const refetchIfInvalidFSCredentials: (
+  fsRequest: () => Promise<FSWebUploadResponse>
+) => Promise<FSWebUploadResponse>;

@@ -1,20 +1,6 @@
-export const mimeToExtension: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/gif": "gif",
-  "image/webp": "webp",
-  "image/bmp": "bmp",
-  "image/tiff": "tiff",
-  "audio/mpeg": "mp3",
-  "audio/ogg": "ogg",
-  "audio/wav": "wav",
-  "video/mp4": "mp4",
-  "video/webm": "webm",
-  "video/x-msvideo": "avi",
-  "video/quicktime": "mov",
-};
+import { mimetypeToExtension } from "../data/mimetypeToExtension";
 
-export const extensionToMime: Record<string, string> = Object.entries(mimeToExtension).reduce(
+export const extensionToMime: Record<string, string> = Object.entries(mimetypeToExtension).reduce(
   (acc, [mime, extension]) => {
     acc[extension] = mime;
     return acc;
@@ -28,8 +14,8 @@ export const extensionToMime: Record<string, string> = Object.entries(mimeToExte
  * @returns the corresponding extension
  */
 export const getExtensionFromMimeType = (mimeType: string) => {
-  if (mimeToExtension[mimeType]) {
-    return mimeToExtension[mimeType];
+  if (mimetypeToExtension[mimeType]) {
+    return mimetypeToExtension[mimeType];
   }
   throw Error("Unrecognized MIME type " + mimeType);
 };

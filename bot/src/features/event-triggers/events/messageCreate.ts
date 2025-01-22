@@ -1,5 +1,5 @@
+import { mimetypeToExtension } from "shared/src/data/mimetypeToExtension";
 import { Attachment, Events, Message } from "discord.js";
-import { mimeToExtension } from "shared/src/helpers/getExtensionFromMimeType";
 import { getChannelSubData } from "../../../services/getChannelSubData";
 import { EventData } from "../../../types/eventData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
@@ -61,7 +61,7 @@ const validateAttachmentTypes = (attachments: Attachment[]) => {
     if (!attachment.contentType) {
       errMsg = `Could not check the content type of ${attachment.name}. Please try again.`;
       throw Error(errMsg);
-    } else if (!mimeToExtension[attachment.contentType]) {
+    } else if (!mimetypeToExtension[attachment.contentType]) {
       errMsg = `${attachment.name} is not of a recognized photo/video type. Please try again.`;
       throw Error(errMsg);
     }

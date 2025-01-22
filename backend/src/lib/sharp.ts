@@ -1,7 +1,7 @@
 import { AllowedMimeTypes, isAllowedMimeType } from "shared/src/data/allowedMimeTypes";
 import sharp from "sharp";
 import { Readable } from "stream";
-import { BufferFile } from "../types/data/BufferFile";
+import { BufferFile } from "../types/data/bufferFile";
 
 /**
  * Shrinks the given image, resulting in a smaller file size.
@@ -9,7 +9,7 @@ import { BufferFile } from "../types/data/BufferFile";
  * @returns the new, smaller image
  * @throws an error if the given file is not an image
  */
-export const shrinkImage = async (imgFile: Express.Multer.File) => {
+export const shrinkImage = async (imgFile: Express.Multer.File): Promise<BufferFile> => {
   const { mimetype } = imgFile;
   if (!mimetype.includes("image")) {
     throw Error("imgFile must be an image");
@@ -21,7 +21,7 @@ export const shrinkImage = async (imgFile: Express.Multer.File) => {
   const transformer = sharp().resize(400);
   const newBuffer = await readableStream.pipe(transformer).toBuffer();
   const file: BufferFile = {
-    fileName: imgFile.filename,
+    discordId: imgFile.originalname,
     buffer: newBuffer,
     mimetype: mimetype as AllowedMimeTypes,
   };

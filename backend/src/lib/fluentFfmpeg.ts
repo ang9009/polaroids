@@ -8,7 +8,7 @@ import { BufferFile } from "../types/data/bufferFile";
  * @param discordId the discord id of the video attachment
  * @param fileLink a download link to the file in question
  * @param mimetype the file's mimetype
- * @returns the thumbnail
+ * @returns the thumbnail as a PNG
  */
 export const getVideoThumbnail = async (
   discordId: string,

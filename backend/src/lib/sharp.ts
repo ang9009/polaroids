@@ -6,7 +6,7 @@ import { BufferFile } from "../types/data/bufferFile";
 /**
  * Shrinks the given image, resulting in a smaller file size.
  * @param imgFile the file in question
- * @returns the new, smaller image
+ * @returns the new, smaller image as a PNG
  * @throws an error if the given file is not an image
  */
 export const shrinkImage = async (imgFile: BufferFile): Promise<BufferFile> => {
@@ -23,7 +23,7 @@ export const shrinkImage = async (imgFile: BufferFile): Promise<BufferFile> => {
   const file: BufferFile = {
     discordId: imgFile.discordId,
     buffer: newBuffer,
-    mimetype: mimetype as AllowedMimeTypes,
+    mimetype: AllowedMimeTypes.PNG,
   };
   return file;
 };

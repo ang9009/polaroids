@@ -142,14 +142,16 @@ export class FileStation {
   ): Promise<T> => {
     let error;
 
-    for (let retries = 0; retries < 3; retries++) {
+    for (let retries = 0; retries <= 1; retries++) {
       try {
         return await fsRequest();
       } catch (err) {
-        if (isAxiosError(err) || err instanceof Error) {
+        if (retries == 1) {
+          error = err;
+          break;
+        } else if (isAxiosError(err) || err instanceof Error) {
           console.log(err.message);
         }
-
         await FileStationCredentials.updateFSCredentials();
       }
     }

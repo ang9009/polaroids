@@ -318,8 +318,8 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
 
   let fileData: Buffer;
   try {
-    const fileName = getFSFileName(discordId, extension);
-    fileData = await FileStation.getFileFromFS(fileName, "/polaroids/media");
+    const fileName = getFSFileName(discordId, "png");
+    fileData = await FileStation.getFileFromFS(fileName, "/polaroids/thumbnails");
   } catch (err) {
     if (isAxiosError(err)) {
       // ! Should create a new error and let it be logged by the error handler

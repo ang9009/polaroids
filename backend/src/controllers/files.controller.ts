@@ -1,23 +1,27 @@
 /* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
-import { DownloadFileRequestSchema } from "shared/src/requests/files/downloadFile";
-import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 import { MediaFile } from "@prisma/client";
 import { isAxiosError } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { AllowedMimeTypes, isAllowedMimeType } from "shared/src/data/allowedMimeTypes";
 import { extensionToMime } from "shared/src/helpers/getExtensionFromMimeType";
+import { DownloadFileRequestSchema } from "shared/src/requests/files/downloadFile";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { GetFilesRequest, GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
-import { UploadFilesRequestBodySchema } from "shared/src/requests/files/uploadFiles";
+import {
+  FilesUploadData,
+  UploadFilesRequestBodySchema,
+} from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
+import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
 import HttpStatusCode from "../data/httpStatusCode";
 import { getVideoThumbnail } from "../lib/fluentFfmpeg";
 import prisma from "../lib/prisma";
 import { shrinkImage } from "../lib/sharp";
 import { getFileData } from "../services/db/getFileData";
+import { uploadFilesAndThumbnails } from "../services/db/uploadFilesAndThumbnails";
 import { FileStation } from "../services/filestation/fileStation";
 import { BufferFile } from "../types/data/bufferFile";
 import UnknownException from "../types/error/unknownException";
@@ -30,7 +34,8 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
 
 /**
  * Uploads the given files to FileStation, and tracks each photo/video in the
- * database. Note that each file will be saved as discordId.fileExtension in FileStation.
+ * database. This also generates scaled down thumbnails for each image and video.
+ * Note that each file will be saved as discordId.fileExtension in FileStation.
  *
  * Route: POST /api/files
  *
@@ -46,6 +51,7 @@ const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilte
  *        fileName: string, // The name of the file
  *        createdAt: DateTime? // When the file was uploaded. If undefined, this
  *                                 will default to now
+ *        fileLink: string? // A link to the video. This is only required for videos
  *        uploaderId: string, // The discord id of the uploader (user)
  *        fileExtension: string // The file's extension
  *      }
@@ -85,16 +91,21 @@ export const uploadFiles = async (
       if (!(file.originalname in filesData)) {
         const error = new UnknownException("One or many files have unmatched filesData properties");
         return next(error);
+      } else if (file.mimetype.startsWith("video") && !filesData[file.originalname].fileLink) {
+        const error = new UnknownException(
+          "Video file " + file.originalname + " doesn't have a file link"
+        );
+        return next(error);
       }
     }
 
-    let fileObjects: MediaFile[]; // MediaFile objects (for prisma)
-    let mediaBufferFiles: BufferFile[]; // Multer files converted to BufferFiles (for FS)
-    let thumbnailFiles: BufferFile[]; // Thumbnails (for FS)
+    let dbFileObjects: MediaFile[]; // Database objects for each image/video (for prisma)
+    let mediaFiles: BufferFile[]; // Images/videos converted to BufferFiles (for FS)
+    let thumbnailFiles: BufferFile[]; // Thumbnails for each image/video (for FS)
     try {
-      fileObjects = getMediaFileObjects(files, filesData, albumId);
-      mediaBufferFiles = convertToBufferFiles(files);
-      thumbnailFiles = await getFileThumbnails(files);
+      mediaFiles = convertToBufferFiles(files, filesData);
+      dbFileObjects = getMediaFileObjects(mediaFiles, filesData, albumId);
+      thumbnailFiles = await getFileThumbnails(mediaFiles);
     } catch (err) {
       let error = new UnknownException(JSON.stringify(err));
       if (err instanceof Error) {
@@ -105,20 +116,11 @@ export const uploadFiles = async (
 
     let filesUploaded: number = 0;
     try {
-      await prisma.$transaction(
-        async (tx) => {
-          const { count } = await tx.mediaFile.createMany({
-            data: fileObjects,
-            skipDuplicates: !throwUniqueConstraintError,
-          });
-          filesUploaded = count;
-
-          await FileStation.uploadFilesToFS(thumbnailFiles, "/polaroids/thumbnails");
-          await FileStation.uploadFilesToFS(mediaBufferFiles, "/polaroids/media");
-        },
-        {
-          timeout: 600_000, // 10 minutes YOLO
-        }
+      filesUploaded = await uploadFilesAndThumbnails(
+        thumbnailFiles,
+        mediaFiles,
+        dbFileObjects,
+        throwUniqueConstraintError
       );
     } catch (err) {
       if (err instanceof Error) {
@@ -136,16 +138,21 @@ export const uploadFiles = async (
 /**
  * Converts Multer files to BufferFile objects.
  */
-const convertToBufferFiles = (files: Express.Multer.File[]): BufferFile[] => {
+const convertToBufferFiles = (
+  files: Express.Multer.File[],
+  fileData: FilesUploadData
+): BufferFile[] => {
   const mediaBufferFiles: BufferFile[] = [];
   for (const file of files) {
     if (!isAllowedMimeType(file.mimetype)) {
       throw Error("Disallowed mimetype found: " + file.mimetype);
     }
+    const { buffer, originalname: discordId, mimetype } = file;
     const newFile: BufferFile = {
-      buffer: file.buffer,
-      discordId: file.originalname,
-      mimetype: file.mimetype as AllowedMimeTypes,
+      buffer: buffer,
+      discordId: discordId,
+      mimetype: mimetype as AllowedMimeTypes,
+      fileLink: fileData[file.originalname].fileLink,
     };
     mediaBufferFiles.push(newFile);
   }
@@ -155,14 +162,17 @@ const convertToBufferFiles = (files: Express.Multer.File[]): BufferFile[] => {
 /**
  * Creates scaled down thumbnails for the given array of files.
  */
-const getFileThumbnails = async (files: Express.Multer.File[]) => {
+const getFileThumbnails = async (files: BufferFile[]) => {
   const thumbnails: BufferFile[] = [];
   for (const file of files) {
     let thumbnail: BufferFile;
     if (file.mimetype.startsWith("image")) {
       thumbnail = await shrinkImage(file);
     } else if (file.mimetype.startsWith("video")) {
-      thumbnail = await getVideoThumbnail(file);
+      if (!file.fileLink) {
+        throw Error("Video file is missing video link");
+      }
+      thumbnail = await getVideoThumbnail(file.discordId, file.fileLink, file.mimetype);
     } else {
       throw Error("Unrecognized mime type");
     }
@@ -172,21 +182,14 @@ const getFileThumbnails = async (files: Express.Multer.File[]) => {
 };
 
 /**
- * Converts Multer file objects to MediaFile objects.
+ * Converts Multer file objects to MediaFile (Prisma compatible) objects.
  */
-const getMediaFileObjects = (
-  files: Express.Multer.File[],
-  filesData: Record<
-    string,
-    { createdAt: Date; fileName: string; fileExtension: string; uploaderId: string }
-  >,
-  albumId: string
-) => {
+const getMediaFileObjects = (files: BufferFile[], filesData: FilesUploadData, albumId: string) => {
   return files.map((file) => {
-    const fileData = filesData[file.originalname];
+    const fileData = filesData[file.discordId];
     const { createdAt, fileName, uploaderId, fileExtension } = fileData;
     const data: MediaFile = {
-      discordId: file.originalname,
+      discordId: file.discordId,
       fileName: fileName,
       albumId: albumId,
       createdAt: createdAt,

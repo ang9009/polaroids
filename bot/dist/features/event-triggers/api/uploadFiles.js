@@ -15,11 +15,13 @@ export const uploadFiles = async (files, albumId, throwUniqueConstraintError) =>
     formData.append("albumId", albumId);
     const filesData = {};
     for (const file of files) {
+        const { fileName, uploaderId, createdAt, extension: fileExtension, link: fileLink } = file;
         const fileData = {
-            fileName: file.fileName,
-            uploaderId: file.uploaderId,
-            createdAt: file.createdAt,
-            fileExtension: file.extension,
+            fileName,
+            uploaderId,
+            createdAt,
+            fileExtension,
+            fileLink,
         };
         filesData[file.discordId] = fileData;
         formData.append("files", file.blob, file.discordId);

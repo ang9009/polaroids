@@ -13,6 +13,7 @@ export const getFileDataFromAttachment = async (attachment, createdAt, uploaderI
     return {
         extension: getExtensionFromMimeType(attachment.contentType),
         blob: blob,
+        link: attachment.url,
         fileName: name,
         discordId: id,
         createdAt,

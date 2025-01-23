@@ -4,4 +4,5 @@ export interface BufferFile {
   buffer: ArrayBuffer;
   discordId: string;
   mimetype: AllowedMimeTypes;
+  fileLink?: string;
 }

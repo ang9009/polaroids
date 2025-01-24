@@ -1,11 +1,12 @@
-import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 import { NextFunction, Request, Response } from "express";
 import { GetFilesRequest } from "shared/src/requests/files/getFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
+import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
 /**
  * Uploads the given files to FileStation, and tracks each photo/video in the
- * database. Note that each file will be saved as discordId.fileExtension in FileStation.
+ * database. This also generates scaled down thumbnails for each image and video.
+ * Note that each file will be saved as discordId.fileExtension in FileStation.
  *
  * Route: POST /api/files
  *
@@ -21,6 +22,7 @@ import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
  *        fileName: string, // The name of the file
  *        createdAt: DateTime? // When the file was uploaded. If undefined, this
  *                                 will default to now
+ *        fileLink: string? // A link to the video. This is only required for videos
  *        uploaderId: string, // The discord id of the uploader (user)
  *        fileExtension: string // The file's extension
  *      }
@@ -63,5 +65,7 @@ export declare const getFilesData: (req: Request<GetFilesRequest>, res: Response
  * Retrieves media from FileStation.
  *
  * Route: GET /api/files/download
+ *
+ * Request query: see DownloadFileRequestSchema
  */
 export declare const downloadFile: (req: Request, res: Response, next: NextFunction) => Promise<void | Response<any, Record<string, any>>>;

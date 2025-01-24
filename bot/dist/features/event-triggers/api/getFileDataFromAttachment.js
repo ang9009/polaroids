@@ -1,4 +1,4 @@
-import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
+import { getExtensionFromMimetype } from "shared/src/helpers/getExtensionFromMimeType";
 /**
  * Returns the blob and its name fetched from the given url.
  * @param attachment the attachment in question
@@ -11,7 +11,7 @@ export const getFileDataFromAttachment = async (attachment, createdAt, uploaderI
     const res = await fetch(url);
     const blob = await res.blob();
     return {
-        extension: getExtensionFromMimeType(attachment.contentType),
+        extension: getExtensionFromMimetype(attachment.contentType),
         blob: blob,
         link: attachment.url,
         fileName: name,

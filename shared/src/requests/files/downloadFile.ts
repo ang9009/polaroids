@@ -1,11 +1,14 @@
 import { z } from "zod";
-import { mimetypeToExtension } from "../../data/mimetypeToExtension";
+import { AllowedMimeType } from "../../data/allowedMimeType";
 
 export const DownloadFileRequestSchema = z.object({
+  // The discord attachment of the original file
   discordId: z.string(),
-  extension: z
-    .string()
-    .refine((extension) => Object.values(mimetypeToExtension).includes(extension)),
+  // The mimetype of the original file
+  mimetype: z.nativeEnum(AllowedMimeType),
+  // Whether the file's thumbnail is being requested, or the file itself. Leave
+  // undefined if the file is desired
+  thumbnail: z.string().transform((bool) => Boolean(bool)),
 });
 
 export type DownloadFileRequest = z.infer<typeof DownloadFileRequestSchema>;

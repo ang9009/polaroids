@@ -1,3 +1,6 @@
+/// <reference types="express-serve-static-core" />
+/// <reference types="express-session" />
+/// <reference types="passport" />
 import { Request } from "express";
 import { FileFilterCallback } from "multer";
 /**

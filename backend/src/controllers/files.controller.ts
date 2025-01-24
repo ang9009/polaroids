@@ -4,8 +4,8 @@ import { MediaFile } from "@prisma/client";
 import { isAxiosError } from "axios";
 import { NextFunction, Request, Response } from "express";
 import multer from "multer";
-import { AllowedMimeTypes, isAllowedMimeType } from "shared/src/data/allowedMimeTypes";
-import { extensionToMime } from "shared/src/helpers/getExtensionFromMimeType";
+import { AllowedMimeType, isAllowedMimeType } from "shared/src/data/allowedMimeType";
+import { mimetypeToExtension } from "shared/src/data/mimetypeToExtension";
 import { DownloadFileRequestSchema } from "shared/src/requests/files/downloadFile";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
 import { GetFilesRequest, GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
@@ -24,6 +24,7 @@ import { getFileData } from "../services/db/getFileData";
 import { uploadFilesAndThumbnails } from "../services/db/uploadFilesAndThumbnails";
 import { FileStation } from "../services/filestation/fileStation";
 import { BufferFile } from "../types/data/bufferFile";
+import NotFoundException from "../types/error/notFoundException";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
@@ -151,7 +152,7 @@ const convertToBufferFiles = (
     const newFile: BufferFile = {
       buffer: buffer,
       discordId: discordId,
-      mimetype: mimetype as AllowedMimeTypes,
+      mimetype: mimetype as AllowedMimeType,
       fileLink: fileData[file.originalname].fileLink,
     };
     mediaBufferFiles.push(newFile);
@@ -306,6 +307,8 @@ export const getFilesData = async (
  * Retrieves media from FileStation.
  *
  * Route: GET /api/files/download
+ *
+ * Request query: see DownloadFileRequestSchema
  */
 export const downloadFile = async (req: Request, res: Response, next: NextFunction) => {
   const parseParams = DownloadFileRequestSchema.safeParse(req.query);
@@ -314,24 +317,23 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
     return next(error);
   }
 
-  const { discordId, extension } = parseParams.data;
+  const { discordId, mimetype, thumbnail } = parseParams.data;
+  const resMimetype = thumbnail ? AllowedMimeType.PNG : mimetype;
 
   let fileData: Buffer;
   try {
-    const fileName = getFSFileName(discordId, "png");
+    const fileName = getFSFileName(discordId, mimetypeToExtension[resMimetype]);
     fileData = await FileStation.getFileFromFS(fileName, "/polaroids/thumbnails");
   } catch (err) {
     if (isAxiosError(err)) {
-      // ! Should create a new error and let it be logged by the error handler
       if (err.status === 404) {
-        return res.status(HttpStatusCode.NOT_FOUND).send({ message: "Could not find file" });
+        return next(new NotFoundException());
       }
     }
     const error = new UnknownException("An unknown exception occurred: " + err);
     return next(error);
   }
-  const mimeType = extensionToMime[extension];
 
-  res.contentType(mimeType);
+  res.contentType(resMimetype);
   return res.send(fileData);
 };

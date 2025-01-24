@@ -4,12 +4,12 @@ export declare const EditAlbumRequestSchema: z.ZodObject<{
     newAlbumName: z.ZodString;
     newAlbumDesc: z.ZodEffects<z.ZodOptional<z.ZodString>, string | undefined, unknown>;
 }, "strip", z.ZodTypeAny, {
-    albumId: string;
-    newAlbumName: string;
     newAlbumDesc?: string | undefined;
-}, {
     albumId: string;
     newAlbumName: string;
+}, {
     newAlbumDesc?: unknown;
+    albumId: string;
+    newAlbumName: string;
 }>;
 export type EditAlbumRequestData = z.infer<typeof EditAlbumRequestSchema>;

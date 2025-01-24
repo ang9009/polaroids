@@ -1,4 +1,4 @@
-import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
+import { mimetypeToExtension } from "shared/src/data/mimetypeToExtension";
 /**
  * File filter to ensure that only images and videos are uploaded.
  * @param req request object
@@ -6,7 +6,7 @@ import { allowedMimeTypes } from "shared/src/data/allowedMimeTypes";
  * @param cb Multer's file filter callback
  */
 export const fileFilter = (req, file, cb) => {
-    if (allowedMimeTypes.has(file.mimetype)) {
+    if (mimetypeToExtension[file.mimetype]) {
         cb(null, true);
     }
     else {

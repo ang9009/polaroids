@@ -1,10 +1,10 @@
 import Ffmpeg from "fluent-ffmpeg";
-import { AllowedMimeTypes, isAllowedMimeType } from "shared/src/data/allowedMimeTypes";
+import { AllowedMimeType, isAllowedMimeType } from "shared/src/data/allowedMimeType";
 import { PassThrough } from "stream";
 import { BufferFile } from "../types/data/bufferFile";
 
 /**
- * Gets a 400px wide thumbnail from the beginning given video file.
+ * Creates a 400px wide thumbnail by taking the 1st frame from the given video file.
  * @param discordId the discord id of the video attachment
  * @param fileLink a download link to the file in question
  * @param mimetype the file's mimetype
@@ -44,7 +44,7 @@ export const getVideoThumbnail = async (
   const file: BufferFile = {
     discordId,
     buffer,
-    mimetype: AllowedMimeTypes.PNG,
+    mimetype: AllowedMimeType.PNG,
   };
   return file;
 };

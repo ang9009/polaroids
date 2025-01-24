@@ -1,4 +1,4 @@
-import { AllowedMimeTypes, isAllowedMimeType } from "shared/src/data/allowedMimeTypes";
+import { AllowedMimeType, isAllowedMimeType } from "shared/src/data/allowedMimeType";
 import sharp from "sharp";
 import { Readable } from "stream";
 import { BufferFile } from "../types/data/bufferFile";
@@ -23,7 +23,7 @@ export const shrinkImage = async (imgFile: BufferFile): Promise<BufferFile> => {
   const file: BufferFile = {
     discordId: imgFile.discordId,
     buffer: newBuffer,
-    mimetype: AllowedMimeTypes.PNG,
+    mimetype: AllowedMimeType.PNG,
   };
   return file;
 };

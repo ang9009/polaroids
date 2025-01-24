@@ -1,4 +1,6 @@
-export const mimetypeToExtension: Record<string, string> = {
+import { AllowedMimeType } from "./allowedMimeType";
+
+export const mimetypeToExtension: Record<AllowedMimeType, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/gif": "gif",

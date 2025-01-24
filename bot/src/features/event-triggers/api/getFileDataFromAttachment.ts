@@ -1,5 +1,6 @@
 import { Attachment } from "discord.js";
-import { getExtensionFromMimeType } from "shared/src/helpers/getExtensionFromMimeType";
+import { AllowedMimeType } from "shared/src/data/allowedMimeType";
+import { getExtensionFromMimetype } from "shared/src/helpers/getExtensionFromMimeType";
 import { MediaFileData } from "../types/fileData";
 
 /**
@@ -18,7 +19,7 @@ export const getFileDataFromAttachment = async (
   const res = await fetch(url);
   const blob = await res.blob();
   return {
-    extension: getExtensionFromMimeType(attachment.contentType!),
+    extension: getExtensionFromMimetype(attachment.contentType! as AllowedMimeType),
     blob: blob,
     link: attachment.url,
     fileName: name,

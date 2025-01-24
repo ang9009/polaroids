@@ -1,4 +1,4 @@
-export enum AllowedMimeTypes {
+export enum AllowedMimeType {
   JPEG = "image/jpeg",
   PNG = "image/png",
   GIF = "image/gif",
@@ -15,7 +15,7 @@ export enum AllowedMimeTypes {
  * @param mimetype the string in question
  * @returns whether it is an allowed MIME type
  */
-export const isAllowedMimeType = (mimetype: string): mimetype is AllowedMimeTypes => {
-  const types = Object.values(AllowedMimeTypes);
-  return !!types.includes(mimetype as AllowedMimeTypes);
+export const isAllowedMimeType = (mimetype: string): mimetype is AllowedMimeType => {
+  const types = Object.values(AllowedMimeType);
+  return !!types.includes(mimetype as AllowedMimeType);
 };

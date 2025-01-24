@@ -1,8 +1,8 @@
-import { AllowedMimeTypes } from "shared/src/data/allowedMimeTypes";
+import { AllowedMimeType } from "shared/src/data/allowedMimeType";
 
 export interface BufferFile {
   buffer: ArrayBuffer;
   discordId: string;
-  mimetype: AllowedMimeTypes;
+  mimetype: AllowedMimeType;
   fileLink?: string;
 }

@@ -6,10 +6,12 @@ import "dotenv/config";
 import express, { Router } from "express";
 import session from "express-session";
 import helmet from "helmet";
+import { schedule } from "node-cron";
 import passport from "passport";
 import DiscordStrategy from "passport-discord";
 import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 import { discordScopes } from "./data/discordScopes";
+import { checkAuth } from "./middleware/checkAuth";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -58,37 +60,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Passport strategies
-const discordStrategy = new DiscordStrategy(
-  {
-    clientID: process.env.DISCORD_CLIENT_ID!,
-    clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-    callbackURL: `${process.env.API_DOMAIN}:${process.env.PORT}/api/auth/discord/callback`,
-    scope: discordScopes,
-  },
-  function (accessToken, refreshToken, profile, cb) {
-    process.nextTick(() => cb(null, profile));
-  }
-);
-const apiKeyStrategy = new HeaderAPIKeyStrategy(
-  { header: "Authorization", prefix: "Api-Key " },
-  false,
-  (apiKey, done) => {
-    // Probably not the best way to do it, but this only has one client (the bot) so this is
-    // fine for now
-    if (apiKey === process.env.BOT_API_KEY) {
-      return done(null, {});
-    }
-    done(null, false);
-  }
-);
-passport.use(discordStrategy);
-passport.use(apiKeyStrategy);
-passport.serializeUser(function (user, done) {
-  done(null, user);
-});
-passport.deserializeUser(function (obj: Express.User, done) {
-  done(null, obj);
-});
+setUpPassportStrategies();
 
 // Routes
 const protectedRoutes = Router();
@@ -101,11 +73,51 @@ const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);
 
 app.use("/api", unprotectedRoutes);
-// ! Add checkAuth back as middleware later
-app.use("/api", protectedRoutes);
+app.use("/api", checkAuth, protectedRoutes);
 
 app.use(errorHandler);
 app.use(notFound);
 
+// Cron jobs
 await FileStationCredentials.getInstance();
+schedule("0 0 * * *", async () => {
+  await FileStationCredentials.updateFSCredentials();
+});
 app.listen(port, () => console.log(`Server running on port ${port}`));
+
+/**
+ * Sets up passport strategies
+ */
+function setUpPassportStrategies() {
+  const discordStrategy = new DiscordStrategy(
+    {
+      clientID: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      callbackURL: `${process.env.API_DOMAIN}:${process.env.PORT}/api/auth/discord/callback`,
+      scope: discordScopes,
+    },
+    function (accessToken, refreshToken, profile, cb) {
+      process.nextTick(() => cb(null, profile));
+    }
+  );
+  const apiKeyStrategy = new HeaderAPIKeyStrategy(
+    { header: "Authorization", prefix: "Api-Key " },
+    false,
+    (apiKey, done) => {
+      // Probably not the best way to do it, but this only has one client (the bot) so this is
+      // fine for now
+      if (apiKey === process.env.BOT_API_KEY) {
+        return done(null, {});
+      }
+      done(null, false);
+    }
+  );
+  passport.use(discordStrategy);
+  passport.use(apiKeyStrategy);
+  passport.serializeUser(function (user, done) {
+    done(null, user);
+  });
+  passport.deserializeUser(function (obj: Express.User, done) {
+    done(null, obj);
+  });
+}

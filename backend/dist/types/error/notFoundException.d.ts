@@ -1,14 +1,14 @@
-import HttpStatusCode from "../../data/statusCodes";
+import HttpStatusCode from "../../data/httpStatusCode";
 import { HttpException } from "./httpException";
 /**
- * Thrown when a user tries to access a route that does not exist.
+ * An exception thrown when the requested route or resource not found
  */
 declare class NotFoundException implements HttpException {
+    readonly status: HttpStatusCode;
     readonly name: string;
     readonly message: string;
-    readonly status: HttpStatusCode;
     /**
-     * Constructor for a NotFoundException.
+     * Constructor for an NotFoundException.
      */
     constructor();
     getResponse(): unknown;

@@ -1,20 +1,20 @@
 import { ApiErrorType } from "shared/src/error-codes/apiErrorType";
-import HttpStatusCode from "../../data/statusCodes";
+import HttpStatusCode from "../../data/httpStatusCode";
 /**
- * Thrown when a user tries to access a route that does not exist.
+ * An exception thrown when the requested route or resource not found
  */
 class NotFoundException {
     /**
-     * Constructor for a NotFoundException.
+     * Constructor for an NotFoundException.
      */
     constructor() {
-        this.status = HttpStatusCode.BAD_REQUEST;
+        this.status = HttpStatusCode.NOT_FOUND;
         this.name = "NotFoundException";
-        this.message = "Route could not be found";
+        this.message = "Route/resource not found";
     }
     // eslint-disable-next-line jsdoc/require-jsdoc
     getResponse() {
-        return { message: this.message, errorType: ApiErrorType.NOT_FOUND_EXCEPTION };
+        return { errorType: ApiErrorType.NOT_FOUND_EXCEPTION, message: this.message };
     }
 }
 export default NotFoundException;

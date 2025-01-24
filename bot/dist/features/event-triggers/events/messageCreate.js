@@ -1,5 +1,5 @@
-import { mimetypeToExtension } from "shared/src/data/mimetypeToExtension";
 import { Events } from "discord.js";
+import { mimetypeToExtension } from "shared/src/data/mimetypeToExtension";
 import { getChannelSubData } from "../../../services/getChannelSubData";
 import { replyWithErrorEmbed } from "../../../utils/replyWithErrorEmbed";
 import { uploadAttachmentsWithProgress } from "../helpers/uploadFilesWithProgress";

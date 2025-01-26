@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { fetchPaginatedThumbnails } from "../services/fetchPaginatedThumbnails";
+import { fetchPaginatedThumbnailUrls } from "../services/fetchPaginatedThumbnails";
 
 /**
  * Represents the cursor object used for pagination.
@@ -11,8 +11,8 @@ export interface FetchMediaCursor {
   createdAt: Date;
 }
 
-interface Page {
-  data: Blob[];
+interface MediaPage {
+  mediaUrls: string[];
   nextCursor?: FetchMediaCursor;
 }
 
@@ -28,13 +28,14 @@ type GetMediaQueryKey = ["mediaThumbnails", { query: string | undefined }];
 export const useGetMedia = (pageSize: number, query?: string, albumId?: string) => {
   const queryKey: GetMediaQueryKey = ["mediaThumbnails", { query }];
   const res = useInfiniteQuery<
-    Page,
+    MediaPage,
     Error,
-    InfiniteData<Page, unknown>,
+    InfiniteData<MediaPage, unknown>,
     GetMediaQueryKey,
     FetchMediaCursor | undefined
   >({
     initialPageParam: undefined,
+    retry: false,
     queryKey,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     queryFn: ({ queryKey, signal, pageParam }) => {
@@ -51,12 +52,12 @@ const fetchPage = async (
   signal: AbortSignal,
   pageParam: FetchMediaCursor | undefined,
   albumId?: string,
-): Promise<Page> => {
+): Promise<MediaPage> => {
   const CancelToken = axios.CancelToken;
   const source = CancelToken.source();
   const { query } = queryKey[1];
 
-  const { data, cursor: nextCursor } = await fetchPaginatedThumbnails(
+  const { data: mediaUrls, cursor: nextCursor } = await fetchPaginatedThumbnailUrls(
     pageSize,
     source.token,
     pageParam,
@@ -69,7 +70,7 @@ const fetchPage = async (
   });
 
   return {
-    data,
+    mediaUrls,
     nextCursor,
   };
 };

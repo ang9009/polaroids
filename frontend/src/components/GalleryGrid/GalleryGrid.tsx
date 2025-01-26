@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGetMedia } from "../../hooks/useGetMedia";
 import { toaster } from "../ui/toaster";
 import GalleryGridCSS from "./GalleryGrid.module.css";
@@ -14,50 +14,51 @@ interface GalleryGridProps {
  * Displays a grid gallery of files.
  */
 const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
-  const { isPending, isRefetching, isRefetchError, data, hasNextPage, fetchNextPage, error } =
+  const { isPending, isFetchingNextPage, isRefetchError, data, hasNextPage, fetchNextPage, error } =
     useGetMedia(pageSize);
-  const [thumbnails, setThumbnails] = useState<Blob[]>([]);
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
 
   // Infinite scroll observer
   const observer = useRef<IntersectionObserver>(undefined);
-  const lastThumbnailRef = useCallback(
-    (node: HTMLImageElement | null) => {
-      if (isPending || !hasNextPage) {
-        return;
-      }
-      let { current: observerObj } = observer;
-      if (observerObj) {
-        observerObj.disconnect();
-      }
-      observerObj = new IntersectionObserver((entries, observer) => {
-        if (entries[0].isIntersecting) {
-          fetchNextPage();
-        } else if (!hasNextPage) {
-          observer.disconnect();
-        }
-      });
-      // Node might be undefined if there are no items left to render
-      if (node) {
-        observerObj.observe(node);
-      }
-    },
-    [isPending, hasNextPage, fetchNextPage],
-  );
+  // const lastThumbnailRef = useCallback(
+  //   (node: HTMLImageElement | null) => {
+  //     if (isPending || !hasNextPage) {
+  //       return;
+  //     }
+  //     let { current: observerObj } = observer;
+  //     if (observerObj) {
+  //       observerObj.disconnect();
+  //     }
+  //     observerObj = new IntersectionObserver((entries, observer) => {
+  //       if (entries[0].isIntersecting) {
+  //         fetchNextPage();
+  //       } else if (!hasNextPage) {
+  //         observer.disconnect();
+  //       }
+  //     });
+  //     // Node might be undefined if there are no items left to render
+  //     if (node) {
+  //       observerObj.observe(node);
+  //     }
+  //   },
+  //   [isPending, hasNextPage, fetchNextPage],
+  // );
 
   useEffect(() => {
-    if (error || isRefetchError) {
+    console.log(error);
+    if (error) {
       toaster.create({
         type: "error",
         description: "Could not fetch images. Please reload and try again",
       });
     }
-  }, [error, isRefetchError]);
+  }, [error]);
 
   useEffect(() => {
     if (!data) {
       return;
     }
-    const newThumbnails = data.pages.map((page) => page.data).flat();
+    const newThumbnails = data.pages.map((page) => page.mediaUrls).flat();
     setThumbnails(newThumbnails);
   }, [data]);
 
@@ -68,13 +69,12 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
       maxHeight={"calc(100vh - {sizes.navbarHeight})"}
       className={GalleryGridCSS["grid-container"]}
     >
-      {thumbnails.map((blob, i) => {
-        const url = URL.createObjectURL(blob);
-        if (i === thumbnails.length - 1) {
+      {thumbnails.map((url, i) => {
+        if (i === thumbnails.length - 1 && hasNextPage) {
           return (
             <img
               src={url}
-              ref={lastThumbnailRef}
+              // ref={lastThumbnailRef}
               className={GalleryGridCSS["file-item"]}
               key={url}
             />
@@ -82,7 +82,8 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
         }
         return <img src={url} className={GalleryGridCSS["file-item"]} key={url} />;
       })}
-      {(isPending || isRefetching) && [...Array(pageSize).keys()].map((i) => <Skeleton key={i} />)}
+      {(isPending || isFetchingNextPage) &&
+        [...Array(pageSize).keys()].map((i) => <Skeleton key={i} />)}
     </Box>
   );
 };

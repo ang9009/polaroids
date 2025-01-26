@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { AllowedMimeType } from "../../data/allowedMimeType";
 
-export const DownloadFileRequestSchema = z.object({
+export const GetFileLinkRequestSchema = z.object({
   // The discord attachment of the original file
   discordId: z.string(),
   // The mimetype of the original file
@@ -11,4 +11,4 @@ export const DownloadFileRequestSchema = z.object({
   thumbnail: z.string().transform((bool) => Boolean(bool)),
 });
 
-export type DownloadFileRequest = z.infer<typeof DownloadFileRequestSchema>;
+export type GetFileLinkRequest = z.infer<typeof GetFileLinkRequestSchema>;

@@ -1,7 +1,7 @@
 import express from "express";
 import {
-  downloadFile,
   filterExistingFileIds,
+  getFileLink,
   getFilesData,
   uploadFiles,
 } from "../controllers/files.controller";
@@ -18,6 +18,6 @@ router.get("/filter-existing-ids", filterExistingFileIds);
 router.get("/data", getFilesData);
 
 // Downloads the specified media file
-router.get("/download", downloadFile);
+router.get("/link", getFileLink);
 
 export default router;

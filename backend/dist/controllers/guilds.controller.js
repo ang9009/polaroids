@@ -1,7 +1,7 @@
 import { GuildQueryParamsSchema } from "shared/src/requests/guilds/guildQueryParams";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 /**
@@ -9,24 +9,23 @@ import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
  * Route: POST /api/guilds
  */
 export const addGuild = async (req, res, next) => {
-    const parseRes = GuildQueryParamsSchema.safeParse(req.body);
-    if (!parseRes.success) {
-        const error = new ValidationException(parseRes.error);
-        return next(error);
-    }
-    const { guildId } = parseRes.data;
-    try {
-        await prisma.guild.create({
-            data: {
-                guildId: guildId,
-            },
-        });
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.OK).json(successJson);
+  const parseRes = GuildQueryParamsSchema.safeParse(req.body);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+  const { guildId } = parseRes.data;
+  try {
+    await prisma.guild.create({
+      data: {
+        guildId: guildId,
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.OK).json(successJson);
 };
 /**
  * Deletes a guild from the Postgres database.
@@ -37,22 +36,21 @@ export const addGuild = async (req, res, next) => {
  * @returns void
  */
 export const deleteGuild = async (req, res, next) => {
-    const parseRes = GuildQueryParamsSchema.safeParse(req.params);
-    if (!parseRes.success) {
-        const error = new ValidationException(parseRes.error);
-        return next(error);
-    }
-    const { guildId } = parseRes.data;
-    try {
-        await prisma.guild.delete({
-            where: {
-                guildId: guildId,
-            },
-        });
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.OK).json(successJson);
+  const parseRes = GuildQueryParamsSchema.safeParse(req.params);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+  const { guildId } = parseRes.data;
+  try {
+    await prisma.guild.delete({
+      where: {
+        guildId: guildId,
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.OK).json(successJson);
 };

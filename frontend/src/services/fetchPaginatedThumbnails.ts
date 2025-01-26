@@ -2,7 +2,7 @@ import { CancelToken } from "axios";
 import { getMimetypeFromExtension } from "shared/src/helpers/getMimetypeFromExtension";
 import { FetchMediaCursor } from "../hooks/useGetMedia";
 import { fetchPaginatedMediaData } from "./fetchPaginatedMediaData";
-import { getFile } from "./getFile";
+import { getFileUrl } from "./getFile";
 
 /**
  * Fetches thumbnails for photos/videos based on the given list of parameters.
@@ -12,15 +12,15 @@ import { getFile } from "./getFile";
  * @param {FetchMediaCursor} cursor the cursor used to paginate the media
  * @param {string} query a search query for file names
  * @param {string} albumId corresponds to the album the files should be in
- * @returns {Blob[]} the requested media
+ * @returns {string[]} the requested media urls
  */
-export const fetchPaginatedThumbnails = async (
+export const fetchPaginatedThumbnailUrls = async (
   pageSize: number,
   cancelToken: CancelToken,
   cursor?: FetchMediaCursor,
   query?: string,
   albumId?: string,
-): Promise<{ data: Blob[]; cursor: FetchMediaCursor | undefined }> => {
+): Promise<{ data: string[]; cursor: FetchMediaCursor | undefined }> => {
   const { data: mediaData } = await fetchPaginatedMediaData(
     pageSize,
     cancelToken,
@@ -30,7 +30,7 @@ export const fetchPaginatedThumbnails = async (
   );
   const mediaFilePromises = mediaData.map((data) => {
     const mimetype = getMimetypeFromExtension(data.extension);
-    return getFile(data.discordId, mimetype, true, cancelToken);
+    return getFileUrl(data.discordId, mimetype, true, cancelToken);
   });
   const mediaFiles = await Promise.all(mediaFilePromises);
 

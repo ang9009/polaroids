@@ -1,4 +1,4 @@
-import prisma from "../../lib/prisma";
+import { prisma } from "../../lib/prisma";
 /**
  * Retrieves paginated file data based on the given parameters.
  * @param pageSize the number of files to be retrieved
@@ -9,21 +9,40 @@ import prisma from "../../lib/prisma";
  * @returns the related file data
  */
 export const getFileData = async (pageSize, cursor, searchQuery, albumId) => {
-    return await prisma.mediaFile.findMany(Object.assign(Object.assign(Object.assign({ take: pageSize }, (cursor && {
-        skip: 1,
-        cursor: {
-            discordId: cursor.discordId,
-            createdAt: cursor.createdAt,
-        },
-    })), (searchQuery && {
-        where: Object.assign({ fileName: {
+  return await prisma.mediaFile.findMany(
+    Object.assign(
+      Object.assign(
+        Object.assign(
+          { take: pageSize },
+          cursor && {
+            skip: 1,
+            cursor: {
+              discordId: cursor.discordId,
+              createdAt: cursor.createdAt,
+            },
+          }
+        ),
+        searchQuery && {
+          where: Object.assign(
+            {
+              fileName: {
                 contains: searchQuery.trim(),
                 mode: "insensitive",
-            } }, (albumId && { albumId: albumId })),
-    })), { select: {
-            discordId: true,
-            fileName: true,
-            extension: true,
-            createdAt: true,
-        }, orderBy: [{ createdAt: "asc" }, { discordId: "asc" }] }));
+              },
+            },
+            albumId && { albumId: albumId }
+          ),
+        }
+      ),
+      {
+        select: {
+          discordId: true,
+          fileName: true,
+          extension: true,
+          createdAt: true,
+        },
+        orderBy: [{ createdAt: "asc" }, { discordId: "asc" }],
+      }
+    )
+  );
 };

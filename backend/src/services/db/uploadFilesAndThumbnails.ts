@@ -1,7 +1,7 @@
 import { MediaFile } from "@prisma/client";
-import prisma from "../../lib/prisma";
+import { prisma } from "../../lib/prisma";
 import { BufferFile } from "../../types/data/bufferFile";
-import { FileStation } from "../filestation/fileStation";
+import { AWSFolder, uploadFiles } from "../aws/aws";
 
 /**
  * Uploads the given thumbnails and media files to FileStation, and updates the
@@ -29,8 +29,8 @@ export const uploadFilesAndThumbnails = async (
       });
       filesUploaded = count;
 
-      await FileStation.uploadFilesToFS(thumbnailFiles, "/polaroids/thumbnails");
-      await FileStation.uploadFilesToFS(mediaFiles, "/polaroids/media");
+      await uploadFiles(thumbnailFiles, AWSFolder.Thumbnails);
+      await uploadFiles(mediaFiles, AWSFolder.Media);
     },
     {
       timeout: 600_000, // 10 minutes YOLO

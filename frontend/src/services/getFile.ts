@@ -1,6 +1,6 @@
 import { CancelToken } from "axios";
 import { AllowedMimeType } from "shared/src/data/allowedMimeType";
-import { z } from "zod";
+import { GetFileLinkResponseSchema } from "shared/src/responses/files/getFileLink";
 import { apiClient } from "../lib/axios";
 
 /**
@@ -10,27 +10,27 @@ import { apiClient } from "../lib/axios";
  * @param {boolean} thumbnail whether the specified file's thumbnail should be fetched
  * @param {CancelToken} cancelToken a token used to cancel the request
  * request if needed
- * @returns {Promise<Blob>} the requested file
+ * @returns {Promise<string>} the requested file url
  */
-export const getFile = async (
+export const getFileUrl = async (
   discordId: string,
   mimetype: AllowedMimeType,
   thumbnail: boolean,
   cancelToken: CancelToken,
-): Promise<Blob> => {
+): Promise<string> => {
   const { VITE_API_URL } = import.meta.env;
-  const url = `${VITE_API_URL}/files/download`;
+  const url = `${VITE_API_URL}/files/link`;
   const req = {
     thumbnail: `${thumbnail}`,
     discordId,
     mimetype,
   };
   const params = new URLSearchParams(req);
-  const res = await apiClient.get(url, { params, cancelToken, responseType: "blob" });
+  const res = await apiClient.get(url, { params, cancelToken });
 
-  const parseRes = z.instanceof(Blob).safeParse(res.data);
+  const parseRes = GetFileLinkResponseSchema.safeParse(res.data);
   if (!parseRes.success) {
     throw Error("Got unexpected response while fetching media: " + parseRes.error);
   }
-  return parseRes.data;
+  return parseRes.data.url;
 };

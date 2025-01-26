@@ -6,30 +6,31 @@ import { NextFunction, Request, Response } from "express";
 import multer from "multer";
 import { AllowedMimeType, isAllowedMimeType } from "shared/src/data/allowedMimeType";
 import { mimetypeToExtension } from "shared/src/data/mimetypeToExtension";
-import { DownloadFileRequestSchema } from "shared/src/requests/files/downloadFile";
 import { FilterExistingFileIdsRequestSchema } from "shared/src/requests/files/filterExistingFileIds";
+import { GetFileLinkRequestSchema } from "shared/src/requests/files/getFileLink";
 import { GetFilesRequest, GetFilesRequestSchema } from "shared/src/requests/files/getFiles";
 import {
   FilesUploadData,
   UploadFilesRequestBodySchema,
 } from "shared/src/requests/files/uploadFiles";
 import { FilterExistingFileIdsResponse } from "shared/src/responses/files/filterExistingFileIds";
+import { GetFileLinkResponse } from "shared/src/responses/files/getFileLink";
 import { GetFilesDataResponse } from "shared/src/responses/files/getFilesData";
 import { UploadFilesResponse } from "shared/src/responses/files/uploadFiles";
 import HttpStatusCode from "../data/httpStatusCode";
 import { getVideoThumbnail } from "../lib/fluentFfmpeg";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import { shrinkImage } from "../lib/sharp";
+import { AWSFolder, getFileUrl } from "../services/aws/aws";
 import { getFileData } from "../services/db/getFileData";
 import { uploadFilesAndThumbnails } from "../services/db/uploadFilesAndThumbnails";
-import { FileStation } from "../services/filestation/fileStation";
 import { BufferFile } from "../types/data/bufferFile";
 import NotFoundException from "../types/error/notFoundException";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { fileFilter } from "../utils/fileFilter";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
-import { getFSFileName } from "../utils/getFSFileName";
+import { getFileName } from "../utils/getFSFileName";
 
 const upload = multer({ limits: { fileSize: 2 * 10 ** 9 }, fileFilter: fileFilter }).array("files");
 
@@ -304,14 +305,18 @@ export const getFilesData = async (
 };
 
 /**
- * Retrieves media from FileStation.
+ * Returns the corresponding urls of the requested media.
  *
  * Route: GET /api/files/download
  *
  * Request query: see DownloadFileRequestSchema
  */
-export const downloadFile = async (req: Request, res: Response, next: NextFunction) => {
-  const parseParams = DownloadFileRequestSchema.safeParse(req.query);
+export const getFileLink = async (
+  req: Request,
+  res: Response<GetFileLinkResponse>,
+  next: NextFunction
+) => {
+  const parseParams = GetFileLinkRequestSchema.safeParse(req.query);
   if (!parseParams.success) {
     const error = new ValidationException(parseParams.error);
     return next(error);
@@ -319,11 +324,12 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
 
   const { discordId, mimetype, thumbnail } = parseParams.data;
   const resMimetype = thumbnail ? AllowedMimeType.PNG : mimetype;
+  const subFolder = thumbnail ? AWSFolder.Thumbnails : AWSFolder.Media;
 
-  let fileData: Buffer;
+  let url: string;
   try {
-    const fileName = getFSFileName(discordId, mimetypeToExtension[resMimetype]);
-    fileData = await FileStation.getFileFromFS(fileName, "/polaroids/thumbnails");
+    const fileName = getFileName(discordId, mimetypeToExtension[resMimetype]);
+    url = await getFileUrl(fileName, subFolder);
   } catch (err) {
     if (isAxiosError(err)) {
       if (err.status === 404) {
@@ -334,6 +340,5 @@ export const downloadFile = async (req: Request, res: Response, next: NextFuncti
     return next(error);
   }
 
-  res.contentType(resMimetype);
-  return res.send(fileData);
+  return res.send({ url }).status(HttpStatusCode.OK);
 };

@@ -12,7 +12,7 @@ import { GetSubbedChannelsResponse } from "shared/src/responses/subscribed-chann
 import { IsSubscribedResponse } from "shared/src/responses/subscribed-channels/isSubscribed";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 

@@ -6,12 +6,10 @@ import "dotenv/config";
 import express, { Router } from "express";
 import session from "express-session";
 import helmet from "helmet";
-import { schedule } from "node-cron";
 import passport from "passport";
 import DiscordStrategy from "passport-discord";
 import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 import { discordScopes } from "./data/discordScopes";
-import { checkAuth } from "./middleware/checkAuth";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -20,13 +18,11 @@ import auth from "./routes/auth.routes";
 import files from "./routes/files.routes";
 import guilds from "./routes/guilds.routes";
 import subscribedChannels from "./routes/subbedChannels.routes";
-import { FileStationCredentials } from "./services/filestation/fileStationCredentials";
 
 dotenv.config();
-
-const port = process.env.PORT;
 const app = express();
 
+// General middleware
 app.use(helmet());
 app.use(
   cors({
@@ -73,16 +69,12 @@ const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);
 
 app.use("/api", unprotectedRoutes);
-app.use("/api", checkAuth, protectedRoutes);
+app.use("/api", protectedRoutes);
 
 app.use(errorHandler);
 app.use(notFound);
 
-// Cron jobs
-await FileStationCredentials.getInstance();
-schedule("0 0 * * *", async () => {
-  await FileStationCredentials.updateFSCredentials();
-});
+const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
 
 /**

@@ -10,7 +10,7 @@ import { CreateAlbumResponse } from "shared/src/responses/albums/createAlbum";
 import { GetAlbumsResponse } from "shared/src/responses/albums/getAlbums";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import UnknownException from "../types/error/unknownException";
 import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";

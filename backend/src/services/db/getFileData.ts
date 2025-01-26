@@ -1,5 +1,5 @@
 import { GetFilesCursor } from "shared/src/requests/files/cursor";
-import prisma from "../../lib/prisma";
+import { prisma } from "../../lib/prisma";
 
 /**
  * Retrieves paginated file data based on the given parameters.

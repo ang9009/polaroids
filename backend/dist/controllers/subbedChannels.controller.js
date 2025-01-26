@@ -7,7 +7,7 @@ import { UnsubChannelRequestSchema } from "shared/src/requests/subscribed-channe
 import { UpdateChannelAlbumRequestSchema } from "shared/src/requests/subscribed-channels/updateChannelAlbum";
 import HttpStatusCode from "../data/statusCodes";
 import successJson from "../data/successJson";
-import prisma from "../lib/prisma";
+import { prisma } from "../lib/prisma";
 import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 /**
@@ -16,73 +16,71 @@ import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
  * Route: GET /api/subscribed-channels/:guildId
  */
 export const getAllSubbedChannels = async (req, res, next) => {
-    const parseRes = GetSubbedChannelsRequestSchema.safeParse(req.params);
-    if (!parseRes.success) {
-        const error = new ValidationException(parseRes.error);
-        return next(error);
-    }
-    const { guildId } = parseRes.data;
-    let subbedChannelsData;
-    try {
-        subbedChannelsData = await prisma.subscribedChannel.findMany({
-            where: {
-                guildId: guildId,
-            },
-            select: {
-                channelId: true,
-                album: {
-                    select: {
-                        albumName: true,
-                    },
-                },
-            },
-        });
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.OK).json(subbedChannelsData);
+  const parseRes = GetSubbedChannelsRequestSchema.safeParse(req.params);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+  const { guildId } = parseRes.data;
+  let subbedChannelsData;
+  try {
+    subbedChannelsData = await prisma.subscribedChannel.findMany({
+      where: {
+        guildId: guildId,
+      },
+      select: {
+        channelId: true,
+        album: {
+          select: {
+            albumName: true,
+          },
+        },
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.OK).json(subbedChannelsData);
 };
 /**
  * Used to check if polaroids has already subscribed to a channel.
  * Route: GET /api/subscribed-channels/is-subscribed/:id
  */
 export const channelIsSubscribed = async (req, res, next) => {
-    const parseRes = IsSubscribedQueryParamsSchema.safeParse(req.params);
-    if (!parseRes.success) {
-        const error = new ValidationException(parseRes.error);
-        return next(error);
-    }
-    const { channelId } = parseRes.data;
-    const channelData = await prisma.subscribedChannel.findFirst({
-        relationLoadStrategy: "join",
+  const parseRes = IsSubscribedQueryParamsSchema.safeParse(req.params);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+  const { channelId } = parseRes.data;
+  const channelData = await prisma.subscribedChannel.findFirst({
+    relationLoadStrategy: "join",
+    select: {
+      album: {
         select: {
-            album: {
-                select: {
-                    albumId: true,
-                    albumName: true,
-                },
-            },
+          albumId: true,
+          albumName: true,
         },
-        where: {
-            channelId: channelId,
-        },
-    });
-    let response;
-    if (channelData) {
-        response = {
-            isSubscribed: true,
-            linkedAlbumId: channelData.album.albumId,
-            linkedAlbumName: channelData.album.albumName,
-        };
-    }
-    else {
-        response = {
-            isSubscribed: false,
-        };
-    }
-    res.status(HttpStatusCode.OK).json(response);
+      },
+    },
+    where: {
+      channelId: channelId,
+    },
+  });
+  let response;
+  if (channelData) {
+    response = {
+      isSubscribed: true,
+      linkedAlbumId: channelData.album.albumId,
+      linkedAlbumName: channelData.album.albumName,
+    };
+  } else {
+    response = {
+      isSubscribed: false,
+    };
+  }
+  res.status(HttpStatusCode.OK).json(response);
 };
 /**
  * Adds a subscribed channel to the database. This also creates a new album
@@ -108,50 +106,48 @@ export const channelIsSubscribed = async (req, res, next) => {
  * }
  */
 export const addSubscribedChannel = async (req, res, next) => {
-    const parseRes = AddSubbedChannelRequestSchema.safeParse(req.body);
-    if (!parseRes.success) {
-        const error = new ValidationException(parseRes.error);
-        return next(error);
+  const parseRes = AddSubbedChannelRequestSchema.safeParse(req.body);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+  const { channelId, albumRequestType, guildId } = parseRes.data;
+  try {
+    if (albumRequestType === AlbumRequestType.CREATE_NEW) {
+      const { albumName, albumDesc } = parseRes.data;
+      await prisma.$transaction(async (tx) => {
+        // Create the album
+        const album = await tx.album.create({
+          data: {
+            albumName: albumName,
+            description: albumDesc,
+          },
+        });
+        // Link the channel to the album
+        await tx.subscribedChannel.create({
+          data: {
+            channelId: channelId,
+            guildId: guildId,
+            albumId: album.albumId,
+          },
+        });
+      });
+    } else {
+      const { albumId } = parseRes.data;
+      // If the album already exists, just add the channel as a subscribed channel
+      await prisma.subscribedChannel.create({
+        data: {
+          channelId: channelId,
+          guildId: guildId,
+          albumId: albumId,
+        },
+      });
     }
-    const { channelId, albumRequestType, guildId } = parseRes.data;
-    try {
-        if (albumRequestType === AlbumRequestType.CREATE_NEW) {
-            const { albumName, albumDesc } = parseRes.data;
-            await prisma.$transaction(async (tx) => {
-                // Create the album
-                const album = await tx.album.create({
-                    data: {
-                        albumName: albumName,
-                        description: albumDesc,
-                    },
-                });
-                // Link the channel to the album
-                await tx.subscribedChannel.create({
-                    data: {
-                        channelId: channelId,
-                        guildId: guildId,
-                        albumId: album.albumId,
-                    },
-                });
-            });
-        }
-        else {
-            const { albumId } = parseRes.data;
-            // If the album already exists, just add the channel as a subscribed channel
-            await prisma.subscribedChannel.create({
-                data: {
-                    channelId: channelId,
-                    guildId: guildId,
-                    albumId: albumId,
-                },
-            });
-        }
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.CREATED).json(successJson);
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.CREATED).json(successJson);
 };
 /**
  * Changes the linked album that a channel that is already subscribed to.
@@ -164,28 +160,27 @@ export const addSubscribedChannel = async (req, res, next) => {
  * }
  */
 export const updateChannelAlbum = async (req, res, next) => {
-    const parsedRequest = UpdateChannelAlbumRequestSchema.safeParse(req.body);
-    if (!parsedRequest.success) {
-        const error = new ValidationException(parsedRequest.error);
-        return next(error);
-    }
-    const { albumId, channelId, guildId } = parsedRequest.data;
-    try {
-        await prisma.subscribedChannel.update({
-            where: {
-                channelId: channelId,
-                guildId: guildId,
-            },
-            data: {
-                albumId: albumId,
-            },
-        });
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.OK).json(successJson);
+  const parsedRequest = UpdateChannelAlbumRequestSchema.safeParse(req.body);
+  if (!parsedRequest.success) {
+    const error = new ValidationException(parsedRequest.error);
+    return next(error);
+  }
+  const { albumId, channelId, guildId } = parsedRequest.data;
+  try {
+    await prisma.subscribedChannel.update({
+      where: {
+        channelId: channelId,
+        guildId: guildId,
+      },
+      data: {
+        albumId: albumId,
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.OK).json(successJson);
 };
 /**
  * Creates a new album, then links an existing channel to it.
@@ -203,36 +198,35 @@ export const updateChannelAlbum = async (req, res, next) => {
  * }
  */
 export const createAlbumAndLinkChannel = async (req, res, next) => {
-    const parseRes = CreateAndLinkAlbumRequestSchema.safeParse(req.body);
-    if (!parseRes.success) {
-        const error = new ValidationException(parseRes.error);
-        return next(error);
-    }
-    const { guildId, channelId, albumName, albumDesc } = parseRes.data;
-    try {
-        await prisma.$transaction(async (tx) => {
-            const album = await tx.album.create({
-                data: {
-                    albumName: albumName,
-                    description: albumDesc,
-                },
-            });
-            await tx.subscribedChannel.update({
-                where: {
-                    guildId: guildId,
-                    channelId: channelId,
-                },
-                data: {
-                    albumId: album.albumId,
-                },
-            });
-        });
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.OK).json(successJson);
+  const parseRes = CreateAndLinkAlbumRequestSchema.safeParse(req.body);
+  if (!parseRes.success) {
+    const error = new ValidationException(parseRes.error);
+    return next(error);
+  }
+  const { guildId, channelId, albumName, albumDesc } = parseRes.data;
+  try {
+    await prisma.$transaction(async (tx) => {
+      const album = await tx.album.create({
+        data: {
+          albumName: albumName,
+          description: albumDesc,
+        },
+      });
+      await tx.subscribedChannel.update({
+        where: {
+          guildId: guildId,
+          channelId: channelId,
+        },
+        data: {
+          albumId: album.albumId,
+        },
+      });
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.OK).json(successJson);
 };
 /**
  * Unsubscribes a given channel from polaroids by removing it its channel id
@@ -241,22 +235,21 @@ export const createAlbumAndLinkChannel = async (req, res, next) => {
  * Route: DELETE /api/subscribed-channels/:channelId
  */
 export const removeSubscribedChannel = async (req, res, next) => {
-    const parsedRequest = UnsubChannelRequestSchema.safeParse(req.params);
-    if (!parsedRequest.success) {
-        const error = new ValidationException(parsedRequest.error);
-        return next(error);
-    }
-    const { channelId } = parsedRequest.data;
-    try {
-        await prisma.subscribedChannel.delete({
-            where: {
-                channelId: channelId,
-            },
-        });
-    }
-    catch (err) {
-        const error = getDbExFromPrismaErr(err);
-        return next(error);
-    }
-    res.status(HttpStatusCode.OK).json(successJson);
+  const parsedRequest = UnsubChannelRequestSchema.safeParse(req.params);
+  if (!parsedRequest.success) {
+    const error = new ValidationException(parsedRequest.error);
+    return next(error);
+  }
+  const { channelId } = parsedRequest.data;
+  try {
+    await prisma.subscribedChannel.delete({
+      where: {
+        channelId: channelId,
+      },
+    });
+  } catch (err) {
+    const error = getDbExFromPrismaErr(err);
+    return next(error);
+  }
+  res.status(HttpStatusCode.OK).json(successJson);
 };

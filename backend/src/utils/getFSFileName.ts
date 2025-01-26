@@ -5,6 +5,6 @@
  * @param extension the file's extension
  * @returns the file's name on FileStation
  */
-export const getFSFileName = (discordId: string, extension: string) => {
+export const getFileName = (discordId: string, extension: string) => {
   return `${discordId}.${extension}`;
 };

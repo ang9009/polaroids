@@ -63,12 +63,7 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
   }, [data]);
 
   return (
-    <Box
-      width={"calc(100vw - {sizes.sidebarWidth})"}
-      height={"100%"}
-      maxHeight={"calc(100vh - {sizes.navbarHeight})"}
-      className={GalleryGridCSS["grid-container"]}
-    >
+    <Box className={GalleryGridCSS["grid-container"]}>
       {thumbnails.map((url, i) => {
         if (i === thumbnails.length - 1 && hasNextPage) {
           return (

@@ -40,6 +40,6 @@ export const getFileData = async (
       extension: true,
       createdAt: true,
     },
-    orderBy: [{ createdAt: "asc" }, { discordId: "asc" }],
+    orderBy: [{ createdAt: "desc" }, { discordId: "asc" }],
   });
 };

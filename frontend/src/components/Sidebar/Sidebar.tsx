@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-returns */
 import { Box, Tabs } from "@chakra-ui/react";
 import { IoIosImages } from "react-icons/io";
 import {

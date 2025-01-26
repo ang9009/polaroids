@@ -34,15 +34,20 @@ export const fetchPaginatedThumbnailUrls = async (
   });
   const mediaFiles = await Promise.all(mediaFilePromises);
 
+  // If there is no media to be fetched, return an undefined cursor to let
+  // Tanstack query know that there is no more data to be fetched
+  if (mediaData.length === 0) {
+    return {
+      data: [],
+      cursor: undefined,
+    };
+  }
   const { discordId: cursorDiscordId, createdAt: cursorCreatedAt } =
     mediaData[mediaData.length - 1];
-  const newCursor: FetchMediaCursor | undefined =
-    mediaData.length !== 0
-      ? {
-          discordId: cursorDiscordId,
-          createdAt: new Date(cursorCreatedAt),
-        }
-      : undefined;
+  const newCursor: FetchMediaCursor = {
+    discordId: cursorDiscordId,
+    createdAt: new Date(cursorCreatedAt),
+  };
 
   return { data: mediaFiles, cursor: newCursor };
 };

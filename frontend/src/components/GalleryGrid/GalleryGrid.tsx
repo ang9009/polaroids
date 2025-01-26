@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetMedia } from "../../hooks/useGetMedia";
 import { toaster } from "../ui/toaster";
 import GalleryGridCSS from "./GalleryGrid.module.css";
@@ -20,29 +20,29 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
 
   // Infinite scroll observer
   const observer = useRef<IntersectionObserver>(undefined);
-  // const lastThumbnailRef = useCallback(
-  //   (node: HTMLImageElement | null) => {
-  //     if (isPending || !hasNextPage) {
-  //       return;
-  //     }
-  //     let { current: observerObj } = observer;
-  //     if (observerObj) {
-  //       observerObj.disconnect();
-  //     }
-  //     observerObj = new IntersectionObserver((entries, observer) => {
-  //       if (entries[0].isIntersecting) {
-  //         fetchNextPage();
-  //       } else if (!hasNextPage) {
-  //         observer.disconnect();
-  //       }
-  //     });
-  //     // Node might be undefined if there are no items left to render
-  //     if (node) {
-  //       observerObj.observe(node);
-  //     }
-  //   },
-  //   [isPending, hasNextPage, fetchNextPage],
-  // );
+  const lastThumbnailRef = useCallback(
+    (node: HTMLImageElement | null) => {
+      if (isPending || !hasNextPage) {
+        return;
+      }
+      let { current: observerObj } = observer;
+      if (observerObj) {
+        observerObj.disconnect();
+      }
+      observerObj = new IntersectionObserver((entries, observer) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
+          observer.disconnect();
+        } else if (!hasNextPage) {
+          observer.disconnect();
+        }
+      });
+      if (node) {
+        observerObj.observe(node);
+      }
+    },
+    [isPending, hasNextPage, fetchNextPage],
+  );
 
   useEffect(() => {
     console.log(error);
@@ -74,7 +74,7 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
           return (
             <img
               src={url}
-              // ref={lastThumbnailRef}
+              ref={lastThumbnailRef}
               className={GalleryGridCSS["file-item"]}
               key={url}
             />

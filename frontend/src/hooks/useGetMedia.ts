@@ -36,6 +36,7 @@ export const useGetMedia = (pageSize: number, query?: string, albumId?: string) 
   >({
     initialPageParam: undefined,
     retry: false,
+    staleTime: 1000 * 60 * 60,
     queryKey,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     queryFn: ({ queryKey, signal, pageParam }) => {

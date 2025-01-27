@@ -3,9 +3,9 @@
 A photos/videos management suite consisting of a Discord bot that automatically uploads
 media to my Synology FileStation, and a website that displays this media.
 
-|             Bot commands             |        Website         |
-| :----------------------------------: | :--------------------: |
-| ![Bot commands](assets/commands.png) | ![Web](assets/web.png) |
+|             Bot commands             |          Website           |
+| :----------------------------------: | :------------------------: |
+| ![Bot commands](assets/commands.png) | ![Web](assets/website.png) |
 
 (The photos are placeholders that's not me)
 

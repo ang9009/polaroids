@@ -2,11 +2,7 @@
 import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import {
-  BreadcrumbCurrentLink,
-  BreadcrumbLink,
-  BreadcrumbRoot,
-} from "../../components/ui/breadcrumb";
+import { BreadcrumbLink, BreadcrumbRoot } from "../../components/ui/breadcrumb";
 import SidebarLayoutCSS from "./SidebarLayout.module.css";
 
 /**
@@ -17,14 +13,13 @@ const SidebarLayout = () => {
     <div className={SidebarLayoutCSS["layout-container"]}>
       <Sidebar />
       <Box
-        maxWidth={"calc(100vw - {sizes.sidebarWidth})"}
-        maxHeight={"calc(100vh - {sizes.navbarHeight})"}
+        width={"calc(100vw - {sizes.sidebarWidth})"}
+        height={"calc(100vh - {sizes.navbarHeight})"}
         className={SidebarLayoutCSS["outlet-container"]}
       >
         <BreadcrumbRoot variant="plain" size="md" className={SidebarLayoutCSS["breadcrumb"]}>
-          <BreadcrumbLink href="#">Docs</BreadcrumbLink>
-          <BreadcrumbLink href="#">Components</BreadcrumbLink>
-          <BreadcrumbCurrentLink>Props</BreadcrumbCurrentLink>
+          <BreadcrumbLink href="#">Albums</BreadcrumbLink>
+          <BreadcrumbLink href="#">Hangout</BreadcrumbLink>
         </BreadcrumbRoot>
         <Outlet />
       </Box>

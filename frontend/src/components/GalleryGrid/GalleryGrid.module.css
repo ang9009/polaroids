@@ -3,6 +3,7 @@
   grid-auto-rows: 20rem;
   grid-template-columns: repeat(3, 3fr);
   gap: 1rem;
+  width: 100%;
 }
 
 .file-item {

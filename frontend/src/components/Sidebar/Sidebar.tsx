@@ -9,44 +9,52 @@ import {
   IoTrashOutline,
 } from "react-icons/io5";
 
+import { IconType } from "react-icons/lib";
+import { Link, useNavigate } from "react-router";
 import SidebarCSS from "./Sidebar.module.css";
 
 /**
  * Sidebar used for navigation between routes.
  */
 const Sidebar = () => {
+  const tabLabelToIcon: Record<string, [IconType, string]> = {
+    Media: [IoIosImages, "/"],
+    Photos: [IoCameraOutline, "/photos"],
+    Videos: [IoFilmOutline, "/videos"],
+    Albums: [IoFolderOutline, "/albums"],
+    People: [IoPeopleOutline, "/people"],
+    Bin: [IoTrashOutline, "/bin"],
+  };
+  const navigate = useNavigate();
+
   return (
     <Box
       className={SidebarCSS["sidebar-container"]}
       width={"{sizes.sidebarWidth}"}
       height={"calc(100vh - {sizes.navbarHeight})"}
     >
-      <Tabs.Root variant={"subtle"} orientation={"vertical"} defaultValue={"media"}>
+      <Tabs.Root
+        variant={"subtle"}
+        orientation={"vertical"}
+        defaultValue={"Media"}
+        navigate={({ value }) => {
+          const [_, route] = tabLabelToIcon[value!];
+          console.log(route);
+          navigate(route);
+        }}
+      >
         <Tabs.List width={"100%"}>
-          <Tabs.Trigger value="media">
-            <IoIosImages />
-            Media
-          </Tabs.Trigger>
-          <Tabs.Trigger value="photos">
-            <IoCameraOutline />
-            Photos
-          </Tabs.Trigger>
-          <Tabs.Trigger value="videos">
-            <IoFilmOutline />
-            Videos
-          </Tabs.Trigger>
-          <Tabs.Trigger value="albums">
-            <IoFolderOutline />
-            Albums
-          </Tabs.Trigger>
-          <Tabs.Trigger value="people">
-            <IoPeopleOutline />
-            People
-          </Tabs.Trigger>
-          <Tabs.Trigger value="bin">
-            <IoTrashOutline />
-            Bin
-          </Tabs.Trigger>
+          {Object.entries(tabLabelToIcon).map((entry) => {
+            const [label, [iconType, route]] = entry;
+            return (
+              <Tabs.Trigger value={label} asChild>
+                <Link to={route}>
+                  {iconType({})}
+                  {label}
+                </Link>
+              </Tabs.Trigger>
+            );
+          })}
         </Tabs.List>
       </Tabs.Root>
     </Box>

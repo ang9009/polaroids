@@ -2,7 +2,7 @@
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useGetMedia } from "../../hooks/useGetMedia";
+import { useGetMediaThumbnails } from "../../hooks/useGetMedia";
 import { toaster } from "../ui/toaster";
 import GalleryGridCSS from "./GalleryGrid.module.css";
 
@@ -14,9 +14,18 @@ interface GalleryGridProps {
  * Displays a grid gallery of files.
  */
 const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
-  const { isPending, isFetchingNextPage, isRefetchError, data, hasNextPage, fetchNextPage, error } =
-    useGetMedia(pageSize);
+  const { isPending, isFetchingNextPage, data, hasNextPage, fetchNextPage, error } =
+    useGetMediaThumbnails(pageSize);
   const [thumbnails, setThumbnails] = useState<string[]>([]);
+
+  // Set thumbnails once new data comes in
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const newThumbnails = data.pages.map((page) => page.mediaUrls).flat();
+    setThumbnails(newThumbnails);
+  }, [data]);
 
   // Infinite scroll observer
   const observer = useRef<IntersectionObserver>(undefined);
@@ -44,8 +53,8 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
     [isPending, hasNextPage, fetchNextPage],
   );
 
+  // Error toast
   useEffect(() => {
-    console.log(error);
     if (error) {
       toaster.create({
         type: "error",
@@ -53,14 +62,6 @@ const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
       });
     }
   }, [error]);
-
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-    const newThumbnails = data.pages.map((page) => page.mediaUrls).flat();
-    setThumbnails(newThumbnails);
-  }, [data]);
 
   return (
     <Box className={GalleryGridCSS["grid-container"]}>

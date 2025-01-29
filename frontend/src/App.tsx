@@ -2,8 +2,9 @@
 import { Route, Routes } from "react-router";
 import NavbarLayout from "./layouts/NavbarLayout/NavbarLayout.tsx";
 import SidebarLayout from "./layouts/SidebarLayout/SidebarLayout.tsx";
-import Home from "./pages/home/Home.tsx";
-import Login from "./pages/login/Login.tsx";
+import Albums from "./pages/Albums/Albums.tsx";
+import Home from "./pages/Home/Home.tsx";
+import Login from "./pages/Login/Login.tsx";
 import PrivateRoutes from "./routes/PrivateRoutes.tsx";
 
 /**
@@ -16,6 +17,7 @@ const App = () => {
         <Route element={<PrivateRoutes />}>
           <Route element={<SidebarLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/albums" element={<Albums />} />
           </Route>
         </Route>
         <Route path="/login" element={<Login />} />

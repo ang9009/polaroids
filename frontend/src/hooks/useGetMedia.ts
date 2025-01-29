@@ -25,7 +25,7 @@ type GetMediaQueryKey = ["mediaThumbnails", { query: string | undefined }];
  * @param {string} albumId corresponds to the album the files should be in
  * @returns {object} the desired media, loading state, and error
  */
-export const useGetMedia = (pageSize: number, query?: string, albumId?: string) => {
+export const useGetMediaThumbnails = (pageSize: number, query?: string, albumId?: string) => {
   const queryKey: GetMediaQueryKey = ["mediaThumbnails", { query }];
   const res = useInfiniteQuery<
     MediaPage,

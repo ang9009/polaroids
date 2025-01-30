@@ -16,7 +16,7 @@ import ValidationException from "../types/error/validationException";
 import { getDbExFromPrismaErr } from "../utils/getDbExFromPrismaErr";
 
 /**
- * Gets the name of all the albums in the database.
+ * Gets the name of all the albums in the database, and their thumbnails.
  * Route: GET /api/albums
  */
 export const getAlbums = async (
@@ -24,17 +24,35 @@ export const getAlbums = async (
   res: Response<GetAlbumsResponse>,
   next: NextFunction
 ) => {
-  let albums: Album[];
   try {
-    albums = await prisma.album.findMany({
-      orderBy: [{ albumName: "asc" }],
+    const albums = await prisma.album.findMany({
+      orderBy: [{ createdAt: "asc" }],
+      // Include the latest file (and all other album related columns),
+      // which serves as the album cover
+      include: {
+        files: {
+          take: 1,
+          select: {
+            discordId: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        // Count the number of files in each album
+        _count: {
+          select: {
+            files: true,
+          },
+        },
+      },
     });
+
+    res.status(HttpStatusCode.OK).json(albums);
   } catch (err) {
     const error = getDbExFromPrismaErr(err);
     return next(error);
   }
-
-  res.status(HttpStatusCode.OK).json(albums);
 };
 
 /**

@@ -309,7 +309,7 @@ export const getFilesData = async (
  *
  * Route: GET /api/files/download
  *
- * Request query: see DownloadFileRequestSchema
+ * Request query: see GetFileLinkRequestSchema
  */
 export const getFileLink = async (
   req: Request,

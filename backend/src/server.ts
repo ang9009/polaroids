@@ -10,6 +10,7 @@ import passport from "passport";
 import DiscordStrategy from "passport-discord";
 import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 import { discordScopes } from "./data/discordScopes";
+import { checkAuth } from "./middleware/checkAuth";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -69,11 +70,12 @@ const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);
 
 app.use("/api", unprotectedRoutes);
-app.use("/api", protectedRoutes);
+app.use("/api", checkAuth, protectedRoutes);
 
 app.use(errorHandler);
 app.use(notFound);
 
+// Listen
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on port ${port}`));
 

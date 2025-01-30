@@ -8,7 +8,7 @@ import { apiClient } from "../lib/axios";
  * @param {string} discordId the file's Discord attachment id
  * @param {string} mimetype the file's mimetype
  * @param {boolean} thumbnail whether the specified file's thumbnail should be fetched
- * @param {CancelToken} cancelToken a token used to cancel the request
+ * @param {CancelToken} cancelToken an optional token used to cancel the request
  * request if needed
  * @returns {Promise<string>} the requested file url
  */
@@ -16,7 +16,7 @@ export const getFileUrl = async (
   discordId: string,
   mimetype: AllowedMimeType,
   thumbnail: boolean,
-  cancelToken: CancelToken,
+  cancelToken?: CancelToken,
 ): Promise<string> => {
   const { VITE_API_URL } = import.meta.env;
   const url = `${VITE_API_URL}/files/link`;

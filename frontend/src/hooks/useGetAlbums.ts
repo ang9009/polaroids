@@ -9,6 +9,7 @@ import { getFileUrl } from "../services/getFile";
  */
 export const useGetAlbums = () =>
   useQuery({
+    staleTime: 1000 * 60 * 60,
     retry: false,
     queryKey: ["albums"],
     queryFn: getAlbumsAndThumbnails,

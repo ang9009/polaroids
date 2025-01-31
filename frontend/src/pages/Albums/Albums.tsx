@@ -22,8 +22,10 @@ const Albums = () => {
               {/* ! Handl text overflow, figure out */}
               <Card.Body gap="2" className={AlbumsCSS["card-body"]}>
                 <Card.Description>{album.numFiles} files</Card.Description>
-                <Card.Title>{album.albumName}</Card.Title>
-                <Card.Description>{album.albumDesc || ""}</Card.Description>
+                <Card.Title className={AlbumsCSS["album-name"]}>{album.albumName}</Card.Title>
+                <Card.Description className={AlbumsCSS["album-desc"]}>
+                  {album.albumDesc || ""}
+                </Card.Description>
               </Card.Body>
             </Card.Root>
           );

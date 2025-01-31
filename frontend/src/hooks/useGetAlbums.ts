@@ -9,6 +9,7 @@ import { getFileUrl } from "../services/getFile";
  */
 export const useGetAlbums = () =>
   useQuery({
+    retry: false,
     queryKey: ["albums"],
     queryFn: getAlbumsAndThumbnails,
   });
@@ -17,7 +18,7 @@ export interface AlbumInfo {
   albumName: string;
   albumDesc: string | null;
   numFiles: number;
-  thumbnailUrl: string;
+  thumbnailUrl: string | null;
 }
 
 /**
@@ -26,13 +27,19 @@ export interface AlbumInfo {
  */
 const getAlbumsAndThumbnails = async (): Promise<AlbumInfo[]> => {
   const albumsData = await getAlbumsData();
-  const thumbnailUrlPromises = albumsData.map(async (albumData) => {
+
+  const thumbnailUrls: (string | null)[] = [];
+  for (const albumData of albumsData) {
     const { files } = albumData;
     // There should only be one file in the response; the thumbnail
+    if (files.length === 0) {
+      thumbnailUrls.push(null);
+      continue;
+    }
     const { discordId } = files[0];
-    return await getFileUrl(discordId, AllowedMimeType.PNG, true);
-  });
-  const thumbnailUrls = await Promise.all(thumbnailUrlPromises);
+    const url = await getFileUrl(discordId, AllowedMimeType.PNG, true);
+    thumbnailUrls.push(url);
+  }
 
   const albumsInfo: AlbumInfo[] = albumsData.map((album, i) => {
     return {
@@ -42,5 +49,6 @@ const getAlbumsAndThumbnails = async (): Promise<AlbumInfo[]> => {
       thumbnailUrl: thumbnailUrls[i],
     };
   });
+
   return albumsInfo;
 };

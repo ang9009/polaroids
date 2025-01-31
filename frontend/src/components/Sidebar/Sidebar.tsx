@@ -10,7 +10,7 @@ import {
 } from "react-icons/io5";
 
 import { IconType } from "react-icons/lib";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import SidebarCSS from "./Sidebar.module.css";
 
 /**
@@ -26,6 +26,9 @@ const Sidebar = () => {
     Bin: [IoTrashOutline, "/bin"],
   };
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // Find the corresponding tab label that matches the current path
+  const currPathLabel = Object.entries(tabLabelToIcon).find((item) => item[1][1] === pathname)?.[0];
 
   return (
     <Box
@@ -36,7 +39,7 @@ const Sidebar = () => {
       <Tabs.Root
         variant={"subtle"}
         orientation={"vertical"}
-        defaultValue={"Media"}
+        defaultValue={currPathLabel}
         navigate={({ value }) => {
           const [_, route] = tabLabelToIcon[value!];
           console.log(route);
@@ -47,7 +50,7 @@ const Sidebar = () => {
           {Object.entries(tabLabelToIcon).map((entry) => {
             const [label, [iconType, route]] = entry;
             return (
-              <Tabs.Trigger value={label} asChild>
+              <Tabs.Trigger key={label} value={label} asChild>
                 <Link to={route}>
                   {iconType({})}
                   {label}

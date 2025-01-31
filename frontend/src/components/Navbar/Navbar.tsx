@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-returns */
-import { Box, Icon, IconButton } from "@chakra-ui/react";
+import { Box, IconButton } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
 import { useNavigate } from "react-router";
 import { useUser } from "../../hooks/useUser";
@@ -33,9 +33,7 @@ const Navbar = () => {
             window.open("https://github.com/ang9009/polaroids", "_blank");
           }}
         >
-          <Icon size="md">
-            <AiFillGithub />
-          </Icon>
+          <AiFillGithub />
         </IconButton>
         {isPending ? (
           <SkeletonText noOfLines={2} width="40" />

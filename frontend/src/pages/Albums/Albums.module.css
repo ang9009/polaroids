@@ -1,0 +1,17 @@
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0px, 1fr));
+  grid-auto-rows: auto;
+  gap: 1rem;
+  width: 100%;
+}
+
+.card-root {
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.card-thumbnail {
+  height: 15rem;
+  object-fit: cover;
+}

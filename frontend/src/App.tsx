@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-returns */
 import { Route, Routes } from "react-router";
+import AlbumBreadcrumbLayout from "./layouts/AlbumBreadcrumbLayout/AlbumBreadcrumbLayout.tsx";
 import NavbarLayout from "./layouts/NavbarLayout/NavbarLayout.tsx";
 import SidebarLayout from "./layouts/SidebarLayout/SidebarLayout.tsx";
 import AlbumContent from "./pages/AlbumContent/AlbumContent.tsx";
@@ -18,8 +19,10 @@ const App = () => {
         <Route element={<PrivateRoutes />}>
           <Route element={<SidebarLayout />}>
             <Route path="" element={<Home />} />
-            <Route path="/albums" element={<Albums />} />
-            <Route path="/albums/:albumName" element={<AlbumContent />} />
+            <Route element={<AlbumBreadcrumbLayout />}>
+              <Route path="/albums" element={<Albums />} />
+              <Route path="/albums/:albumId" element={<AlbumContent />} />
+            </Route>
           </Route>
         </Route>
         <Route path="/login" element={<Login />} />

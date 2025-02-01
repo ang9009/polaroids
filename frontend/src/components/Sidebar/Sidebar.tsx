@@ -42,7 +42,6 @@ const Sidebar = () => {
         defaultValue={currPathLabel}
         navigate={({ value }) => {
           const [_, route] = tabLabelToIcon[value!];
-          console.log(route);
           navigate(route);
         }}
       >

@@ -1,6 +1,6 @@
-import { AlbumCard } from "./../../components/AlbumCard/AlbumCard";
 /* eslint-disable jsdoc/require-returns */
 import { useGetAlbums } from "../../hooks/useGetAlbums";
+import { AlbumCard } from "./../../components/AlbumCard/AlbumCard";
 import AlbumsCSS from "./Albums.module.css";
 
 /**

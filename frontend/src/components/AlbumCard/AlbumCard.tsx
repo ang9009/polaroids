@@ -19,7 +19,7 @@ export function AlbumCard({ albumInfo }: AlbumCardProps) {
     <Card.Root
       className={AlbumCardCSS["card-root"]}
       key={albumInfo.albumName}
-      onClick={() => navigate(`/albums/${albumInfo.albumName}`)}
+      onClick={() => navigate(`/albums/${albumInfo.albumId}`)}
     >
       <img
         src={albumInfo.thumbnailUrl || "/images/thumbnail-placeholder.jpg"}

@@ -18,6 +18,7 @@ export const useGetAlbums = () =>
 export interface AlbumInfo {
   albumName: string;
   albumDesc: string | null;
+  albumId: string;
   numFiles: number;
   thumbnailUrl: string | null;
 }
@@ -46,6 +47,7 @@ const getAlbumsAndThumbnails = async (): Promise<AlbumInfo[]> => {
     return {
       albumName: album.albumName,
       albumDesc: album.description,
+      albumId: album.albumId,
       numFiles: album._count.files,
       thumbnailUrl: thumbnailUrls[i],
     };

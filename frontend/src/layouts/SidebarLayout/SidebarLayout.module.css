@@ -1,16 +1,3 @@
 .layout-container {
   display: flex;
 }
-
-.outlet-container {
-  overflow-y: scroll;
-  padding: 2.3rem 2rem;
-}
-
-.breadcrumb {
-  margin-bottom: 1rem;
-}
-
-.breadcrumb-link {
-  cursor: pointer;
-}

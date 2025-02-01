@@ -5,21 +5,3 @@
   gap: 1rem;
   width: 100%;
 }
-
-.card-root {
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.card-thumbnail {
-  height: 15rem;
-  object-fit: cover;
-}
-
-.album-name,
-.album-desc {
-  display: inline-block;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}

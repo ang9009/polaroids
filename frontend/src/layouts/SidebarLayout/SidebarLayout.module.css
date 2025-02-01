@@ -10,3 +10,7 @@
 .breadcrumb {
   margin-bottom: 1rem;
 }
+
+.breadcrumb-link {
+  cursor: pointer;
+}

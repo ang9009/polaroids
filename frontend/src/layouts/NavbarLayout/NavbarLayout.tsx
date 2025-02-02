@@ -12,7 +12,7 @@ const NavbarLayout = () => {
     <>
       <Navbar />
       <div className={NavbarLayoutCSS["outlet-container"]}>
-        <Box maxHeight={"calc(100vh - {sizes.navbarHeight})"}>
+        <Box height={"calc(100vh - {sizes.navbarHeight})"}>
           <Outlet />
         </Box>
       </div>

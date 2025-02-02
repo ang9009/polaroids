@@ -81,7 +81,7 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
         return <img src={url} className={GalleryGridCSS["file-item"]} key={url} />;
       })}
       {(isPending || isFetchingNextPage) &&
-        [...Array(pageSize).keys()].map((i) => <Skeleton key={i} />)}
+        [...Array(pageSize || 9).keys()].map((i) => <Skeleton key={i} />)}
     </Box>
   );
 };

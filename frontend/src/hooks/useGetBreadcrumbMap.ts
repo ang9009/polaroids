@@ -4,7 +4,7 @@ import { useGetAlbums } from "./useGetAlbums";
 
 /**
  * Returns a map that maps capitalized breadcrumb path segments to their
- * respective paths/links.
+ * respective paths/links. Path should be of format albums/albumId/folder1Id/folder2Id...
  * @returns {Map<string, string> | undefined} a map that maps capitalized
  * breadcrumb path segments to their respective paths/links, or undefined if
  * background fetches are incomplete
@@ -21,7 +21,9 @@ export const useGetBreadcrumbMap = () => {
     const pathNames = pathname.split("/");
     pathNames.shift(); // First element is an empty string, so we remove it
 
-    // Path should be of format albums/albumId/folder1Id/folder2Id...
+    // Maps each path section to its respective link. For example, if the breacrumb
+    // is Albums > Album1, then the map looks like {Albums: "link/to/albums",
+    // Album1: "link/to/album1"}.
     const pathSectionToLink: Map<string, string> = new Map();
     pathSectionToLink.set("Albums", `/albums`);
     if (pathNames.length === 1) {

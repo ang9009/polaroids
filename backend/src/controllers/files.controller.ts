@@ -282,8 +282,9 @@ export const getFilesData = async (
     }
   }
   if (albumId) {
-    const album = await prisma.album.findFirst({ where: { albumId } });
-    if (!album) {
+    try {
+      await prisma.album.findFirstOrThrow({ where: { albumId } });
+    } catch (err) {
       const error = new UnknownException(`Could not find album with albumId ${albumId}`);
       return next(error);
     }

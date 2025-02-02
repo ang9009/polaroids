@@ -1,5 +1,5 @@
 /* eslint-disable jsdoc/require-returns */
-import { Box, BreadcrumbLink } from "@chakra-ui/react";
+import { BreadcrumbLink } from "@chakra-ui/react";
 import { Outlet, useNavigate } from "react-router";
 import { BreadcrumbRoot } from "../../components/ui/breadcrumb";
 import { useGetBreadcrumbMap } from "../../hooks/useGetBreadcrumbMap";
@@ -14,11 +14,7 @@ const AlbumBreadcrumbLayout = () => {
   const breadcrumbMap = useGetBreadcrumbMap();
 
   return (
-    <Box
-      width={"calc(100vw - {sizes.sidebarWidth})"}
-      height={"calc(100vh - {sizes.navbarHeight})"}
-      className={AlbumBreadCrumbLayoutCSS["outlet-container"]}
-    >
+    <>
       <BreadcrumbRoot variant="plain" size="md" className={AlbumBreadCrumbLayoutCSS["breadcrumb"]}>
         {breadcrumbMap &&
           [...breadcrumbMap.keys()].map((pathSection) => {
@@ -35,7 +31,7 @@ const AlbumBreadcrumbLayout = () => {
           })}
       </BreadcrumbRoot>
       <Outlet />
-    </Box>
+    </>
   );
 };
 

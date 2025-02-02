@@ -5,11 +5,7 @@ import GalleryGrid from "../../components/GalleryGrid/GalleryGrid";
  * The homepage. Displays a gallery of all photos.
  */
 const Home = () => {
-  return (
-    <div>
-      <GalleryGrid pageSize={9} />
-    </div>
-  );
+  return <GalleryGrid pageSize={9} />;
 };
 
 export default Home;

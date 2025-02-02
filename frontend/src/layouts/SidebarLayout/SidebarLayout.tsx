@@ -1,4 +1,5 @@
 /* eslint-disable jsdoc/require-returns */
+import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import SidebarLayoutCSS from "./SidebarLayout.module.css";
@@ -8,10 +9,16 @@ import SidebarLayoutCSS from "./SidebarLayout.module.css";
  */
 const SidebarLayout = () => {
   return (
-    <div className={SidebarLayoutCSS["layout-container"]}>
+    <Box className={SidebarLayoutCSS["layout-container"]}>
       <Sidebar />
-      <Outlet />
-    </div>
+      <Box
+        width={"calc(100vw - {sizes.sidebarWidth})"}
+        maxHeight={"calc(100vh - {sizes.navbarHeight})"}
+        className={SidebarLayoutCSS["outlet-container"]}
+      >
+        <Outlet />
+      </Box>
+    </Box>
   );
 };
 

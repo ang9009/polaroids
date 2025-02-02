@@ -1,4 +1,5 @@
 /* eslint-disable jsdoc/require-returns */
+import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router";
 import Navbar from "../../components/Navbar/Navbar";
 import NavbarLayoutCSS from "./NavbarLayout.module.css";
@@ -11,7 +12,9 @@ const NavbarLayout = () => {
     <>
       <Navbar />
       <div className={NavbarLayoutCSS["outlet-container"]}>
-        <Outlet />
+        <Box maxHeight={"calc(100vh - {sizes.navbarHeight})"}>
+          <Outlet />
+        </Box>
       </div>
     </>
   );

@@ -28,7 +28,7 @@ export function AlbumCard({ albumInfo }: AlbumCardProps) {
       <Card.Body gap="2" className={AlbumCardCSS["card-body"]}>
         <Card.Title className={AlbumCardCSS["album-name"]}>{albumInfo.albumName}</Card.Title>
         <Card.Description>
-          {albumInfo.numFiles} file{albumInfo.numFiles > 1 ? "s" : ""}
+          {albumInfo.numFiles} file{albumInfo.numFiles !== 1 ? "s" : ""}
         </Card.Description>
       </Card.Body>
     </Card.Root>

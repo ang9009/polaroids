@@ -25,15 +25,15 @@ export const getFileData = async (
         createdAt: cursor.createdAt,
       },
     }),
-    ...(searchQuery && {
-      where: {
+    where: {
+      ...(searchQuery && {
         fileName: {
           contains: searchQuery.trim(),
           mode: "insensitive",
         },
-        ...(albumId && { albumId: albumId }),
-      },
-    }),
+      }),
+      ...(albumId && { albumId: albumId }),
+    },
     select: {
       discordId: true,
       fileName: true,

@@ -3,7 +3,7 @@ import {
   GetFilesDataResponse,
   GetFilesDataResponseSchema,
 } from "shared/src/responses/files/getFilesData";
-import { FetchMediaCursor } from "../hooks/useGetMedia";
+import { FetchMediaCursor } from "../hooks/useGetMediaThumbnails";
 import { apiClient } from "../lib/axios";
 
 /**

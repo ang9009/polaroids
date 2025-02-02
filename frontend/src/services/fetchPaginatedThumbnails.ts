@@ -1,6 +1,6 @@
 import { CancelToken } from "axios";
 import { getMimetypeFromExtension } from "shared/src/helpers/getMimetypeFromExtension";
-import { FetchMediaCursor } from "../hooks/useGetMedia";
+import { FetchMediaCursor } from "../hooks/useGetMediaThumbnails";
 import { fetchPaginatedMediaData } from "./fetchPaginatedMediaData";
 import { getFileUrl } from "./getFile";
 

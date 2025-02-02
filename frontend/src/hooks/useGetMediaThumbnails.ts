@@ -16,17 +16,21 @@ interface MediaPage {
   nextCursor?: FetchMediaCursor;
 }
 
-type GetMediaQueryKey = ["mediaThumbnails", { query: string | undefined }];
+type GetMediaQueryKey = [
+  "mediaThumbnails",
+  { query: string | undefined; albumId: string | undefined },
+];
 
 /**
  * Fetches paginated media based on the given parameters.
- * @param {number} pageSize the number of items to be retrieved
+ * @param {number} pageSize the number of items to be retrieved. By default,
+ *                 this is 9
  * @param {string} query a search query for file names
  * @param {string} albumId corresponds to the album the files should be in
  * @returns {object} the desired media, loading state, and error
  */
-export const useGetMediaThumbnails = (pageSize: number, query?: string, albumId?: string) => {
-  const queryKey: GetMediaQueryKey = ["mediaThumbnails", { query }];
+export const useGetMediaThumbnails = (pageSize: number = 9, query?: string, albumId?: string) => {
+  const queryKey: GetMediaQueryKey = ["mediaThumbnails", { query, albumId }];
   const res = useInfiniteQuery<
     MediaPage,
     Error,

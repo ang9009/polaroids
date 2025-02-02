@@ -2,20 +2,22 @@
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useGetMediaThumbnails } from "../../hooks/useGetMedia";
+import { useGetMediaThumbnails } from "../../hooks/useGetMediaThumbnails";
 import { toaster } from "../ui/toaster";
 import GalleryGridCSS from "./GalleryGrid.module.css";
 
 interface GalleryGridProps {
-  pageSize: number;
+  pageSize?: number;
+  query?: string;
+  albumId?: string;
 }
 
 /**
  * Displays a grid gallery of files.
  */
-const GalleryGrid = ({ pageSize }: GalleryGridProps) => {
+const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
   const { isPending, isFetchingNextPage, data, hasNextPage, fetchNextPage, error } =
-    useGetMediaThumbnails(pageSize);
+    useGetMediaThumbnails(pageSize, query, albumId);
   const [thumbnails, setThumbnails] = useState<string[]>([]);
 
   // Set thumbnails once new data comes in

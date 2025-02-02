@@ -10,7 +10,6 @@ import passport from "passport";
 import DiscordStrategy from "passport-discord";
 import { HeaderAPIKeyStrategy } from "passport-headerapikey";
 import { discordScopes } from "./data/discordScopes";
-import { checkAuth } from "./middleware/checkAuth";
 import { errorHandler } from "./middleware/errorHandler";
 import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
@@ -70,7 +69,7 @@ const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);
 
 app.use("/api", unprotectedRoutes);
-app.use("/api", checkAuth, protectedRoutes);
+app.use("/api", protectedRoutes);
 
 app.use(errorHandler);
 app.use(notFound);

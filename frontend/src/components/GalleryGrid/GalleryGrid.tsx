@@ -19,7 +19,7 @@ interface GalleryGridProps {
 const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
   const { isPending, isFetchingNextPage, data, hasNextPage, fetchNextPage, error } =
     useGetMediaThumbnails(pageSize, query, albumId);
-  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const [thumbnails, setThumbnails] = useState<string[] | undefined>(undefined);
 
   // Set thumbnails once new data comes in
   useEffect(() => {
@@ -56,17 +56,17 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
     [isPending, hasNextPage, fetchNextPage],
   );
 
-  if (isPending || isFetchingNextPage) {
-    return [...Array(pageSize || 9).keys()].map((i) => <Skeleton key={i} />);
+  if (isPending) {
+    return <LoadingGrid pageSize={pageSize} />;
   } else if (error) {
     return <CouldNotFindItemsMsg />;
-  } else if (thumbnails.length === 0) {
+  } else if (thumbnails && thumbnails.length === 0) {
     return <NoItemsFoundMsg />;
   }
 
   return (
     <Box className={GalleryGridCSS["grid-container"]}>
-      {thumbnails.map((url, i) => {
+      {thumbnails?.map((url, i) => {
         if (i === thumbnails.length - 1 && hasNextPage) {
           return (
             <img
@@ -79,6 +79,7 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
         }
         return <img src={url} className={GalleryGridCSS["file-item"]} key={url} />;
       })}
+      {isFetchingNextPage && <LoadingGrid pageSize={pageSize} />}
     </Box>
   );
 };
@@ -118,3 +119,16 @@ function NoItemsFoundMsg() {
 }
 
 export default GalleryGrid;
+
+/**
+ * A grid of loading skeletons.
+ */
+function LoadingGrid({ pageSize }: { pageSize?: number }) {
+  return (
+    <Box className={GalleryGridCSS["grid-container"]}>
+      {[...Array(pageSize || 9).keys()].map((i) => (
+        <Skeleton key={i} />
+      ))}
+    </Box>
+  );
+}

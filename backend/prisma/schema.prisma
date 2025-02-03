@@ -19,15 +19,16 @@ model Guild {
   subscribedChannels SubscribedChannel[] /// Channels that polaroids watches for updates
 }
 
-/// Albums that correspond to existing folders in FileStation.
+/// Albums 
 model Album {
   albumId     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  albumName   String   @unique @db.VarChar(255) /// The name of the folder on FileStation
+  albumName   String   @unique @db.VarChar(255) /// The name of the album
   description String?  @db.VarChar(255) /// The album's description
   createdAt   DateTime @default(now()) /// When the file was uploaded
 
   files    MediaFile[] /// The files in this album
   channels SubscribedChannel[] /// The channels this album is associated with
+  Folder   Folder[]
 }
 
 /// Channels within Discord servers that polaroids watches for updates
@@ -53,6 +54,19 @@ model MediaFile {
 
   albumId String @db.Uuid /// The id of the album the photo/video is in
   album   Album  @relation(fields: [albumId], references: [albumId], onDelete: Cascade)
+}
+
+/// Folders in albums that can hold photos/videos. Folders can be nested.
+model Folder {
+  folderId   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  folderName String @unique @db.VarChar(255)
+
+  albumId String? @db.Uuid /// The id of the album the folder is in
+  album   Album?  @relation(fields: [albumId], references: [albumId])
+
+  parentFolderId String?  @db.Uuid /// This folder's parent folder id
+  parentFolder   Folder?  @relation("ParentChild", fields: [parentFolderId], references: [folderId], onDelete: Cascade)
+  childFolders   Folder[] @relation("ParentChild")
 }
 
 /// Session objects 

@@ -2,9 +2,9 @@
 import { Box, Tabs } from "@chakra-ui/react";
 import { IoIosImages } from "react-icons/io";
 import {
+  IoAlbumsOutline,
   IoCameraOutline,
   IoFilmOutline,
-  IoFolderOutline,
   IoPeopleOutline,
   IoTrashOutline,
 } from "react-icons/io5";
@@ -26,7 +26,7 @@ const Sidebar = () => {
       Media: [IoIosImages, ""],
       Photos: [IoCameraOutline, "photos"],
       Videos: [IoFilmOutline, "videos"],
-      Albums: [IoFolderOutline, "albums"],
+      Albums: [IoAlbumsOutline, "albums"],
       People: [IoPeopleOutline, "people"],
       Bin: [IoTrashOutline, "bin"],
     };
@@ -56,8 +56,9 @@ const Sidebar = () => {
           {Object.entries(tabLabelToIconRoute).map((entry) => {
             const [label, [iconType, route]] = entry;
             return (
-              // Using a link element here will cause the trigger to make the
-              // link redirect to the base route. DO NOT USE THE LINK ELEMENT
+              // Using a link element here + asChild will cause the trigger to make the
+              // link redirect to the base route (since the link will be clicked/selected).
+              // DO NOT USE THE LINK ELEMENT + asChild
               <Tabs.Trigger key={label} value={label} onClick={() => navigate(route)}>
                 {iconType({})}
                 {label}

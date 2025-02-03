@@ -22,6 +22,8 @@ export const SubscribedChannelScalarFieldEnumSchema = z.enum(['channelId','creat
 
 export const MediaFileScalarFieldEnumSchema = z.enum(['discordId','uploaderId','extension','fileName','description','createdAt','albumId']);
 
+export const FolderScalarFieldEnumSchema = z.enum(['folderId','folderName','albumId','parentFolderId']);
+
 export const SessionScalarFieldEnumSchema = z.enum(['id','sid','data','expiresAt']);
 
 export const SortOrderSchema = z.enum(['asc','desc']);
@@ -58,12 +60,12 @@ export type Guild = z.infer<typeof GuildSchema>
 /////////////////////////////////////////
 
 /**
- * Albums that correspond to existing folders in FileStation.
+ * Albums
  */
 export const AlbumSchema = z.object({
   albumId: z.string(),
   /**
-   * The name of the folder on FileStation
+   * The name of the album
    */
   albumName: z.string(),
   /**
@@ -147,6 +149,28 @@ export const MediaFileSchema = z.object({
 export type MediaFile = z.infer<typeof MediaFileSchema>
 
 /////////////////////////////////////////
+// FOLDER SCHEMA
+/////////////////////////////////////////
+
+/**
+ * Folders in albums that can hold photos/videos. Folders can be nested.
+ */
+export const FolderSchema = z.object({
+  folderId: z.string(),
+  folderName: z.string(),
+  /**
+   * The id of the album the folder is in
+   */
+  albumId: z.string().nullable(),
+  /**
+   * This folder's parent folder id
+   */
+  parentFolderId: z.string().nullable(),
+})
+
+export type Folder = z.infer<typeof FolderSchema>
+
+/////////////////////////////////////////
 // SESSION SCHEMA
 /////////////////////////////////////////
 
@@ -200,6 +224,7 @@ export const GuildSelectSchema: z.ZodType<Prisma.GuildSelect> = z.object({
 export const AlbumIncludeSchema: z.ZodType<Prisma.AlbumInclude> = z.object({
   files: z.union([z.boolean(),z.lazy(() => MediaFileFindManyArgsSchema)]).optional(),
   channels: z.union([z.boolean(),z.lazy(() => SubscribedChannelFindManyArgsSchema)]).optional(),
+  Folder: z.union([z.boolean(),z.lazy(() => FolderFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AlbumCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -215,6 +240,7 @@ export const AlbumCountOutputTypeArgsSchema: z.ZodType<Prisma.AlbumCountOutputTy
 export const AlbumCountOutputTypeSelectSchema: z.ZodType<Prisma.AlbumCountOutputTypeSelect> = z.object({
   files: z.boolean().optional(),
   channels: z.boolean().optional(),
+  Folder: z.boolean().optional(),
 }).strict();
 
 export const AlbumSelectSchema: z.ZodType<Prisma.AlbumSelect> = z.object({
@@ -224,6 +250,7 @@ export const AlbumSelectSchema: z.ZodType<Prisma.AlbumSelect> = z.object({
   createdAt: z.boolean().optional(),
   files: z.union([z.boolean(),z.lazy(() => MediaFileFindManyArgsSchema)]).optional(),
   channels: z.union([z.boolean(),z.lazy(() => SubscribedChannelFindManyArgsSchema)]).optional(),
+  Folder: z.union([z.boolean(),z.lazy(() => FolderFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => AlbumCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -270,6 +297,40 @@ export const MediaFileSelectSchema: z.ZodType<Prisma.MediaFileSelect> = z.object
   createdAt: z.boolean().optional(),
   albumId: z.boolean().optional(),
   album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
+}).strict()
+
+// FOLDER
+//------------------------------------------------------
+
+export const FolderIncludeSchema: z.ZodType<Prisma.FolderInclude> = z.object({
+  album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
+  parentFolder: z.union([z.boolean(),z.lazy(() => FolderArgsSchema)]).optional(),
+  childFolders: z.union([z.boolean(),z.lazy(() => FolderFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => FolderCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+export const FolderArgsSchema: z.ZodType<Prisma.FolderDefaultArgs> = z.object({
+  select: z.lazy(() => FolderSelectSchema).optional(),
+  include: z.lazy(() => FolderIncludeSchema).optional(),
+}).strict();
+
+export const FolderCountOutputTypeArgsSchema: z.ZodType<Prisma.FolderCountOutputTypeDefaultArgs> = z.object({
+  select: z.lazy(() => FolderCountOutputTypeSelectSchema).nullish(),
+}).strict();
+
+export const FolderCountOutputTypeSelectSchema: z.ZodType<Prisma.FolderCountOutputTypeSelect> = z.object({
+  childFolders: z.boolean().optional(),
+}).strict();
+
+export const FolderSelectSchema: z.ZodType<Prisma.FolderSelect> = z.object({
+  folderId: z.boolean().optional(),
+  folderName: z.boolean().optional(),
+  albumId: z.boolean().optional(),
+  parentFolderId: z.boolean().optional(),
+  album: z.union([z.boolean(),z.lazy(() => AlbumArgsSchema)]).optional(),
+  parentFolder: z.union([z.boolean(),z.lazy(() => FolderArgsSchema)]).optional(),
+  childFolders: z.union([z.boolean(),z.lazy(() => FolderFindManyArgsSchema)]).optional(),
+  _count: z.union([z.boolean(),z.lazy(() => FolderCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
 // SESSION
@@ -339,7 +400,8 @@ export const AlbumWhereInputSchema: z.ZodType<Prisma.AlbumWhereInput> = z.object
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   files: z.lazy(() => MediaFileListRelationFilterSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
+  channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional(),
+  Folder: z.lazy(() => FolderListRelationFilterSchema).optional()
 }).strict();
 
 export const AlbumOrderByWithRelationInputSchema: z.ZodType<Prisma.AlbumOrderByWithRelationInput> = z.object({
@@ -348,7 +410,8 @@ export const AlbumOrderByWithRelationInputSchema: z.ZodType<Prisma.AlbumOrderByW
   description: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   createdAt: z.lazy(() => SortOrderSchema).optional(),
   files: z.lazy(() => MediaFileOrderByRelationAggregateInputSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelOrderByRelationAggregateInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelOrderByRelationAggregateInputSchema).optional(),
+  Folder: z.lazy(() => FolderOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const AlbumWhereUniqueInputSchema: z.ZodType<Prisma.AlbumWhereUniqueInput> = z.union([
@@ -372,7 +435,8 @@ export const AlbumWhereUniqueInputSchema: z.ZodType<Prisma.AlbumWhereUniqueInput
   description: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
   files: z.lazy(() => MediaFileListRelationFilterSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional()
+  channels: z.lazy(() => SubscribedChannelListRelationFilterSchema).optional(),
+  Folder: z.lazy(() => FolderListRelationFilterSchema).optional()
 }).strict());
 
 export const AlbumOrderByWithAggregationInputSchema: z.ZodType<Prisma.AlbumOrderByWithAggregationInput> = z.object({
@@ -519,6 +583,74 @@ export const MediaFileScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.Med
   albumId: z.union([ z.lazy(() => UuidWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const FolderWhereInputSchema: z.ZodType<Prisma.FolderWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => FolderWhereInputSchema),z.lazy(() => FolderWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FolderWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FolderWhereInputSchema),z.lazy(() => FolderWhereInputSchema).array() ]).optional(),
+  folderId: z.union([ z.lazy(() => UuidFilterSchema),z.string() ]).optional(),
+  folderName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  albumId: z.union([ z.lazy(() => UuidNullableFilterSchema),z.string() ]).optional().nullable(),
+  parentFolderId: z.union([ z.lazy(() => UuidNullableFilterSchema),z.string() ]).optional().nullable(),
+  album: z.union([ z.lazy(() => AlbumNullableRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional().nullable(),
+  parentFolder: z.union([ z.lazy(() => FolderNullableRelationFilterSchema),z.lazy(() => FolderWhereInputSchema) ]).optional().nullable(),
+  childFolders: z.lazy(() => FolderListRelationFilterSchema).optional()
+}).strict();
+
+export const FolderOrderByWithRelationInputSchema: z.ZodType<Prisma.FolderOrderByWithRelationInput> = z.object({
+  folderId: z.lazy(() => SortOrderSchema).optional(),
+  folderName: z.lazy(() => SortOrderSchema).optional(),
+  albumId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  parentFolderId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  album: z.lazy(() => AlbumOrderByWithRelationInputSchema).optional(),
+  parentFolder: z.lazy(() => FolderOrderByWithRelationInputSchema).optional(),
+  childFolders: z.lazy(() => FolderOrderByRelationAggregateInputSchema).optional()
+}).strict();
+
+export const FolderWhereUniqueInputSchema: z.ZodType<Prisma.FolderWhereUniqueInput> = z.union([
+  z.object({
+    folderId: z.string(),
+    folderName: z.string()
+  }),
+  z.object({
+    folderId: z.string(),
+  }),
+  z.object({
+    folderName: z.string(),
+  }),
+])
+.and(z.object({
+  folderId: z.string().optional(),
+  folderName: z.string().optional(),
+  AND: z.union([ z.lazy(() => FolderWhereInputSchema),z.lazy(() => FolderWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FolderWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FolderWhereInputSchema),z.lazy(() => FolderWhereInputSchema).array() ]).optional(),
+  albumId: z.union([ z.lazy(() => UuidNullableFilterSchema),z.string() ]).optional().nullable(),
+  parentFolderId: z.union([ z.lazy(() => UuidNullableFilterSchema),z.string() ]).optional().nullable(),
+  album: z.union([ z.lazy(() => AlbumNullableRelationFilterSchema),z.lazy(() => AlbumWhereInputSchema) ]).optional().nullable(),
+  parentFolder: z.union([ z.lazy(() => FolderNullableRelationFilterSchema),z.lazy(() => FolderWhereInputSchema) ]).optional().nullable(),
+  childFolders: z.lazy(() => FolderListRelationFilterSchema).optional()
+}).strict());
+
+export const FolderOrderByWithAggregationInputSchema: z.ZodType<Prisma.FolderOrderByWithAggregationInput> = z.object({
+  folderId: z.lazy(() => SortOrderSchema).optional(),
+  folderName: z.lazy(() => SortOrderSchema).optional(),
+  albumId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  parentFolderId: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
+  _count: z.lazy(() => FolderCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => FolderMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => FolderMinOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const FolderScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.FolderScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => FolderScalarWhereWithAggregatesInputSchema),z.lazy(() => FolderScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FolderScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FolderScalarWhereWithAggregatesInputSchema),z.lazy(() => FolderScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  folderId: z.union([ z.lazy(() => UuidWithAggregatesFilterSchema),z.string() ]).optional(),
+  folderName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  albumId: z.union([ z.lazy(() => UuidNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+  parentFolderId: z.union([ z.lazy(() => UuidNullableWithAggregatesFilterSchema),z.string() ]).optional().nullable(),
+}).strict();
+
 export const SessionWhereInputSchema: z.ZodType<Prisma.SessionWhereInput> = z.object({
   AND: z.union([ z.lazy(() => SessionWhereInputSchema),z.lazy(() => SessionWhereInputSchema).array() ]).optional(),
   OR: z.lazy(() => SessionWhereInputSchema).array().optional(),
@@ -623,7 +755,8 @@ export const AlbumCreateInputSchema: z.ZodType<Prisma.AlbumCreateInput> = z.obje
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   files: z.lazy(() => MediaFileCreateNestedManyWithoutAlbumInputSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional(),
+  Folder: z.lazy(() => FolderCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateInput> = z.object({
@@ -632,7 +765,8 @@ export const AlbumUncheckedCreateInputSchema: z.ZodType<Prisma.AlbumUncheckedCre
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
   files: z.lazy(() => MediaFileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
+  Folder: z.lazy(() => FolderUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUpdateInputSchema: z.ZodType<Prisma.AlbumUpdateInput> = z.object({
@@ -641,7 +775,8 @@ export const AlbumUpdateInputSchema: z.ZodType<Prisma.AlbumUpdateInput> = z.obje
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   files: z.lazy(() => MediaFileUpdateManyWithoutAlbumNestedInputSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  Folder: z.lazy(() => FolderUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateInput> = z.object({
@@ -650,7 +785,8 @@ export const AlbumUncheckedUpdateInputSchema: z.ZodType<Prisma.AlbumUncheckedUpd
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   files: z.lazy(() => MediaFileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
-  channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  Folder: z.lazy(() => FolderUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumCreateManyInputSchema: z.ZodType<Prisma.AlbumCreateManyInput> = z.object({
@@ -788,6 +924,57 @@ export const MediaFileUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MediaFile
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   albumId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const FolderCreateInputSchema: z.ZodType<Prisma.FolderCreateInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  album: z.lazy(() => AlbumCreateNestedOneWithoutFolderInputSchema).optional(),
+  parentFolder: z.lazy(() => FolderCreateNestedOneWithoutChildFoldersInputSchema).optional(),
+  childFolders: z.lazy(() => FolderCreateNestedManyWithoutParentFolderInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedCreateInputSchema: z.ZodType<Prisma.FolderUncheckedCreateInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  albumId: z.string().optional().nullable(),
+  parentFolderId: z.string().optional().nullable(),
+  childFolders: z.lazy(() => FolderUncheckedCreateNestedManyWithoutParentFolderInputSchema).optional()
+}).strict();
+
+export const FolderUpdateInputSchema: z.ZodType<Prisma.FolderUpdateInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  album: z.lazy(() => AlbumUpdateOneWithoutFolderNestedInputSchema).optional(),
+  parentFolder: z.lazy(() => FolderUpdateOneWithoutChildFoldersNestedInputSchema).optional(),
+  childFolders: z.lazy(() => FolderUpdateManyWithoutParentFolderNestedInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedUpdateInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  parentFolderId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  childFolders: z.lazy(() => FolderUncheckedUpdateManyWithoutParentFolderNestedInputSchema).optional()
+}).strict();
+
+export const FolderCreateManyInputSchema: z.ZodType<Prisma.FolderCreateManyInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  albumId: z.string().optional().nullable(),
+  parentFolderId: z.string().optional().nullable()
+}).strict();
+
+export const FolderUpdateManyMutationInputSchema: z.ZodType<Prisma.FolderUpdateManyMutationInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const FolderUncheckedUpdateManyInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateManyInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  parentFolderId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 export const SessionCreateInputSchema: z.ZodType<Prisma.SessionCreateInput> = z.object({
@@ -955,12 +1142,22 @@ export const MediaFileListRelationFilterSchema: z.ZodType<Prisma.MediaFileListRe
   none: z.lazy(() => MediaFileWhereInputSchema).optional()
 }).strict();
 
+export const FolderListRelationFilterSchema: z.ZodType<Prisma.FolderListRelationFilter> = z.object({
+  every: z.lazy(() => FolderWhereInputSchema).optional(),
+  some: z.lazy(() => FolderWhereInputSchema).optional(),
+  none: z.lazy(() => FolderWhereInputSchema).optional()
+}).strict();
+
 export const SortOrderInputSchema: z.ZodType<Prisma.SortOrderInput> = z.object({
   sort: z.lazy(() => SortOrderSchema),
   nulls: z.lazy(() => NullsOrderSchema).optional()
 }).strict();
 
 export const MediaFileOrderByRelationAggregateInputSchema: z.ZodType<Prisma.MediaFileOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const FolderOrderByRelationAggregateInputSchema: z.ZodType<Prisma.FolderOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -1079,6 +1276,64 @@ export const MediaFileMinOrderByAggregateInputSchema: z.ZodType<Prisma.MediaFile
   albumId: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
+export const UuidNullableFilterSchema: z.ZodType<Prisma.UuidNullableFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  mode: z.lazy(() => QueryModeSchema).optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedUuidNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
+export const AlbumNullableRelationFilterSchema: z.ZodType<Prisma.AlbumNullableRelationFilter> = z.object({
+  is: z.lazy(() => AlbumWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => AlbumWhereInputSchema).optional().nullable()
+}).strict();
+
+export const FolderNullableRelationFilterSchema: z.ZodType<Prisma.FolderNullableRelationFilter> = z.object({
+  is: z.lazy(() => FolderWhereInputSchema).optional().nullable(),
+  isNot: z.lazy(() => FolderWhereInputSchema).optional().nullable()
+}).strict();
+
+export const FolderCountOrderByAggregateInputSchema: z.ZodType<Prisma.FolderCountOrderByAggregateInput> = z.object({
+  folderId: z.lazy(() => SortOrderSchema).optional(),
+  folderName: z.lazy(() => SortOrderSchema).optional(),
+  albumId: z.lazy(() => SortOrderSchema).optional(),
+  parentFolderId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const FolderMaxOrderByAggregateInputSchema: z.ZodType<Prisma.FolderMaxOrderByAggregateInput> = z.object({
+  folderId: z.lazy(() => SortOrderSchema).optional(),
+  folderName: z.lazy(() => SortOrderSchema).optional(),
+  albumId: z.lazy(() => SortOrderSchema).optional(),
+  parentFolderId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const FolderMinOrderByAggregateInputSchema: z.ZodType<Prisma.FolderMinOrderByAggregateInput> = z.object({
+  folderId: z.lazy(() => SortOrderSchema).optional(),
+  folderName: z.lazy(() => SortOrderSchema).optional(),
+  albumId: z.lazy(() => SortOrderSchema).optional(),
+  parentFolderId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const UuidNullableWithAggregatesFilterSchema: z.ZodType<Prisma.UuidNullableWithAggregatesFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  mode: z.lazy(() => QueryModeSchema).optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedUuidNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
+}).strict();
+
 export const SessionCountOrderByAggregateInputSchema: z.ZodType<Prisma.SessionCountOrderByAggregateInput> = z.object({
   id: z.lazy(() => SortOrderSchema).optional(),
   sid: z.lazy(() => SortOrderSchema).optional(),
@@ -1164,6 +1419,13 @@ export const SubscribedChannelCreateNestedManyWithoutAlbumInputSchema: z.ZodType
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const FolderCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.FolderCreateNestedManyWithoutAlbumInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutAlbumInputSchema),z.lazy(() => FolderCreateWithoutAlbumInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyAlbumInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const MediaFileUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.MediaFileUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
   create: z.union([ z.lazy(() => MediaFileCreateWithoutAlbumInputSchema),z.lazy(() => MediaFileCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaFileUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaFileUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => MediaFileCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaFileCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
@@ -1176,6 +1438,13 @@ export const SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema: 
   connectOrCreate: z.union([ z.lazy(() => SubscribedChannelCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => SubscribedChannelCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
   createMany: z.lazy(() => SubscribedChannelCreateManyAlbumInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => SubscribedChannelWhereUniqueInputSchema),z.lazy(() => SubscribedChannelWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const FolderUncheckedCreateNestedManyWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUncheckedCreateNestedManyWithoutAlbumInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutAlbumInputSchema),z.lazy(() => FolderCreateWithoutAlbumInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyAlbumInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const NullableStringFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableStringFieldUpdateOperationsInput> = z.object({
@@ -1210,6 +1479,20 @@ export const SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema: z.ZodType
   deleteMany: z.union([ z.lazy(() => SubscribedChannelScalarWhereInputSchema),z.lazy(() => SubscribedChannelScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const FolderUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.FolderUpdateManyWithoutAlbumNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutAlbumInputSchema),z.lazy(() => FolderCreateWithoutAlbumInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FolderUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FolderUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyAlbumInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FolderUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FolderUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FolderUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => FolderUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FolderScalarWhereInputSchema),z.lazy(() => FolderScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const MediaFileUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.MediaFileUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
   create: z.union([ z.lazy(() => MediaFileCreateWithoutAlbumInputSchema),z.lazy(() => MediaFileCreateWithoutAlbumInputSchema).array(),z.lazy(() => MediaFileUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => MediaFileUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => MediaFileCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => MediaFileCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
@@ -1236,6 +1519,20 @@ export const SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema: 
   update: z.union([ z.lazy(() => SubscribedChannelUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => SubscribedChannelUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => SubscribedChannelUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => SubscribedChannelUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => SubscribedChannelScalarWhereInputSchema),z.lazy(() => SubscribedChannelScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const FolderUncheckedUpdateManyWithoutAlbumNestedInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateManyWithoutAlbumNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutAlbumInputSchema),z.lazy(() => FolderCreateWithoutAlbumInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema),z.lazy(() => FolderCreateOrConnectWithoutAlbumInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FolderUpsertWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FolderUpsertWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyAlbumInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FolderUpdateWithWhereUniqueWithoutAlbumInputSchema),z.lazy(() => FolderUpdateWithWhereUniqueWithoutAlbumInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FolderUpdateManyWithWhereWithoutAlbumInputSchema),z.lazy(() => FolderUpdateManyWithWhereWithoutAlbumInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FolderScalarWhereInputSchema),z.lazy(() => FolderScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const GuildCreateNestedOneWithoutSubscribedChannelsInputSchema: z.ZodType<Prisma.GuildCreateNestedOneWithoutSubscribedChannelsInput> = z.object({
@@ -1278,6 +1575,80 @@ export const AlbumUpdateOneRequiredWithoutFilesNestedInputSchema: z.ZodType<Pris
   upsert: z.lazy(() => AlbumUpsertWithoutFilesInputSchema).optional(),
   connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional(),
   update: z.union([ z.lazy(() => AlbumUpdateToOneWithWhereWithoutFilesInputSchema),z.lazy(() => AlbumUpdateWithoutFilesInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutFilesInputSchema) ]).optional(),
+}).strict();
+
+export const AlbumCreateNestedOneWithoutFolderInputSchema: z.ZodType<Prisma.AlbumCreateNestedOneWithoutFolderInput> = z.object({
+  create: z.union([ z.lazy(() => AlbumCreateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutFolderInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutFolderInputSchema).optional(),
+  connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional()
+}).strict();
+
+export const FolderCreateNestedOneWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderCreateNestedOneWithoutChildFoldersInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedCreateWithoutChildFoldersInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => FolderCreateOrConnectWithoutChildFoldersInputSchema).optional(),
+  connect: z.lazy(() => FolderWhereUniqueInputSchema).optional()
+}).strict();
+
+export const FolderCreateNestedManyWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderCreateNestedManyWithoutParentFolderInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutParentFolderInputSchema),z.lazy(() => FolderCreateWithoutParentFolderInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema),z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyParentFolderInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const FolderUncheckedCreateNestedManyWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUncheckedCreateNestedManyWithoutParentFolderInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutParentFolderInputSchema),z.lazy(() => FolderCreateWithoutParentFolderInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema),z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyParentFolderInputEnvelopeSchema).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const AlbumUpdateOneWithoutFolderNestedInputSchema: z.ZodType<Prisma.AlbumUpdateOneWithoutFolderNestedInput> = z.object({
+  create: z.union([ z.lazy(() => AlbumCreateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutFolderInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => AlbumCreateOrConnectWithoutFolderInputSchema).optional(),
+  upsert: z.lazy(() => AlbumUpsertWithoutFolderInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => AlbumWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => AlbumWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => AlbumUpdateToOneWithWhereWithoutFolderInputSchema),z.lazy(() => AlbumUpdateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutFolderInputSchema) ]).optional(),
+}).strict();
+
+export const FolderUpdateOneWithoutChildFoldersNestedInputSchema: z.ZodType<Prisma.FolderUpdateOneWithoutChildFoldersNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedCreateWithoutChildFoldersInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => FolderCreateOrConnectWithoutChildFoldersInputSchema).optional(),
+  upsert: z.lazy(() => FolderUpsertWithoutChildFoldersInputSchema).optional(),
+  disconnect: z.union([ z.boolean(),z.lazy(() => FolderWhereInputSchema) ]).optional(),
+  delete: z.union([ z.boolean(),z.lazy(() => FolderWhereInputSchema) ]).optional(),
+  connect: z.lazy(() => FolderWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => FolderUpdateToOneWithWhereWithoutChildFoldersInputSchema),z.lazy(() => FolderUpdateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutChildFoldersInputSchema) ]).optional(),
+}).strict();
+
+export const FolderUpdateManyWithoutParentFolderNestedInputSchema: z.ZodType<Prisma.FolderUpdateManyWithoutParentFolderNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutParentFolderInputSchema),z.lazy(() => FolderCreateWithoutParentFolderInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema),z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FolderUpsertWithWhereUniqueWithoutParentFolderInputSchema),z.lazy(() => FolderUpsertWithWhereUniqueWithoutParentFolderInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyParentFolderInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FolderUpdateWithWhereUniqueWithoutParentFolderInputSchema),z.lazy(() => FolderUpdateWithWhereUniqueWithoutParentFolderInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FolderUpdateManyWithWhereWithoutParentFolderInputSchema),z.lazy(() => FolderUpdateManyWithWhereWithoutParentFolderInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FolderScalarWhereInputSchema),z.lazy(() => FolderScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const FolderUncheckedUpdateManyWithoutParentFolderNestedInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateManyWithoutParentFolderNestedInput> = z.object({
+  create: z.union([ z.lazy(() => FolderCreateWithoutParentFolderInputSchema),z.lazy(() => FolderCreateWithoutParentFolderInputSchema).array(),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema).array() ]).optional(),
+  connectOrCreate: z.union([ z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema),z.lazy(() => FolderCreateOrConnectWithoutParentFolderInputSchema).array() ]).optional(),
+  upsert: z.union([ z.lazy(() => FolderUpsertWithWhereUniqueWithoutParentFolderInputSchema),z.lazy(() => FolderUpsertWithWhereUniqueWithoutParentFolderInputSchema).array() ]).optional(),
+  createMany: z.lazy(() => FolderCreateManyParentFolderInputEnvelopeSchema).optional(),
+  set: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => FolderWhereUniqueInputSchema),z.lazy(() => FolderWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => FolderUpdateWithWhereUniqueWithoutParentFolderInputSchema),z.lazy(() => FolderUpdateWithWhereUniqueWithoutParentFolderInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => FolderUpdateManyWithWhereWithoutParentFolderInputSchema),z.lazy(() => FolderUpdateManyWithWhereWithoutParentFolderInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => FolderScalarWhereInputSchema),z.lazy(() => FolderScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
@@ -1414,6 +1785,31 @@ export const NestedIntNullableFilterSchema: z.ZodType<Prisma.NestedIntNullableFi
   not: z.union([ z.number(),z.lazy(() => NestedIntNullableFilterSchema) ]).optional().nullable(),
 }).strict();
 
+export const NestedUuidNullableFilterSchema: z.ZodType<Prisma.NestedUuidNullableFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedUuidNullableFilterSchema) ]).optional().nullable(),
+}).strict();
+
+export const NestedUuidNullableWithAggregatesFilterSchema: z.ZodType<Prisma.NestedUuidNullableWithAggregatesFilter> = z.object({
+  equals: z.string().optional().nullable(),
+  in: z.string().array().optional().nullable(),
+  notIn: z.string().array().optional().nullable(),
+  lt: z.string().optional(),
+  lte: z.string().optional(),
+  gt: z.string().optional(),
+  gte: z.string().optional(),
+  not: z.union([ z.string(),z.lazy(() => NestedUuidNullableWithAggregatesFilterSchema) ]).optional().nullable(),
+  _count: z.lazy(() => NestedIntNullableFilterSchema).optional(),
+  _min: z.lazy(() => NestedStringNullableFilterSchema).optional(),
+  _max: z.lazy(() => NestedStringNullableFilterSchema).optional()
+}).strict();
+
 export const SubscribedChannelCreateWithoutGuildInputSchema: z.ZodType<Prisma.SubscribedChannelCreateWithoutGuildInput> = z.object({
   channelId: z.string(),
   createdAt: z.coerce.date().optional(),
@@ -1512,6 +1908,30 @@ export const SubscribedChannelCreateManyAlbumInputEnvelopeSchema: z.ZodType<Pris
   skipDuplicates: z.boolean().optional()
 }).strict();
 
+export const FolderCreateWithoutAlbumInputSchema: z.ZodType<Prisma.FolderCreateWithoutAlbumInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  parentFolder: z.lazy(() => FolderCreateNestedOneWithoutChildFoldersInputSchema).optional(),
+  childFolders: z.lazy(() => FolderCreateNestedManyWithoutParentFolderInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedCreateWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUncheckedCreateWithoutAlbumInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  parentFolderId: z.string().optional().nullable(),
+  childFolders: z.lazy(() => FolderUncheckedCreateNestedManyWithoutParentFolderInputSchema).optional()
+}).strict();
+
+export const FolderCreateOrConnectWithoutAlbumInputSchema: z.ZodType<Prisma.FolderCreateOrConnectWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => FolderCreateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema) ]),
+}).strict();
+
+export const FolderCreateManyAlbumInputEnvelopeSchema: z.ZodType<Prisma.FolderCreateManyAlbumInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => FolderCreateManyAlbumInputSchema),z.lazy(() => FolderCreateManyAlbumInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
 export const MediaFileUpsertWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.MediaFileUpsertWithWhereUniqueWithoutAlbumInput> = z.object({
   where: z.lazy(() => MediaFileWhereUniqueInputSchema),
   update: z.union([ z.lazy(() => MediaFileUpdateWithoutAlbumInputSchema),z.lazy(() => MediaFileUncheckedUpdateWithoutAlbumInputSchema) ]),
@@ -1557,6 +1977,32 @@ export const SubscribedChannelUpdateManyWithWhereWithoutAlbumInputSchema: z.ZodT
   data: z.union([ z.lazy(() => SubscribedChannelUpdateManyMutationInputSchema),z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumInputSchema) ]),
 }).strict();
 
+export const FolderUpsertWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUpsertWithWhereUniqueWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => FolderUpdateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutAlbumInputSchema) ]),
+  create: z.union([ z.lazy(() => FolderCreateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedCreateWithoutAlbumInputSchema) ]),
+}).strict();
+
+export const FolderUpdateWithWhereUniqueWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUpdateWithWhereUniqueWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => FolderUpdateWithoutAlbumInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutAlbumInputSchema) ]),
+}).strict();
+
+export const FolderUpdateManyWithWhereWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUpdateManyWithWhereWithoutAlbumInput> = z.object({
+  where: z.lazy(() => FolderScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => FolderUpdateManyMutationInputSchema),z.lazy(() => FolderUncheckedUpdateManyWithoutAlbumInputSchema) ]),
+}).strict();
+
+export const FolderScalarWhereInputSchema: z.ZodType<Prisma.FolderScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => FolderScalarWhereInputSchema),z.lazy(() => FolderScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => FolderScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => FolderScalarWhereInputSchema),z.lazy(() => FolderScalarWhereInputSchema).array() ]).optional(),
+  folderId: z.union([ z.lazy(() => UuidFilterSchema),z.string() ]).optional(),
+  folderName: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  albumId: z.union([ z.lazy(() => UuidNullableFilterSchema),z.string() ]).optional().nullable(),
+  parentFolderId: z.union([ z.lazy(() => UuidNullableFilterSchema),z.string() ]).optional().nullable(),
+}).strict();
+
 export const GuildCreateWithoutSubscribedChannelsInputSchema: z.ZodType<Prisma.GuildCreateWithoutSubscribedChannelsInput> = z.object({
   guildId: z.string(),
   createdAt: z.coerce.date().optional()
@@ -1577,7 +2023,8 @@ export const AlbumCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreate
   albumName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
-  files: z.lazy(() => MediaFileCreateNestedManyWithoutAlbumInputSchema).optional()
+  files: z.lazy(() => MediaFileCreateNestedManyWithoutAlbumInputSchema).optional(),
+  Folder: z.lazy(() => FolderCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutChannelsInput> = z.object({
@@ -1585,7 +2032,8 @@ export const AlbumUncheckedCreateWithoutChannelsInputSchema: z.ZodType<Prisma.Al
   albumName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
-  files: z.lazy(() => MediaFileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
+  files: z.lazy(() => MediaFileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
+  Folder: z.lazy(() => FolderUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumCreateOrConnectWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutChannelsInput> = z.object({
@@ -1630,7 +2078,8 @@ export const AlbumUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUpdate
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  files: z.lazy(() => MediaFileUpdateManyWithoutAlbumNestedInputSchema).optional()
+  files: z.lazy(() => MediaFileUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  Folder: z.lazy(() => FolderUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutChannelsInput> = z.object({
@@ -1638,7 +2087,8 @@ export const AlbumUncheckedUpdateWithoutChannelsInputSchema: z.ZodType<Prisma.Al
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  files: z.lazy(() => MediaFileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
+  files: z.lazy(() => MediaFileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  Folder: z.lazy(() => FolderUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumCreateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumCreateWithoutFilesInput> = z.object({
@@ -1646,7 +2096,8 @@ export const AlbumCreateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumCreateWit
   albumName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
-  channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional(),
+  Folder: z.lazy(() => FolderCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedCreateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutFilesInput> = z.object({
@@ -1654,7 +2105,8 @@ export const AlbumUncheckedCreateWithoutFilesInputSchema: z.ZodType<Prisma.Album
   albumName: z.string(),
   description: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional(),
-  channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
+  Folder: z.lazy(() => FolderUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
 }).strict();
 
 export const AlbumCreateOrConnectWithoutFilesInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutFilesInput> = z.object({
@@ -1678,7 +2130,8 @@ export const AlbumUpdateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumUpdateWit
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
-  channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
+  channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  Folder: z.lazy(() => FolderUpdateManyWithoutAlbumNestedInputSchema).optional()
 }).strict();
 
 export const AlbumUncheckedUpdateWithoutFilesInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutFilesInput> = z.object({
@@ -1686,7 +2139,144 @@ export const AlbumUncheckedUpdateWithoutFilesInputSchema: z.ZodType<Prisma.Album
   albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  Folder: z.lazy(() => FolderUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
+}).strict();
+
+export const AlbumCreateWithoutFolderInputSchema: z.ZodType<Prisma.AlbumCreateWithoutFolderInput> = z.object({
+  albumId: z.string().optional(),
+  albumName: z.string(),
+  description: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  files: z.lazy(() => MediaFileCreateNestedManyWithoutAlbumInputSchema).optional(),
+  channels: z.lazy(() => SubscribedChannelCreateNestedManyWithoutAlbumInputSchema).optional()
+}).strict();
+
+export const AlbumUncheckedCreateWithoutFolderInputSchema: z.ZodType<Prisma.AlbumUncheckedCreateWithoutFolderInput> = z.object({
+  albumId: z.string().optional(),
+  albumName: z.string(),
+  description: z.string().optional().nullable(),
+  createdAt: z.coerce.date().optional(),
+  files: z.lazy(() => MediaFileUncheckedCreateNestedManyWithoutAlbumInputSchema).optional(),
+  channels: z.lazy(() => SubscribedChannelUncheckedCreateNestedManyWithoutAlbumInputSchema).optional()
+}).strict();
+
+export const AlbumCreateOrConnectWithoutFolderInputSchema: z.ZodType<Prisma.AlbumCreateOrConnectWithoutFolderInput> = z.object({
+  where: z.lazy(() => AlbumWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => AlbumCreateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutFolderInputSchema) ]),
+}).strict();
+
+export const FolderCreateWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderCreateWithoutChildFoldersInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  album: z.lazy(() => AlbumCreateNestedOneWithoutFolderInputSchema).optional(),
+  parentFolder: z.lazy(() => FolderCreateNestedOneWithoutChildFoldersInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedCreateWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderUncheckedCreateWithoutChildFoldersInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  albumId: z.string().optional().nullable(),
+  parentFolderId: z.string().optional().nullable()
+}).strict();
+
+export const FolderCreateOrConnectWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderCreateOrConnectWithoutChildFoldersInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => FolderCreateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedCreateWithoutChildFoldersInputSchema) ]),
+}).strict();
+
+export const FolderCreateWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderCreateWithoutParentFolderInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  album: z.lazy(() => AlbumCreateNestedOneWithoutFolderInputSchema).optional(),
+  childFolders: z.lazy(() => FolderCreateNestedManyWithoutParentFolderInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedCreateWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUncheckedCreateWithoutParentFolderInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  albumId: z.string().optional().nullable(),
+  childFolders: z.lazy(() => FolderUncheckedCreateNestedManyWithoutParentFolderInputSchema).optional()
+}).strict();
+
+export const FolderCreateOrConnectWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderCreateOrConnectWithoutParentFolderInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => FolderCreateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema) ]),
+}).strict();
+
+export const FolderCreateManyParentFolderInputEnvelopeSchema: z.ZodType<Prisma.FolderCreateManyParentFolderInputEnvelope> = z.object({
+  data: z.union([ z.lazy(() => FolderCreateManyParentFolderInputSchema),z.lazy(() => FolderCreateManyParentFolderInputSchema).array() ]),
+  skipDuplicates: z.boolean().optional()
+}).strict();
+
+export const AlbumUpsertWithoutFolderInputSchema: z.ZodType<Prisma.AlbumUpsertWithoutFolderInput> = z.object({
+  update: z.union([ z.lazy(() => AlbumUpdateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutFolderInputSchema) ]),
+  create: z.union([ z.lazy(() => AlbumCreateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedCreateWithoutFolderInputSchema) ]),
+  where: z.lazy(() => AlbumWhereInputSchema).optional()
+}).strict();
+
+export const AlbumUpdateToOneWithWhereWithoutFolderInputSchema: z.ZodType<Prisma.AlbumUpdateToOneWithWhereWithoutFolderInput> = z.object({
+  where: z.lazy(() => AlbumWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => AlbumUpdateWithoutFolderInputSchema),z.lazy(() => AlbumUncheckedUpdateWithoutFolderInputSchema) ]),
+}).strict();
+
+export const AlbumUpdateWithoutFolderInputSchema: z.ZodType<Prisma.AlbumUpdateWithoutFolderInput> = z.object({
+  albumId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  files: z.lazy(() => MediaFileUpdateManyWithoutAlbumNestedInputSchema).optional(),
+  channels: z.lazy(() => SubscribedChannelUpdateManyWithoutAlbumNestedInputSchema).optional()
+}).strict();
+
+export const AlbumUncheckedUpdateWithoutFolderInputSchema: z.ZodType<Prisma.AlbumUncheckedUpdateWithoutFolderInput> = z.object({
+  albumId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  description: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  files: z.lazy(() => MediaFileUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional(),
   channels: z.lazy(() => SubscribedChannelUncheckedUpdateManyWithoutAlbumNestedInputSchema).optional()
+}).strict();
+
+export const FolderUpsertWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderUpsertWithoutChildFoldersInput> = z.object({
+  update: z.union([ z.lazy(() => FolderUpdateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutChildFoldersInputSchema) ]),
+  create: z.union([ z.lazy(() => FolderCreateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedCreateWithoutChildFoldersInputSchema) ]),
+  where: z.lazy(() => FolderWhereInputSchema).optional()
+}).strict();
+
+export const FolderUpdateToOneWithWhereWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderUpdateToOneWithWhereWithoutChildFoldersInput> = z.object({
+  where: z.lazy(() => FolderWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => FolderUpdateWithoutChildFoldersInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutChildFoldersInputSchema) ]),
+}).strict();
+
+export const FolderUpdateWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderUpdateWithoutChildFoldersInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  album: z.lazy(() => AlbumUpdateOneWithoutFolderNestedInputSchema).optional(),
+  parentFolder: z.lazy(() => FolderUpdateOneWithoutChildFoldersNestedInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedUpdateWithoutChildFoldersInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateWithoutChildFoldersInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  parentFolderId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const FolderUpsertWithWhereUniqueWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUpsertWithWhereUniqueWithoutParentFolderInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  update: z.union([ z.lazy(() => FolderUpdateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutParentFolderInputSchema) ]),
+  create: z.union([ z.lazy(() => FolderCreateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedCreateWithoutParentFolderInputSchema) ]),
+}).strict();
+
+export const FolderUpdateWithWhereUniqueWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUpdateWithWhereUniqueWithoutParentFolderInput> = z.object({
+  where: z.lazy(() => FolderWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => FolderUpdateWithoutParentFolderInputSchema),z.lazy(() => FolderUncheckedUpdateWithoutParentFolderInputSchema) ]),
+}).strict();
+
+export const FolderUpdateManyWithWhereWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUpdateManyWithWhereWithoutParentFolderInput> = z.object({
+  where: z.lazy(() => FolderScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => FolderUpdateManyMutationInputSchema),z.lazy(() => FolderUncheckedUpdateManyWithoutParentFolderInputSchema) ]),
 }).strict();
 
 export const SubscribedChannelCreateManyGuildInputSchema: z.ZodType<Prisma.SubscribedChannelCreateManyGuildInput> = z.object({
@@ -1726,6 +2316,12 @@ export const SubscribedChannelCreateManyAlbumInputSchema: z.ZodType<Prisma.Subsc
   channelId: z.string(),
   createdAt: z.coerce.date().optional(),
   guildId: z.string()
+}).strict();
+
+export const FolderCreateManyAlbumInputSchema: z.ZodType<Prisma.FolderCreateManyAlbumInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  parentFolderId: z.string().optional().nullable()
 }).strict();
 
 export const MediaFileUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.MediaFileUpdateWithoutAlbumInput> = z.object({
@@ -1771,6 +2367,52 @@ export const SubscribedChannelUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodT
   channelId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
   guildId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const FolderUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUpdateWithoutAlbumInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  parentFolder: z.lazy(() => FolderUpdateOneWithoutChildFoldersNestedInputSchema).optional(),
+  childFolders: z.lazy(() => FolderUpdateManyWithoutParentFolderNestedInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedUpdateWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateWithoutAlbumInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  parentFolderId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  childFolders: z.lazy(() => FolderUncheckedUpdateManyWithoutParentFolderNestedInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedUpdateManyWithoutAlbumInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateManyWithoutAlbumInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  parentFolderId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+}).strict();
+
+export const FolderCreateManyParentFolderInputSchema: z.ZodType<Prisma.FolderCreateManyParentFolderInput> = z.object({
+  folderId: z.string().optional(),
+  folderName: z.string(),
+  albumId: z.string().optional().nullable()
+}).strict();
+
+export const FolderUpdateWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUpdateWithoutParentFolderInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  album: z.lazy(() => AlbumUpdateOneWithoutFolderNestedInputSchema).optional(),
+  childFolders: z.lazy(() => FolderUpdateManyWithoutParentFolderNestedInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedUpdateWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateWithoutParentFolderInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  childFolders: z.lazy(() => FolderUncheckedUpdateManyWithoutParentFolderNestedInputSchema).optional()
+}).strict();
+
+export const FolderUncheckedUpdateManyWithoutParentFolderInputSchema: z.ZodType<Prisma.FolderUncheckedUpdateManyWithoutParentFolderInput> = z.object({
+  folderId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  folderName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  albumId: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
 }).strict();
 
 /////////////////////////////////////////
@@ -2045,6 +2687,73 @@ export const MediaFileFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.MediaFileFin
   relationLoadStrategy: RelationLoadStrategySchema.optional(),
 }).strict() ;
 
+export const FolderFindFirstArgsSchema: z.ZodType<Prisma.FolderFindFirstArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereInputSchema.optional(),
+  orderBy: z.union([ FolderOrderByWithRelationInputSchema.array(),FolderOrderByWithRelationInputSchema ]).optional(),
+  cursor: FolderWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ FolderScalarFieldEnumSchema,FolderScalarFieldEnumSchema.array() ]).optional(),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderFindFirstOrThrowArgsSchema: z.ZodType<Prisma.FolderFindFirstOrThrowArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereInputSchema.optional(),
+  orderBy: z.union([ FolderOrderByWithRelationInputSchema.array(),FolderOrderByWithRelationInputSchema ]).optional(),
+  cursor: FolderWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ FolderScalarFieldEnumSchema,FolderScalarFieldEnumSchema.array() ]).optional(),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderFindManyArgsSchema: z.ZodType<Prisma.FolderFindManyArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereInputSchema.optional(),
+  orderBy: z.union([ FolderOrderByWithRelationInputSchema.array(),FolderOrderByWithRelationInputSchema ]).optional(),
+  cursor: FolderWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ FolderScalarFieldEnumSchema,FolderScalarFieldEnumSchema.array() ]).optional(),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderAggregateArgsSchema: z.ZodType<Prisma.FolderAggregateArgs> = z.object({
+  where: FolderWhereInputSchema.optional(),
+  orderBy: z.union([ FolderOrderByWithRelationInputSchema.array(),FolderOrderByWithRelationInputSchema ]).optional(),
+  cursor: FolderWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const FolderGroupByArgsSchema: z.ZodType<Prisma.FolderGroupByArgs> = z.object({
+  where: FolderWhereInputSchema.optional(),
+  orderBy: z.union([ FolderOrderByWithAggregationInputSchema.array(),FolderOrderByWithAggregationInputSchema ]).optional(),
+  by: FolderScalarFieldEnumSchema.array(),
+  having: FolderScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const FolderFindUniqueArgsSchema: z.ZodType<Prisma.FolderFindUniqueArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.FolderFindUniqueOrThrowArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
 export const SessionFindFirstArgsSchema: z.ZodType<Prisma.SessionFindFirstArgs> = z.object({
   select: SessionSelectSchema.optional(),
   where: SessionWhereInputSchema.optional(),
@@ -2305,6 +3014,56 @@ export const MediaFileUpdateManyArgsSchema: z.ZodType<Prisma.MediaFileUpdateMany
 
 export const MediaFileDeleteManyArgsSchema: z.ZodType<Prisma.MediaFileDeleteManyArgs> = z.object({
   where: MediaFileWhereInputSchema.optional(),
+}).strict() ;
+
+export const FolderCreateArgsSchema: z.ZodType<Prisma.FolderCreateArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  data: z.union([ FolderCreateInputSchema,FolderUncheckedCreateInputSchema ]),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderUpsertArgsSchema: z.ZodType<Prisma.FolderUpsertArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereUniqueInputSchema,
+  create: z.union([ FolderCreateInputSchema,FolderUncheckedCreateInputSchema ]),
+  update: z.union([ FolderUpdateInputSchema,FolderUncheckedUpdateInputSchema ]),
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderCreateManyArgsSchema: z.ZodType<Prisma.FolderCreateManyArgs> = z.object({
+  data: z.union([ FolderCreateManyInputSchema,FolderCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const FolderCreateManyAndReturnArgsSchema: z.ZodType<Prisma.FolderCreateManyAndReturnArgs> = z.object({
+  data: z.union([ FolderCreateManyInputSchema,FolderCreateManyInputSchema.array() ]),
+  skipDuplicates: z.boolean().optional(),
+}).strict() ;
+
+export const FolderDeleteArgsSchema: z.ZodType<Prisma.FolderDeleteArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  where: FolderWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderUpdateArgsSchema: z.ZodType<Prisma.FolderUpdateArgs> = z.object({
+  select: FolderSelectSchema.optional(),
+  include: FolderIncludeSchema.optional(),
+  data: z.union([ FolderUpdateInputSchema,FolderUncheckedUpdateInputSchema ]),
+  where: FolderWhereUniqueInputSchema,
+  relationLoadStrategy: RelationLoadStrategySchema.optional(),
+}).strict() ;
+
+export const FolderUpdateManyArgsSchema: z.ZodType<Prisma.FolderUpdateManyArgs> = z.object({
+  data: z.union([ FolderUpdateManyMutationInputSchema,FolderUncheckedUpdateManyInputSchema ]),
+  where: FolderWhereInputSchema.optional(),
+}).strict() ;
+
+export const FolderDeleteManyArgsSchema: z.ZodType<Prisma.FolderDeleteManyArgs> = z.object({
+  where: FolderWhereInputSchema.optional(),
 }).strict() ;
 
 export const SessionCreateArgsSchema: z.ZodType<Prisma.SessionCreateArgs> = z.object({

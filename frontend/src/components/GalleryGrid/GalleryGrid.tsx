@@ -2,8 +2,8 @@
 /* eslint-disable jsdoc/require-returns */
 import { Box, Skeleton } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import { useGetMediaThumbnails } from "../../hooks/useGetMediaThumbnails";
-import { toaster } from "../ui/toaster";
 import GalleryGridCSS from "./GalleryGrid.module.css";
 
 interface GalleryGridProps {
@@ -13,7 +13,8 @@ interface GalleryGridProps {
 }
 
 /**
- * Displays a grid gallery of files.
+ * Displays a gallery of photos/videos arranged in a grid. Displays an error
+ * message if there was an error while fetching thumbnails.
  */
 const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
   const { isPending, isFetchingNextPage, data, hasNextPage, fetchNextPage, error } =
@@ -55,15 +56,13 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
     [isPending, hasNextPage, fetchNextPage],
   );
 
-  // Error toast
-  useEffect(() => {
-    if (error) {
-      toaster.create({
-        type: "error",
-        description: "Could not fetch images. Please reload and try again",
-      });
-    }
-  }, [error]);
+  if (isPending || isFetchingNextPage) {
+    return [...Array(pageSize || 9).keys()].map((i) => <Skeleton key={i} />);
+  } else if (error) {
+    return <CouldNotFindItemsMsg />;
+  } else if (thumbnails.length === 0) {
+    return <NoItemsFoundMsg />;
+  }
 
   return (
     <Box className={GalleryGridCSS["grid-container"]}>
@@ -80,10 +79,42 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
         }
         return <img src={url} className={GalleryGridCSS["file-item"]} key={url} />;
       })}
-      {(isPending || isFetchingNextPage) &&
-        [...Array(pageSize || 9).keys()].map((i) => <Skeleton key={i} />)}
     </Box>
   );
 };
+
+/**
+ * The message that is displayed when an error occurs while fetching.
+ */
+function CouldNotFindItemsMsg() {
+  return (
+    <Box
+      className={GalleryGridCSS["msg-container"]}
+      height={"calc(100% - {sizes.breadcrumbHeight})"}
+    >
+      <h1 className={GalleryGridCSS["msg-title"]}>Album not found</h1>
+      <p className={GalleryGridCSS["msg"]}>
+        Something went wrong. <Link to={"/albums"}>Click here</Link> to return to the albums page.
+      </p>
+    </Box>
+  );
+}
+
+/**
+ * The messsage displayed when no items can be found.
+ */
+function NoItemsFoundMsg() {
+  return (
+    <Box
+      className={GalleryGridCSS["msg-container"]}
+      height={"calc(100% - {sizes.breadcrumbHeight})"}
+    >
+      <h1 className={GalleryGridCSS["msg-title"]}>No items found</h1>
+      <p className={GalleryGridCSS["msg"]}>
+        This album is empty. Drag files here to add photos/videos, or upload it via the discord bot.
+      </p>
+    </Box>
+  );
+}
 
 export default GalleryGrid;

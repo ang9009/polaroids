@@ -14,6 +14,7 @@ const config = defineConfig({
       sizes: {
         sidebarWidth: { value: "20rem" },
         navbarHeight: { value: "10vh" },
+        breadcrumbHeight: { value: "2rem" },
       },
     },
     textStyles,

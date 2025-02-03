@@ -1,5 +1,6 @@
 /* eslint-disable jsdoc/require-returns */
 import { BreadcrumbLink } from "@chakra-ui/react";
+import { IoAlbumsOutline, IoFolder } from "react-icons/io5";
 import { Outlet, useNavigate } from "react-router";
 import { BreadcrumbRoot } from "../../components/ui/breadcrumb";
 import { useGetBreadcrumbMap } from "../../hooks/useGetBreadcrumbMap";
@@ -15,9 +16,14 @@ const AlbumBreadcrumbLayout = () => {
 
   return (
     <>
-      <BreadcrumbRoot variant="plain" size="md" className={AlbumBreadCrumbLayoutCSS["breadcrumb"]}>
-        {breadcrumbMap &&
-          [...breadcrumbMap.keys()].map((pathSection) => {
+      {breadcrumbMap && (
+        <BreadcrumbRoot
+          variant="plain"
+          size="md"
+          className={AlbumBreadCrumbLayoutCSS["breadcrumb"]}
+          height="breadcrumbHeight"
+        >
+          {[...breadcrumbMap.keys()].map((pathSection, i) => {
             const link = breadcrumbMap.get(pathSection)!;
             return (
               <BreadcrumbLink
@@ -25,11 +31,13 @@ const AlbumBreadcrumbLayout = () => {
                 className={AlbumBreadCrumbLayoutCSS["breadcrumb-link"]}
                 onClick={() => navigate(link)}
               >
+                {i <= 1 ? <IoAlbumsOutline /> : <IoFolder />}
                 {pathSection}
               </BreadcrumbLink>
             );
           })}
-      </BreadcrumbRoot>
+        </BreadcrumbRoot>
+      )}
       <Outlet />
     </>
   );

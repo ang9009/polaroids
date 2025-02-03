@@ -41,6 +41,7 @@ export const useGetMediaThumbnails = (pageSize: number = 9, query?: string, albu
     initialPageParam: undefined,
     retry: false,
     staleTime: 1000 * 60 * 60,
+    refetchOnWindowFocus: false,
     queryKey,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     queryFn: ({ queryKey, signal, pageParam }) => {

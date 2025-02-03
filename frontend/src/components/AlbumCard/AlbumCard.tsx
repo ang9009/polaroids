@@ -1,6 +1,6 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { Card } from "@chakra-ui/react";
+import { Box, Card } from "@chakra-ui/react";
 import { useNavigate } from "react-router";
 import { AlbumInfo } from "../../hooks/useGetAlbums";
 import AlbumCardCSS from "./AlbumCard.module.css";
@@ -21,10 +21,12 @@ export function AlbumCard({ albumInfo }: AlbumCardProps) {
       key={albumInfo.albumName}
       onClick={() => navigate(`/albums/${albumInfo.albumId}`)}
     >
-      <img
-        src={albumInfo.thumbnailUrl || "/images/thumbnail-placeholder.jpg"}
-        className={AlbumCardCSS["card-thumbnail"]}
-      />
+      {albumInfo.thumbnailUrl ? (
+        <img src={albumInfo.thumbnailUrl} className={AlbumCardCSS["card-thumbnail"]} />
+      ) : (
+        <Box background={"gray.900"} className={AlbumCardCSS["card-thumbnail"]}></Box>
+      )}
+
       <Card.Body gap="2" className={AlbumCardCSS["card-body"]}>
         <Card.Title className={AlbumCardCSS["album-name"]}>{albumInfo.albumName}</Card.Title>
         <Card.Description>

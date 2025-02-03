@@ -6,6 +6,7 @@
 .card-thumbnail {
   height: 15rem;
   object-fit: cover;
+  pointer-events: none;
 }
 
 .album-name,

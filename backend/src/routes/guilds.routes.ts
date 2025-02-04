@@ -1,7 +1,7 @@
-import express from "express";
+import { Router } from "express";
 import { addGuild, deleteGuild } from "../controllers/guilds.controller";
 
-const router = express.Router();
+const router = Router();
 
 // Add a guild
 router.post("/", addGuild);

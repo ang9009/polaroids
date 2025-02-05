@@ -12,22 +12,18 @@ COPY ./backend/prisma /app/backend/prisma
 RUN npm i
 RUN npx prisma generate
 
-# Since there is a circular dependency, run npm i again in shared to set up workspaces
+# Install Postgres CLI to run .sql files
+RUN apt-get update
+RUN apt-get install -y postgresql
+
+# Since there is a circular dependency between shared and backend, run npm i
+# again in shared to set up workspaces
 WORKDIR /app/shared
 RUN npm i
 
-WORKDIR /
-# Install Chrome (for puppeteer)
-# (https://stackoverflow.com/questions/78466171/how-to-run-puppeteer-and-node-js-inside-a-docker-container)
-RUN apt-get update && apt-get install curl gnupg -y \
-  && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-  && apt-get update \
-  && apt-get install google-chrome-stable -y --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/*
-
 EXPOSE 8080
 
+WORKDIR /app/backend
 CMD ["npm", "run", "dev"]
 
 # Apply migrations after container starts

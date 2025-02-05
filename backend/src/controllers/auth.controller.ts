@@ -1,7 +1,9 @@
+/* eslint-disable jsdoc/require-returns */
 /* eslint-disable jsdoc/require-param */
 import { NextFunction, Request, Response } from "express";
 import { GetUserInfoResponseSchema } from "shared/src/responses/auth/getInfo";
 import HttpStatusCode from "../data/httpStatusCode";
+import ValidationException from "../types/error/validationException";
 
 /**
  * Returns information regarding the user who is currently logged in. This
@@ -9,8 +11,13 @@ import HttpStatusCode from "../data/httpStatusCode";
  * Route: GET /api/auth/discord/info
  */
 export const getInfo = (req: Request, res: Response, next: NextFunction) => {
-  const parsedUser = GetUserInfoResponseSchema.parse(req.user);
-  res.status(HttpStatusCode.OK).json(parsedUser);
+  const parsedUser = GetUserInfoResponseSchema.safeParse(req.user);
+  if (!parsedUser.success) {
+    const error = new ValidationException(parsedUser.error);
+    return next(error);
+  }
+
+  res.status(HttpStatusCode.OK).json(parsedUser.data);
 };
 
 /**

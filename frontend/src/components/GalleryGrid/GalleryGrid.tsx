@@ -112,7 +112,7 @@ function NoItemsFoundMsg() {
     >
       <h1 className={GalleryGridCSS["msg-title"]}>No items found</h1>
       <p className={GalleryGridCSS["msg"]}>
-        This album is empty. Drag files here to add photos/videos, or upload it via the discord bot.
+        This album is empty. Drag files here to add photos/videos, or upload it via the Discord bot.
       </p>
     </Box>
   );

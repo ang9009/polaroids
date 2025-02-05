@@ -1,6 +1,6 @@
 import { Attachment } from "discord.js";
 import { AllowedMimeType } from "shared/src/data/allowedMimeType";
-import { getExtensionFromMimetype } from "shared/src/helpers/getExtensionFromMimeType";
+import { getExtensionFromMimetype } from "shared/src/helpers/getExtensionFromMimetype";
 import { MediaFileData } from "../types/fileData";
 
 /**

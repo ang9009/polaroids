@@ -15,6 +15,7 @@ import { logger } from "./middleware/logger";
 import { notFound } from "./middleware/notFound";
 import albums from "./routes/albums.routes";
 import auth from "./routes/auth.routes";
+import folders from "./routes/folders.routes";
 import files from "./routes/files.routes";
 import guilds from "./routes/guilds.routes";
 import subscribedChannels from "./routes/subbedChannels.routes";
@@ -64,6 +65,7 @@ protectedRoutes.use("/albums", albums);
 protectedRoutes.use("/guilds", guilds);
 protectedRoutes.use("/subscribed-channels", subscribedChannels);
 protectedRoutes.use("/files", files);
+protectedRoutes.use("/folders", folders);
 
 const unprotectedRoutes = Router();
 unprotectedRoutes.use("/auth", auth);

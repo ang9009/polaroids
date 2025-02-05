@@ -103,8 +103,7 @@ export const createAlbum = async (
 ) => {
   const parsedReqBody = CreateAlbumRequestSchema.safeParse(req.body);
   if (!parsedReqBody.success) {
-    const error = new ValidationException(parsedReqBody.error);
-    return next(error);
+    return next(new ValidationException(parsedReqBody.error));
   }
 
   const { albumName, albumDesc } = parsedReqBody.data;

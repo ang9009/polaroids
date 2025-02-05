@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "setup": "(npm i); (cd backend && npm i); (cd bot && npm i); (cd shared && npm i)",
+    "setup": "(npm i); (cd backend && npm i && npx prisma generate); (cd bot && npm i); (cd shared && npm i)",
     "lint": "eslint .",
     "build": "(cd backend && npm run build) & (cd bot && npm run build) & (cd shared && npm run build)"
   },

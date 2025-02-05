@@ -66,7 +66,11 @@ FileStation would not co-operate. A
    POSTGRES_DB=XXXX
    ```
 
-   These variables are used in `docker-compose.yml` to initialize the Postgres database.
+   These variables are used in `docker-compose.yml` to initialize the Postgres
+   database.
+
+3. Go to `constraints.sql` in the `backend` folder and run its contents in any
+   database IDE/cli tool (e.g. psql)
 
 ## Starting Services
 

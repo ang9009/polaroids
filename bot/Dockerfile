@@ -6,6 +6,8 @@ COPY ./backend/prisma/generated/zod/index.ts /app/backend/prisma/generated/zod
 COPY ./backend/package.json /app/backend
 WORKDIR /app/backend
 RUN npm i
+
+# Copy shared folder
 WORKDIR /app/shared
 COPY ./shared /app/shared
 RUN npm i

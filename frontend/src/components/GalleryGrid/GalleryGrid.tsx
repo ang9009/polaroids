@@ -31,27 +31,20 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
   }, [data]);
 
   // Infinite scroll observer
-  const observer = useRef<IntersectionObserver>(undefined);
+  const observer = useRef<IntersectionObserver | null>(null);
   const lastThumbnailRef = useCallback(
     (node: HTMLImageElement | null) => {
-      if (isPending || !hasNextPage) {
-        return;
-      }
-      let { current: observerObj } = observer;
-      if (observerObj) {
-        observerObj.disconnect();
-      }
-      observerObj = new IntersectionObserver((entries, observer) => {
+      if (isPending || !hasNextPage) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasNextPage) {
           fetchNextPage();
-          observer.disconnect();
-        } else if (!hasNextPage) {
-          observer.disconnect();
         }
       });
-      if (node) {
-        observerObj.observe(node);
-      }
+
+      if (node) observer.current.observe(node);
     },
     [isPending, hasNextPage, fetchNextPage],
   );
@@ -67,17 +60,8 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
   return (
     <Box className={GalleryGridCSS["grid-container"]}>
       {thumbnails?.map((url, i) => {
-        if (i === thumbnails.length - 1 && hasNextPage) {
-          return (
-            <img
-              src={url}
-              ref={lastThumbnailRef}
-              className={GalleryGridCSS["file-item"]}
-              key={url}
-            />
-          );
-        }
-        return <img src={url} className={GalleryGridCSS["file-item"]} key={url} />;
+        const ref = i === thumbnails.length - 1 && hasNextPage ? lastThumbnailRef : undefined;
+        return <img src={url} ref={ref} className={GalleryGridCSS["file-item"]} key={url} />;
       })}
       {isFetchingNextPage && <LoadingGrid pageSize={pageSize} />}
     </Box>
@@ -118,8 +102,6 @@ function NoItemsFoundMsg() {
   );
 }
 
-export default GalleryGrid;
-
 /**
  * A grid of loading skeletons.
  */
@@ -132,3 +114,5 @@ function LoadingGrid({ pageSize }: { pageSize?: number }) {
     </Box>
   );
 }
+
+export default GalleryGrid;

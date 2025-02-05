@@ -7,7 +7,7 @@ import AlbumContent from "./pages/AlbumContent/AlbumContent.tsx";
 import Albums from "./pages/Albums/Albums.tsx";
 import Home from "./pages/Home/Home.tsx";
 import Login from "./pages/Login/Login.tsx";
-import NotFound from "./pages/NotFound.tsx/NotFound.tsx";
+import NotFound from "./pages/NotFound/NotFound.tsx";
 import PrivateRoutes from "./routes/PrivateRoutes.tsx";
 
 /**

@@ -33,5 +33,11 @@ export const createFolder = async (req: Request, res: Response, next: NextFuncti
     return next(getDbExFromPrismaErr(err));
   }
 
-  return res.status(HttpStatusCode.OK).send({ message: "Folder created" });
+  return res.status(HttpStatusCode.OK).send({ message: "Folder successfully created" });
 };
+
+// Get folder by album/folder id
+/**
+ *
+ */
+export const getFolders = async (req: Request, res: Response, next: NextFunction) => {};

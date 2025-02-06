@@ -23,10 +23,15 @@ RUN npm i
 
 EXPOSE 8080
 
+# Unfortunately the migration command/constraints will run on every startup, but this cannot
+# be written in the image build step, since the database container has to be up
+# for this to work
 WORKDIR /app/backend
-CMD ["npm", "run", "dev"]
+CMD /bin/bash && \
+    # Run migrations
+    npx prisma migrate dev --name init && \
+    export $(grep -E 'POSTGRES_USER|POSTGRES_DB|POSTGRES_PASSWORD' .env | xargs) && \
+    # Add constraints
+    PGPASSWORD="$POSTGRES_PASSWORD" psql -h db -U "$POSTGRES_USER" -d "$POSTGRES_DB" -f /app/backend/prisma/constraints.sql && \
+    npm run dev
 
-# Apply migrations after container starts
-COPY ./backend/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-ENTRYPOINT ["/docker-entrypoint.sh"]

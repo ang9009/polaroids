@@ -1,7 +1,8 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { Skeleton } from "@chakra-ui/react";
+import { Box, Button, Skeleton, Text } from "@chakra-ui/react";
 import { useGetAlbums } from "../../hooks/useGetAlbums";
+import EmptyGraphic from "../../public/empty_graphic.svg?react";
 import { AlbumCard } from "./../../components/AlbumCard/AlbumCard";
 import AlbumsCSS from "./Albums.module.css";
 
@@ -14,7 +15,20 @@ const Albums = () => {
   if (isPending) {
     return <LoadingGrid />;
   } else if (albumsData?.length === 0) {
-    return <p>No albums found</p>;
+    return (
+      <Box
+        height={"calc(100% - {sizes.breadcrumbHeight})"}
+        className={AlbumsCSS["no-albums-msg-container"]}
+      >
+        <EmptyGraphic className={AlbumsCSS["empty-graphic"]} />
+        <Text color={"secondaryText"} className={AlbumsCSS["no-albums-msg"]}>
+          Albums you create will be shown here
+        </Text>
+        <Button colorPalette={"purple"} variant={"surface"}>
+          Create album
+        </Button>
+      </Box>
+    );
   }
   return (
     <div className={AlbumsCSS["cards-container"]}>

@@ -31,3 +31,8 @@
   text-align: center;
   margin-top: 1rem;
 }
+
+.empty-graphic {
+  width: 40%;
+  min-width: 300px;
+}

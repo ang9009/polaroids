@@ -1,9 +1,10 @@
 /* eslint-disable jsdoc/require-param */
 /* eslint-disable jsdoc/require-returns */
-import { Box, Skeleton } from "@chakra-ui/react";
+import { Box, Skeleton, Text } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useGetMediaThumbnails } from "../../hooks/useGetMediaThumbnails";
+import EmptyGraphic from "../../public/empty_graphic.svg?react";
 import GalleryGridCSS from "./GalleryGrid.module.css";
 
 interface GalleryGridProps {
@@ -78,9 +79,9 @@ function CouldNotFindItemsMsg() {
       height={"calc(100% - {sizes.breadcrumbHeight})"}
     >
       <h1 className={GalleryGridCSS["msg-title"]}>Album not found</h1>
-      <p className={GalleryGridCSS["msg"]}>
+      <Text color={"secondaryText"} className={GalleryGridCSS["msg"]}>
         Something went wrong. <Link to={"/albums"}>Click here</Link> to return to the albums page.
-      </p>
+      </Text>
     </Box>
   );
 }
@@ -94,10 +95,10 @@ function NoItemsFoundMsg() {
       className={GalleryGridCSS["msg-container"]}
       height={"calc(100% - {sizes.breadcrumbHeight})"}
     >
-      <h1 className={GalleryGridCSS["msg-title"]}>No items found</h1>
-      <p className={GalleryGridCSS["msg"]}>
-        Drag files here to add photos/videos, or upload it via the Discord bot.
-      </p>
+      <EmptyGraphic className={GalleryGridCSS["empty-graphic"]} />
+      <Text color={"secondaryText"} className={GalleryGridCSS["msg"]}>
+        Upload files via the Discord bot
+      </Text>
     </Box>
   );
 }

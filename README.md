@@ -9,9 +9,6 @@ media to my Synology FileStation, and a website that displays this media.
 
 (The photos were uploaded for demonstration purposes, that's not me)
 
-I tried really hard to make this fully self-hostable, but unfortunately
-FileStation would not co-operate. A
-
 ## Setup
 
 ### Prerequisites

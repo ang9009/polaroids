@@ -4,7 +4,7 @@ import { AiFillGithub } from "react-icons/ai";
 import { useNavigate } from "react-router";
 import { useUser } from "../../hooks/useUser";
 import polaroidsIcon from "../../public/polaroids_icon.png";
-import { SkeletonText } from "../ui/skeleton";
+import { SkeletonText } from "../Chakra/skeleton";
 import { UserWidget } from "../UserWidget/UserWidget";
 import NavbarCSS from "./Navbar.module.css";
 

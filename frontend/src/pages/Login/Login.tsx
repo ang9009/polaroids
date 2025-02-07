@@ -2,8 +2,8 @@
 import { Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-import { Button } from "../../components/ui/button";
-import { toaster } from "../../components/ui/toaster";
+import { Button } from "../../components/Chakra/button";
+import { toaster } from "../../components/Chakra/toaster";
 import { ApiRoutes } from "../../data/apiRoutes";
 import { useUser } from "../../hooks/useUser";
 import DiscordIcon from "../../public/discord_icon.svg?react";

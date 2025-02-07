@@ -12,7 +12,7 @@ const config = defineConfig({
         primary: { value: "1px solid #27272a" },
       },
       sizes: {
-        sidebarWidth: { value: "20rem" },
+        sidebarWidth: { value: "17rem" },
         navbarHeight: { value: "10vh" },
         breadcrumbHeight: { value: "2rem" },
       },

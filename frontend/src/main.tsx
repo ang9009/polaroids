@@ -5,8 +5,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import App from "./App.tsx";
-import { Provider } from "./components/ui/provider.tsx";
-import { Toaster } from "./components/ui/toaster.tsx";
+import { Provider } from "./components/Chakra/provider.tsx";
+import { Toaster } from "./components/Chakra/toaster.tsx";
 import system from "./data/chakraConfig.ts";
 import "./index.css";
 

@@ -5,8 +5,8 @@ import { useNavigate } from "react-router";
 import { GetUserInfoResponse } from "shared/src/responses/auth/getInfo";
 import { userQueryKey } from "../../data/constants";
 import { logout } from "../../services/logout";
-import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../ui/menu";
-import { toaster } from "../ui/toaster";
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../Chakra/menu";
+import { toaster } from "../Chakra/toaster";
 import UserWidgetCSS from "./UserWidget.module.css";
 
 interface UserWidgetProps {

@@ -44,11 +44,11 @@ const Albums = () => {
  */
 function LoadingGrid({ pageSize }: { pageSize?: number }) {
   return (
-    <div className={AlbumsCSS["cards-container"]}>
-      {[...Array(pageSize || 9).keys()].map((i) => (
+    <Box height={"calc(100% - {sizes.breadcrumbHeight})"} className={AlbumsCSS["cards-container"]}>
+      {[...Array(pageSize || 5).keys()].map((i) => (
         <Skeleton key={i} />
       ))}
-    </div>
+    </Box>
   );
 }
 

@@ -2,7 +2,7 @@
 import { BreadcrumbLink } from "@chakra-ui/react";
 import { IoAlbumsOutline, IoFolder } from "react-icons/io5";
 import { Outlet, useNavigate } from "react-router";
-import { BreadcrumbRoot } from "../../components/ui/breadcrumb";
+import { BreadcrumbRoot } from "../../components/Chakra/breadcrumb";
 import { useGetBreadcrumbMap } from "../../hooks/useGetBreadcrumbMap";
 import AlbumBreadCrumbLayoutCSS from "./AlbumBreadcrumbLayout.module.css";
 

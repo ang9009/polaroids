@@ -59,13 +59,15 @@ const GalleryGrid = ({ pageSize, query, albumId }: GalleryGridProps) => {
   }
 
   return (
-    <Box className={GalleryGridCSS["grid-container"]}>
-      {thumbnails?.map((url, i) => {
-        const ref = i === thumbnails.length - 1 && hasNextPage ? lastThumbnailRef : undefined;
-        return <img src={url} ref={ref} className={GalleryGridCSS["file-item"]} key={url} />;
-      })}
+    <>
+      <Box className={GalleryGridCSS["grid-container"]}>
+        {thumbnails?.map((url, i) => {
+          const ref = i === thumbnails.length - 1 && hasNextPage ? lastThumbnailRef : undefined;
+          return <img src={url} ref={ref} className={GalleryGridCSS["file-item"]} key={url} />;
+        })}
+      </Box>
       {isFetchingNextPage && <LoadingGrid pageSize={pageSize} />}
-    </Box>
+    </>
   );
 };
 
